@@ -12,8 +12,17 @@ class Collidable {
     }
 
 
+    /**
+     * Checking for collisions with tiles
+     * @return
+     */
     public boolean tileCollision(){
+        return false;
     }
+
+
+
+
 
 
 }

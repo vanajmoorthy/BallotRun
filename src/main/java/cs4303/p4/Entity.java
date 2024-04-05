@@ -6,5 +6,12 @@ public class Entity extends Collidable{
         super(g, x, y);
     }
 
-
+    /**
+     * Check for collisions between this entity and another
+     * @param e entity colliding with this entity
+     * @return true if the collision occurs
+     */
+    public boolean entityCollision(Entity e){
+        return false;
+    }
 }
