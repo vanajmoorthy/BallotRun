@@ -14,4 +14,11 @@ public class Entity extends Collidable{
     public boolean entityCollision(Entity e){
         return false;
     }
+
+    public void draw(){
+
+    }
+
+    public void update(){
+    }
 }
