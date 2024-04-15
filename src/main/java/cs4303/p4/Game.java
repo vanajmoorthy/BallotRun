@@ -74,12 +74,13 @@ public class Game extends PApplet {
     @Override
     public void draw() {
         // draw the player
-        player.draw();
         background(200);
         graphics.beginDraw();
         myLevel.draw();
         graphics.endDraw();
         image(graphics, 0, 0); // Draw the PGraphics object to the screen
+        player.draw();
+
     }
 
     public void movePlayer() {
