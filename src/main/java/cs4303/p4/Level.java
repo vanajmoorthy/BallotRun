@@ -3,6 +3,7 @@ package cs4303.p4;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
+// Assumes player can jump 2 "cells"
 public class Level {
     int cellSize; // Size of each cell in the grid
     int gridWidth;
