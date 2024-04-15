@@ -3,7 +3,15 @@ package cs4303.p4;
 import processing.core.PVector;
 
 class Collidable {
-    PVector location;
+    public PVector getLocation() {
+        return location;
+    }
+
+    public void setLocation(PVector location) {
+        this.location = location;
+    }
+
+    private PVector location;
     Game game;
 
     public Collidable(Game g, float x, float y) {
