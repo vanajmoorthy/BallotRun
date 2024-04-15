@@ -7,7 +7,7 @@ public class Player extends Entity{
 
     public Player(Game g, float x, float y) {
         super(g, x, y);
-        super.setMass(Contants.PLAYER.INSTANCE.MASS);
+        super.setMass(Constants.PLAYER.INSTANCE.MASS);
         //initialise mass and acceleration to 0
         super.setAcceleration(new PVector(0,0));
         super.setVelocity(new PVector(0,0));
@@ -25,7 +25,7 @@ public class Player extends Entity{
     public void jump(){
 
         //TODO take account of screen size in jump
-        PVector jump = new PVector(0,Contants.PLAYER.INSTANCE.JUMP_IMPULSE);
+        PVector jump = new PVector(0,Constants.PLAYER.INSTANCE.JUMP_IMPULSE);
         super.applyForce(jump);
 
     }
@@ -36,7 +36,7 @@ public class Player extends Entity{
         //update acceleration by applying resistance to it
         //gravity
         //TODO take screen size into account
-        PVector gravity = new PVector(0,Contants.gravity);
+        PVector gravity = new PVector(0,Constants.gravity);
         super.applyForce(gravity);
 
         //drag

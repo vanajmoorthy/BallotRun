@@ -1,6 +1,6 @@
 package cs4303.p4;
 
-public class Contants {
+public class Constants {
     public static final float gravity = 0.005F;
     public static final float airResistance = 0.005F;
 
