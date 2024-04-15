@@ -1,12 +1,11 @@
 package cs4303.p4;
 
+import processing.core.PApplet;
 import processing.core.PVector;
 
-public class Player extends Entity{
-
-
-    public Player(Game g, float x, float y) {
-        super(g, x, y);
+public class Player extends Entity {
+    public Player(float x, float y) {
+        super(x, y);
         super.setMass(Constants.PLAYER.INSTANCE.MASS);
         //initialise mass and acceleration to 0
         super.setAcceleration(new PVector(0,0));
@@ -14,12 +13,12 @@ public class Player extends Entity{
     }
 
     @Override
-    public void draw() {
-        super.game.pushMatrix();
-        super.game.fill(0, 0, 255); // Set fill color to blue
+    public void draw(PApplet sketch) {
+        sketch.pushMatrix();
+        sketch.fill(0, 0, 255); // Set fill color to blue
         //TODO FIX THE SIZE OF THE PLAYER
-        super.game.rect(super.getLocation().x,super.getLocation().y,10,10);
-        super.game.popMatrix();
+        sketch.rect(super.getLocation().x,super.getLocation().y,10,10);
+        sketch.popMatrix();
     }
 
     public void jump(){

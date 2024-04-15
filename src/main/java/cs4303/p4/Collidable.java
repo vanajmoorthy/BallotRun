@@ -1,22 +1,16 @@
 package cs4303.p4;
 
+import lombok.Getter;
+import lombok.Setter;
 import processing.core.PVector;
 
+@Getter
+@Setter
 class Collidable {
-    public PVector getLocation() {
-        return location;
-    }
-
-    public void setLocation(PVector location) {
-        this.location = location;
-    }
-
     private PVector location;
-    Game game;
 
-    public Collidable(Game g, float x, float y) {
+    public Collidable(float x, float y) {
         location = new PVector(x, y);
-        this.game = g;
     }
 
     /**

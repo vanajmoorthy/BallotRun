@@ -1,25 +1,24 @@
 package cs4303.p4;
 
+import lombok.Getter;
 import processing.core.PApplet;
-import processing.core.PGraphics;
 
 // Assumes player can jump 2 "cells"
+@Getter
 public class Level {
-    int cellSize; // Size of each cell in the grid
-    int gridWidth;
-    int gridHeight;
-    int[][] levelGrid;
-    PGraphics graphics;
-    PApplet parent;
+    private int cellSize; // Size of each cell in the grid
+    private int gridWidth;
+    private int gridHeight;
+    private int[][] levelGrid;
+    private PApplet parent;
 
     // Constructor
-    Level(int cellSize, PGraphics g, PApplet p) {
+    public Level(int cellSize, PApplet p) {
         this.cellSize = cellSize;
-        this.graphics = g;
         this.parent = p;
         this.gridWidth = p.width / cellSize;
         this.gridHeight = p.height / cellSize;
-        levelGrid = new int[gridHeight][gridWidth];
+        this.levelGrid = new int[gridHeight][gridWidth];
         initializeGrid();
         generateLevel();
     }
@@ -33,7 +32,7 @@ public class Level {
         }
     }
 
-    void generateLevel() {
+    public void generateLevel() {
         // Create the solid ground on the bottom
         for (int x = 0; x < gridWidth; x++) {
             levelGrid[gridHeight - 1][x] = 1;
@@ -68,15 +67,19 @@ public class Level {
     }
 
     // Draw the level
-    void draw() {
+    public void draw(PApplet sketch) {
         for (int y = 0; y < gridHeight; y++) {
             for (int x = 0; x < gridWidth; x++) {
                 if (levelGrid[y][x] == 1) {
                     // Draw platform
-                    graphics.rect(x * 40, y * 40, 40, 40);
+                    sketch.fill(0xFFFFFFFF);
+                    sketch.stroke(0xFF000000);
+                    sketch.rect(x * 40, y * 40, 40, 40);
                 } else if (levelGrid[y][x] == 2) {
                     // Draw enemy or treasure: placeholder
-                    graphics.ellipse(x * 40 + 20, y * 40 + 20, 20, 20);
+                    sketch.fill(0xFF555555);
+                    sketch.stroke(0xFF000000);
+                    sketch.ellipse(x * 40 + 20, y * 40 + 20, 20, 20);
                 }
             }
         }
