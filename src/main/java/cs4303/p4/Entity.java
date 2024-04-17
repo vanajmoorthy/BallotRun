@@ -16,6 +16,7 @@ import processing.core.PVector;
 public abstract class Entity extends Collidable{
     private EnumMap<Attribute, AttributeModifier> baseAttributes;
     private ArrayList<Item> inventory;
+    private int maxSlots;
 
     //values for movement
     //TODO add to constructors
@@ -58,5 +59,13 @@ public abstract class Entity extends Collidable{
         a.add(f);
         this.setAcceleration(a);
 
+    }
+
+    public boolean addItem(Item item) {
+        if (inventory.contains(item)) return false;
+        if (inventory.size() >= maxSlots) return false;
+
+        inventory.add(item);
+        return true;
     }
 }

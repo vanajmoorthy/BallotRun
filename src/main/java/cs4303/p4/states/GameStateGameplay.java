@@ -66,6 +66,14 @@ public final class GameStateGameplay extends GameState {
         }
     }
 
+    public void mousePressed(PApplet sketch) {
+
+    }
+
+    public void mouseReleased(PApplet sketch) {
+        
+    }
+
     public void movePlayer() {
 
     }

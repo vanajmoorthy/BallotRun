@@ -1,11 +1,17 @@
 package cs4303.p4;
 
+import java.util.ArrayList;
+
+import cs4303.p4._util.Constants;
+import cs4303.p4.items.Item;
 import processing.core.PApplet;
 import processing.core.PVector;
 
 public class Player extends Entity {
     public Player(float x, float y) {
         super(x, y);
+        super.setInventory(new ArrayList<Item>());
+        super.setMaxSlots(3);
         super.setMass(Constants.PLAYER.INSTANCE.MASS);
         //initialise mass and acceleration to 0
         super.setAcceleration(new PVector(0,0));
