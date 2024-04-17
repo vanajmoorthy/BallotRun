@@ -36,10 +36,10 @@ public final class GestureDetector {
     private final Hitbox hitbox;
 
     public void draw(PApplet sketch) {
-        draw.handle(sketch, hitbox, isFocused(sketch), sketch.mousePressed);
+        draw.handle(sketch, hitbox, hasFocus(sketch), hasFocus(sketch) && sketch.mousePressed);
     }
 
-    public boolean isFocused(PApplet sketch) {
+    public boolean hasFocus(PApplet sketch) {
         return
             sketch.mouseX >= hitbox.pos.x &&
             sketch.mouseY >= hitbox.pos.y &&

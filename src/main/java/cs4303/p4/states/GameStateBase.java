@@ -13,6 +13,7 @@ import processing.core.PVector;
 
 public final class GameStateBase extends GameState {
     private Player player;
+    private Item selectedItem;
     private List<GestureDetector> buttons;
 
     public GameStateBase(Player player) {
@@ -26,8 +27,8 @@ public final class GameStateBase extends GameState {
                 (sketch, hitbox, hasHover, hasClick) -> {
                     sketch.fill(
                         hasHover
-                            ? Colors.platinum.dark
-                            : Colors.night.lighter
+                            ? Colors.night.lighter
+                            : Colors.night.primary
                     );
                     sketch.noStroke();
                     sketch.rect(10 + offset, 10, 50, 50, 10);
@@ -51,18 +52,23 @@ public final class GameStateBase extends GameState {
     public void draw(PApplet sketch) {
         sketch.fill(Colors.night.darker);
         sketch.noStroke();
-        sketch.rect(0, 0, Constants.Screen.Base.inventoryWidth, Constants.Screen.Base.inventoryHeight);
+        sketch.rect(0, 0, Constants.Screen.Base.inventoryWidth - 300, Constants.Screen.Base.inventoryHeight);
 
         boolean isAnyButtonFocused = false;
         for (GestureDetector button : buttons) {
             button.draw(sketch);
-            if (button.isFocused(sketch)) isAnyButtonFocused = true;
+            if (button.hasFocus(sketch)) isAnyButtonFocused = true;
         }
         sketch.cursor(
             isAnyButtonFocused
                 ? PApplet.HAND
                 : PApplet.ARROW
         );
+
+        sketch.fill(Colors.night.dark);
+        sketch.noStroke();
+        sketch.rect(Constants.Screen.Base.inventoryWidth - 300, 0, 300, Constants.Screen.Base.inventoryHeight);
+        
     }
 
     public void keyPressed(PApplet sketch) {
@@ -79,7 +85,7 @@ public final class GameStateBase extends GameState {
 
     public void mouseReleased(PApplet sketch) {
         for (GestureDetector button : buttons) {
-            if (button.isFocused(sketch)) button.click(sketch);
+            if (button.hasFocus(sketch)) button.click(sketch);
         }
 
     }
