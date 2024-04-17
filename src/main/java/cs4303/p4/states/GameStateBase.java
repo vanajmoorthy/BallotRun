@@ -53,9 +53,16 @@ public final class GameStateBase extends GameState {
         sketch.noStroke();
         sketch.rect(0, 0, Constants.Screen.Base.inventoryWidth, Constants.Screen.Base.inventoryHeight);
 
+        boolean isAnyButtonFocused = false;
         for (GestureDetector button : buttons) {
             button.draw(sketch);
+            if (button.isFocused(sketch)) isAnyButtonFocused = true;
         }
+        sketch.cursor(
+            isAnyButtonFocused
+                ? PApplet.HAND
+                : PApplet.ARROW
+        );
     }
 
     public void keyPressed(PApplet sketch) {
@@ -74,5 +81,6 @@ public final class GameStateBase extends GameState {
         for (GestureDetector button : buttons) {
             if (button.isFocused(sketch)) button.click(sketch);
         }
+
     }
 }
