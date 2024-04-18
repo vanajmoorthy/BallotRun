@@ -2,21 +2,17 @@ package cs4303.p4;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import cs4303.p4.map.Level;
+import cs4303.p4._util.Constants;
+import cs4303.p4.items.Item;
+import cs4303.p4.items.ItemType;
+import cs4303.p4.states.GameState;
+import cs4303.p4.states.GameStateBase;
+import cs4303.p4.states.GameStateGameplay;
 import processing.core.PApplet;
-import processing.core.PGraphics;
 
 @SpringBootApplication
 public class Game extends PApplet {
-    Level myLevel;
-    PGraphics graphics;
-    // flags to decouple movement
-    boolean w_pressed = false;
-    boolean d_pressed = false;
-    boolean a_pressed = false;
-    boolean s_pressed = false;
-
-    Player player;
+    private GameState state;
 
     public static void main(String[] args) {
         String[] appletArgs = new String[] { "Game" };
@@ -26,70 +22,44 @@ public class Game extends PApplet {
 
     @Override
     public void settings() {
-        size(1000, 600);
+        size(
+            Math.max(Constants.Screen.width, Constants.Screen.minWidth),
+            Math.max(Constants.Screen.height, Constants.Screen.minHeight)
+        );
     }
 
     @Override
     public void setup() {
-        // initialise the player
-        // TODO insert a start location
-        player = new Player(this, 100, 100);
-        graphics = createGraphics(width, height);
-        myLevel = new Level(graphics, this);
+        // state = new GameStateGameplay(this);
+        Player player = new Player(0, 0);
+        player.addItem(new Item(ItemType.Chestplate));
+        player.addItem(new Item(ItemType.Constinution));
+        state = new GameStateBase(player);
+        // state = new GameStateGameplay(this);
     }
 
     @Override
     public void keyPressed() {
-        if (key == 'w') {
-            this.w_pressed = true;
-        } else if (key == 's') {
-            this.s_pressed = true;
-        } else if (key == 'a') {
-            this.a_pressed = true;
-        } else if (key == 'd') {
-            this.d_pressed = true;
-        } else if (key == ' ') {
-            player.jump();
-            println("Spacebar pressed!");
-        }
+        state.keyPressed(this);
     }
 
     @Override
     public void keyReleased() {
-        if (key == 'w') {
-            this.w_pressed = false;
-        }
-        if (key == 's') {
-            this.s_pressed = false;
-        }
-        if (key == 'a') {
-            this.a_pressed = false;
-        }
-        if (key == 'd') {
-            this.d_pressed = false;
-        }
+        state.keyReleased(this);
+    }
+
+    @Override
+    public void mousePressed() {
+        state.mousePressed(this);
+    }
+
+    @Override
+    public void mouseReleased() {
+        state.mouseReleased(this);
     }
 
     @Override
     public void draw() {
-        // draw the player
-        background(200);
-        clear();
-
-        graphics.beginDraw();
-        myLevel.updateCamera(); // Update the camera position
-        myLevel.draw(); // Draw the current view of the level
-        graphics.endDraw();
-        image(graphics, 0, 0); // Draw the PGraphics object to the screen
-        player.draw();
-
+        state.draw(this);
     }
-
-    public void movePlayer() {
-    }
-
-    public void update() {
-
-    }
-
 }

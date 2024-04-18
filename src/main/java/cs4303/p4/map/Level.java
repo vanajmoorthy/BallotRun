@@ -1,8 +1,7 @@
 package cs4303.p4.map;
 
-import cs4303.p4.Constants;
+import cs4303.p4._util.Constants;
 import processing.core.PApplet;
-import processing.core.PGraphics;
 
 // TODO: make tile object with literally just cell size of tile and draw method
 // Implement sliding window
@@ -13,15 +12,13 @@ public class Level {
     private int gridWidth;
     private int gridHeight;
     private Tile[][] levelGrid;
-    private PGraphics graphics;
     private PApplet parent;
     private int cameraX; // Camera offset on the X-axis
     private final int cameraSpeed = 1; // Speed at which the camera moves to the right
 
     // Constructor
-    public Level(PGraphics g, PApplet p) {
+    public Level(PApplet p) {
         this.cellSize = Constants.TILE_SIZE;
-        this.graphics = g;
         this.parent = p;
         this.gridWidth = (p.width / cellSize) * 2;
         this.gridHeight = p.height / cellSize;
@@ -33,7 +30,7 @@ public class Level {
     private void initializeGrid() {
         for (int y = 0; y < gridHeight; y++) {
             for (int x = 0; x < gridWidth; x++) {
-                levelGrid[y][x] = new Tile(cellSize, graphics); // Initialize each Tile object
+                levelGrid[y][x] = new Tile(cellSize); // Initialize each Tile object
             }
         }
     }
@@ -92,7 +89,7 @@ public class Level {
                 // position
                 int screenX = x * cellSize - cameraX;
                 if (levelGrid[y][x].getType() != TileType.EMPTY) {
-                    levelGrid[y][x].draw(screenX / cellSize, y); // Use Tile's draw method with adjusted screenX
+                    levelGrid[y][x].draw(parent, screenX / cellSize, y); // Use Tile's draw method with adjusted screenX
                 }
             }
         }
