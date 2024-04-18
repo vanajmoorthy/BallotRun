@@ -2,6 +2,7 @@ package cs4303.p4;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import cs4303.p4.map.Level;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
@@ -9,7 +10,6 @@ import processing.core.PGraphics;
 public class Game extends PApplet {
     Level myLevel;
     PGraphics graphics;
-    int cellSize = 40;
     // flags to decouple movement
     boolean w_pressed = false;
     boolean d_pressed = false;
@@ -35,7 +35,7 @@ public class Game extends PApplet {
         // TODO insert a start location
         player = new Player(this, 100, 100);
         graphics = createGraphics(width, height);
-        myLevel = new Level(cellSize, graphics, this);
+        myLevel = new Level(graphics, this);
     }
 
     @Override
@@ -44,7 +44,6 @@ public class Game extends PApplet {
             this.w_pressed = true;
         } else if (key == 's') {
             this.s_pressed = true;
-
         } else if (key == 'a') {
             this.a_pressed = true;
         } else if (key == 'd') {
@@ -75,8 +74,11 @@ public class Game extends PApplet {
     public void draw() {
         // draw the player
         background(200);
+        clear();
+
         graphics.beginDraw();
-        myLevel.draw();
+        myLevel.updateCamera(); // Update the camera position
+        myLevel.draw(); // Draw the current view of the level
         graphics.endDraw();
         image(graphics, 0, 0); // Draw the PGraphics object to the screen
         player.draw();
