@@ -27,6 +27,7 @@ public class Tile {
         switch (type) {
             case PLATFORM:
                 // Draw platform
+                sketch.fill(255);
                 sketch.rect(x * cellSize, y * cellSize, cellSize, cellSize);
                 break;
             case ENTITY:

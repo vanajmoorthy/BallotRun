@@ -13,14 +13,15 @@ public class Level {
     private int gridHeight;
     private Tile[][] levelGrid;
     private PApplet parent;
-    private int cameraX; // Camera offset on the X-axis
-    private final int cameraSpeed = 1; // Speed at which the camera moves to the right
+
+    private float cameraX; // Camera offset on the X-axis (now float)
+    private final float cameraSpeed = 0.9f; // Speed at which the camera moves to the right
 
     // Constructor
     public Level(PApplet p) {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
-        this.gridWidth = (p.width / cellSize) * 2;
+        this.gridWidth = (p.width / cellSize) * 3;
         this.gridHeight = p.height / cellSize;
         levelGrid = new Tile[gridHeight][gridWidth];
         initializeGrid();
@@ -72,22 +73,24 @@ public class Level {
 
     // Call this method in main game loop
     public void updateCamera() {
-        // Increment the camera position by the camera speed each frame
+        // Increment the camera position by a fraction of the camera speed each frame
+        cameraX += cameraSpeed;
+
         // Ensure the camera does not go past the end of the level
-        cameraX = Math.min(cameraX + cameraSpeed, (gridWidth * cellSize) - parent.width);
+        cameraX = Math.min(cameraX, (gridWidth * cellSize) - parent.width);
     }
 
     // Modify the draw method to offset tiles based on the camera position
     public void draw() {
         // Only draw the part of the level that's currently within the camera's view
-        int startCol = cameraX / cellSize;
+        int startCol = (int) cameraX / cellSize;
         int endCol = Math.min(startCol + parent.width / cellSize, gridWidth);
 
         for (int y = 0; y < gridHeight; y++) {
             for (int x = startCol; x < endCol; x++) {
                 // Calculate the on-screen x position, adjusted for the camera's current
                 // position
-                int screenX = x * cellSize - cameraX;
+                int screenX = x * cellSize - (int) cameraX;
                 if (levelGrid[y][x].getType() != TileType.EMPTY) {
                     levelGrid[y][x].draw(parent, screenX / cellSize, y); // Use Tile's draw method with adjusted screenX
                 }

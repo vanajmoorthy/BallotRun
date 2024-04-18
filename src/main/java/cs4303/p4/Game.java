@@ -23,9 +23,8 @@ public class Game extends PApplet {
     @Override
     public void settings() {
         size(
-            Math.max(Constants.Screen.width, Constants.Screen.minWidth),
-            Math.max(Constants.Screen.height, Constants.Screen.minHeight)
-        );
+                Math.max(Constants.Screen.width, Constants.Screen.minWidth),
+                Math.max(Constants.Screen.height, Constants.Screen.minHeight));
     }
 
     @Override
@@ -34,8 +33,8 @@ public class Game extends PApplet {
         Player player = new Player(0, 0);
         player.addItem(new Item(ItemType.Chestplate));
         player.addItem(new Item(ItemType.Constinution));
-        state = new GameStateBase(player);
-        // state = new GameStateGameplay(this);
+        // state = new GameStateBase(player);
+        state = new GameStateGameplay(this);
     }
 
     @Override
