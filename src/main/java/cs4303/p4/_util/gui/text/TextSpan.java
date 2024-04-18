@@ -7,11 +7,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public final class TextSpan extends TextNode {
     private final String text;
-    private final int color;
+    private final Integer color;
     private final boolean bold;
     private final boolean italic;
 
-    public TextSpan(String text, int color) {
+    public TextSpan(String text, Integer color) {
         this(text, color, false, false);
     }
 }
