@@ -27,18 +27,11 @@ public final class GameStateGameplay extends GameState {
     public void draw(PApplet sketch) {
         // draw the player
         sketch.background(200);
-        // graphics.beginDraw();
-        level.draw();
-        // graphics.endDraw();
-        // image(graphics, 0, 0); // Draw the PGraphics object to the screen
-        player.draw(sketch);
 
-        sketch.background(200);
-        sketch.clear();
-
-        level.updateCamera(); // Update the camera position
         level.draw(); // Draw the current view of the level
+        player.setCameraOffsetX(level.getCameraX());
         player.draw(sketch);
+        update();
     }
 
     public void keyPressed(PApplet sketch) {
@@ -86,6 +79,7 @@ public final class GameStateGameplay extends GameState {
     }
 
     public void update() {
-
+        level.updateCamera(); // Update the camera position
+        player.update();
     }
 }

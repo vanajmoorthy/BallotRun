@@ -22,17 +22,22 @@ public class Tile {
     }
 
     // Draw method for the tile
-    public void draw(PApplet sketch, int x, int y) {
+    public void draw(PApplet sketch, int x, int y, float lerp) {
         // Draw based on type
         switch (type) {
+            case EMPTY:
+                sketch.fill(255, 0, 0);
+                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
+                break;
             case PLATFORM:
                 // Draw platform
                 sketch.fill(255);
-                sketch.rect(x * cellSize, y * cellSize, cellSize, cellSize);
+                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
                 break;
             case ENTITY:
                 // Draw enemy or treasure
-                sketch.ellipse(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, cellSize / 2, cellSize / 2);
+                sketch.ellipse(x * cellSize + cellSize / 2 + lerp * cellSize, y * cellSize + cellSize / 2, cellSize / 2,
+                        cellSize / 2);
                 break;
             default:
                 break;

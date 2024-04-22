@@ -27,29 +27,26 @@ public final class GameStateBase extends GameState {
             final int offset = i * 60;
 
             buttons.add(new GestureDetector(
-                (sketch, hitbox, hasHover, hasClick) -> {
-                    sketch.fill(
-                        hasHover
-                            ? Colors.night.lighter
-                            : Colors.night.primary
-                    );
-                    sketch.noStroke();
-                    sketch.rect(10 + offset, 10, 50, 50, 10);
+                    (sketch, hitbox, hasHover, hasClick) -> {
+                        sketch.fill(
+                                hasHover
+                                        ? Colors.night.lighter
+                                        : Colors.night.primary);
+                        sketch.noStroke();
+                        sketch.rect(10 + offset, 10, 50, 50, 10);
 
-                    sketch.noFill();
-                    sketch.stroke(item.getType().getRarity().getColor());
-                    sketch.strokeWeight(2);
-                    sketch.rect(10 + offset + 5, 10 + 5, 40, 40, 5);
-                },
-                (sketch) -> {
-                    // PApplet.println(item.getType().getDisplayName());
-                    selectedItem = item;
-                },
-                new GestureDetector.Hitbox(
-                    new PVector(10 + offset, 10),
-                    new PVector(50, 50)
-                )
-            ));
+                        sketch.noFill();
+                        sketch.stroke(item.getType().getRarity().getColor());
+                        sketch.strokeWeight(2);
+                        sketch.rect(10 + offset + 5, 10 + 5, 40, 40, 5);
+                    },
+                    (sketch) -> {
+                        // PApplet.println(item.getType().getDisplayName());
+                        selectedItem = item;
+                    },
+                    new GestureDetector.Hitbox(
+                            new PVector(10 + offset, 10),
+                            new PVector(50, 50))));
         }
     }
 
@@ -63,13 +60,13 @@ public final class GameStateBase extends GameState {
         boolean isAnyButtonFocused = false;
         for (GestureDetector button : buttons) {
             button.draw(sketch);
-            if (button.hasFocus(sketch)) isAnyButtonFocused = true;
+            if (button.hasFocus(sketch))
+                isAnyButtonFocused = true;
         }
         sketch.cursor(
-            isAnyButtonFocused
-                ? PApplet.HAND
-                : PApplet.ARROW
-        );
+                isAnyButtonFocused
+                        ? PApplet.HAND
+                        : PApplet.ARROW);
 
         sketch.fill(Colors.night.dark);
         sketch.noStroke();
@@ -85,7 +82,7 @@ public final class GameStateBase extends GameState {
 
                 float offset = sketch.textWidth(modifier.getAttribute().getSymbol() + " ");
                 sketch.text(modifier.getAttribute().getDisplayName(), itemX + 10 + offset, 50 + 22 * i);
-                
+
                 offset += sketch.textWidth(modifier.getAttribute().getDisplayName());
                 sketch.fill(Colors.platinum.dark);
                 sketch.text(": " + Math.round(modifier.getValue()), itemX + 10 + offset, 50 + 22 * i);
@@ -94,12 +91,11 @@ public final class GameStateBase extends GameState {
             }
 
             selectedItem.getType().getLore().draw(
-                sketch,
-                itemX + 10,
-                50 + 22 * (i + 1),
-                300 - 20,
-                20
-            );
+                    sketch,
+                    itemX + 10,
+                    50 + 22 * (i + 1),
+                    300 - 20,
+                    20);
         }
     }
 
@@ -113,7 +109,8 @@ public final class GameStateBase extends GameState {
 
     public void mousePressed(PApplet sketch) {
         for (GestureDetector button : buttons) {
-            if (button.hasFocus(sketch)) button.click(sketch);
+            if (button.hasFocus(sketch))
+                button.click(sketch);
         }
     }
 

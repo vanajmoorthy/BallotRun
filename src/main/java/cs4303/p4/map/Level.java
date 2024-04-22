@@ -1,5 +1,8 @@
 package cs4303.p4.map;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cs4303.p4._util.Constants;
 import processing.core.PApplet;
 
@@ -15,7 +18,9 @@ public class Level {
     private PApplet parent;
 
     private float cameraX; // Camera offset on the X-axis (now float)
-    private final float cameraSpeed = 0.9f; // Speed at which the camera moves to the right
+    private final float cameraSpeed = 0.3f; // Speed at which the camera moves to the right
+
+    private List<Node> nodes;
 
     // Constructor
     public Level(PApplet p) {
@@ -28,6 +33,10 @@ public class Level {
         generateLevel();
     }
 
+    public float getCameraX() {
+        return cameraX;
+    }
+
     private void initializeGrid() {
         for (int y = 0; y < gridHeight; y++) {
             for (int x = 0; x < gridWidth; x++) {
@@ -36,15 +45,43 @@ public class Level {
         }
     }
 
+    public boolean isPlatformAt(float x, float y) {
+        int gridX = (int) (x / cellSize);
+        int gridY = (int) (y / cellSize);
+
+        // Check bounds
+        if (gridX < 0 || gridX >= gridWidth || gridY < 0 || gridY >= gridHeight) {
+            return false;
+        }
+
+        return levelGrid[gridY][gridX].getType() == TileType.PLATFORM;
+    }
+
     void generateLevel() {
-        // Create the solid ground on the bottom
-        for (int x = 0; x < gridWidth; x++) {
-            levelGrid[gridHeight - 1][x].setType(TileType.PLATFORM);
+        int lastPlatformX = 0; // Keep track of the last platform's x-coordinate
+
+        // Ensure the player can always progress by creating a base path
+        for (int x = 1; x < gridWidth - 1; x++) {
+            // Every few cells, guarantee a platform within jump reach
+            if ((x - lastPlatformX) >= 2) { // Ensure a platform is placed every two cells
+                levelGrid[gridHeight - 3][x].setType(TileType.PLATFORM);
+                lastPlatformX = x; // Update the last platform position
+            }
+        }
+
+        // Additional random platforms for complexity (could overlap the base path)
+        for (int x = 1; x < gridWidth - 1; x++) {
+            for (int y = gridHeight - 5; y > 1; y -= 2) { // Avoid interfering with the guaranteed path
+                if (parent.random(1) < 0.1) { // Less frequent random platforms
+                    levelGrid[y][x].setType(TileType.PLATFORM);
+                }
+            }
         }
 
         // Create the platforms that can be jumped onto from below
         for (int x = 1; x < gridWidth - 1; x++) {
-            for (int y = gridHeight - 3; y > 0; y -= 2) { // Start from second row above the ground and check upwards
+            // Start from ground level and check upwards, ignore top two rows
+            for (int y = gridHeight - 1; y > 1; y -= 2) {
                 if (parent.random(1) < 0.3) { // With a 30% probability, place a platform
                     levelGrid[y][x].setType(TileType.PLATFORM);
 
@@ -71,6 +108,25 @@ public class Level {
         }
     }
 
+    void buildGraph() {
+        nodes = new ArrayList<>(); // Initialize the graph nodes list
+
+        // Iterate over levelGrid and add platforms as nodes
+        for (int y = 0; y < gridHeight; y++) {
+            for (int x = 0; x < gridWidth; x++) {
+                if (levelGrid[y][x].getType() == TileType.PLATFORM) {
+                    Node newNode = new Node(x, y);
+                    // Connect to existing nodes
+                    for (Node node : nodes) {
+                        node.addNeighbor(newNode);
+                        newNode.addNeighbor(node);
+                    }
+                    nodes.add(newNode); // Add the new node to the list
+                }
+            }
+        }
+    }
+
     // Call this method in main game loop
     public void updateCamera() {
         // Increment the camera position by a fraction of the camera speed each frame
@@ -83,16 +139,20 @@ public class Level {
     // Modify the draw method to offset tiles based on the camera position
     public void draw() {
         // Only draw the part of the level that's currently within the camera's view
-        int startCol = (int) cameraX / cellSize;
+        int startCol = (int) (cameraX / cellSize);
         int endCol = Math.min(startCol + parent.width / cellSize, gridWidth);
 
         for (int y = 0; y < gridHeight; y++) {
             for (int x = startCol; x < endCol; x++) {
                 // Calculate the on-screen x position, adjusted for the camera's current
-                // position
-                int screenX = x * cellSize - (int) cameraX;
+                // position using floating-point arithmetic
+                float screenX = x * cellSize - cameraX;
+
                 if (levelGrid[y][x].getType() != TileType.EMPTY) {
-                    levelGrid[y][x].draw(parent, screenX / cellSize, y); // Use Tile's draw method with adjusted screenX
+                    // Use linear interpolation to smoothly transition between cell positions
+                    int cellX = (int) (screenX / cellSize);
+                    float lerp = (screenX / cellSize) - cellX;
+                    levelGrid[y][x].draw(parent, cellX, y, lerp);
                 }
             }
         }
