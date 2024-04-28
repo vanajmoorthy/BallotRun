@@ -5,9 +5,9 @@ import lombok.Getter;
 
 
 public class BoundingBox {
-    private PVector location;
-    private int width;
-    private int height;
+    private  @Getter PVector location;
+    private @Getter int width;
+    private @Getter int height;
 
     /**
  * Constructs a new BoundingBox object with the specified location, width, and height.
@@ -16,9 +16,10 @@ public class BoundingBox {
  * @param width     The width of the bounding box.
  * @param height    The height of the bounding box.
  */
-public BoundingBox(PVector location, int width, int height) {
-    this.location = location;
-    this.width = width;
-    this.height = height;
-}
+    public BoundingBox(PVector location, int width, int height) {
+        this.location = location;
+        this.width = width;
+        this.height = height;
+    }
+
 }
