@@ -2,6 +2,7 @@ package cs4303.p4;
 
 import java.util.ArrayList;
 
+import cs4303.p4.physics.BoundingBox;
 import lombok.Getter;
 import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
@@ -16,10 +17,18 @@ public class Player extends Entity {
         super.setInventory(new ArrayList<Item>());
         super.setMaxSlots(3);
         super.setMass(Constants.PLAYER.INSTANCE.MASS);
+
         // initialise mass and acceleration to 0
         super.setAcceleration(new PVector(0, 0));
         super.setVelocity(new PVector(0, 0));
         this.cameraOffsetX = 0;
+
+        //create bounding box
+        //TODO change this to player size
+        BoundingBox b1 = new BoundingBox(this.getLocation(),20,20);
+        ArrayList<BoundingBox> b = new ArrayList<BoundingBox>();
+        b.add(b1);
+        super.setBounds(b);
     }
 
     public void setCameraOffsetX(float offsetX) {
@@ -45,6 +54,7 @@ public class Player extends Entity {
 
     @Override
     public void update() {
+
 
         // update acceleration by applying resistance to it
         // gravity
