@@ -22,4 +22,14 @@ public class BoundingBox {
         this.height = height;
     }
 
+    /**
+     * Moves the box by the move vector
+     * @param move
+     */
+    public void moveBox(PVector move){
+        this.location.add(move);
+    }
+
+
+
 }

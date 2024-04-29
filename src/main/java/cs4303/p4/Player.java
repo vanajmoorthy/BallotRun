@@ -52,9 +52,11 @@ public class Player extends Entity {
 
     }
 
+    /**
+     * Updates the
+     */
     @Override
     public void update() {
-
 
         // update acceleration by applying resistance to it
         // gravity
@@ -64,12 +66,21 @@ public class Player extends Entity {
 
         // drag
         // TODO add drag
+        super.applyDrag();
 
         // Update velocity based on acceleration
         super.setVelocity(super.getVelocity().add(super.getAcceleration()));
 
+    }
+
+
+    @Override
+    public void move() {
         // Update position based on velocity
         super.setLocation(super.getLocation().add(super.getVelocity()));
 
     }
+
+
+
 }

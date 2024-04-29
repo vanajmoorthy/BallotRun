@@ -28,8 +28,11 @@ public final class Constants {
 
         public final float X_MOVE = 0.002F;
         public final float Y_MOVE = 0.002F;
+        public final float WALL_IMPULSE = 25;
 
-        public final float JUMP_IMPULSE = 0.005F;
+        public final float JUMP_IMPULSE = 10;
         public final int MASS = 10;
     }
+
+
 }
