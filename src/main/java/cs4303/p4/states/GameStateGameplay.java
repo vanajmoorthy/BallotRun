@@ -2,6 +2,7 @@ package cs4303.p4.states;
 
 import cs4303.p4.Entity;
 import cs4303.p4.Player;
+import cs4303.p4._util.Constants;
 import cs4303.p4.map.Level;
 import cs4303.p4.map.Node;
 import cs4303.p4.physics.BoundingBox;
@@ -26,9 +27,9 @@ public final class GameStateGameplay extends GameState {
     private ArrayList<Entity> entities =new ArrayList<Entity>();
     public GameStateGameplay(PApplet sketch) {
         // TODO insert a start location
-        player = new Player(50, 50);
+        player = new Player(500, 50);
         level = new Level(sketch);
-
+        level.buildGraph();
         entities.add(player);
     }
 
@@ -92,28 +93,28 @@ public final class GameStateGameplay extends GameState {
         }
 
         if(a_pressed){
-            //TODO SCALE TO SCREEN SIZE
-            PVector left = new PVector(-10,0);
+            PVector left = new PVector(-1*Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width, 0);
             player.applyForce(left);
         }
 
         if(d_pressed){
-            PVector right = new PVector(10,0);
+            PVector right = new PVector(Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width,0);
             player.applyForce(right);
         }
     }
 
     public void update() {
         level.updateCamera(); // Update the camera position
-        movePlayer();
+
         player.update();
 
+        wallCollisions();
 
+        movePlayer();
+        player.move();
 
     }
-    //  for(BoundingBox b :player.getBounds()){
-    //    b.moveBox(player.getVelocity());
-    //}
+
 
     /**
      * Checks if the player collides with the map
@@ -121,29 +122,83 @@ public final class GameStateGameplay extends GameState {
      * @return true on collision
      */
     private boolean wallCollisions(){
-        //move the bounding box of the player
 
-        for(Node n: level.getNodes()){
-            for(Entity e : this.entities){
+        //move the bounding box of the player
+        for(Entity e : this.entities){
+            for(Node n: level.getNodes()){
                 if(e.Collision(n)){
+
                     //work out direction between e and n
-                    if(e.getLocation().x < n.getLocation().x){
+                    if(e.getLocation().x < n.getBounds().get(0).getLocation().x){
                         //entity on the left of the wall
 
+                        if(e.getVelocity().x > 0){
+                            PVector v = e.getVelocity().copy();
+                            v.x = 0;
+                            e.setVelocity(v);
+
+                            if(e.getAcceleration().x > 0){
+                                PVector a = e.getAcceleration().copy();
+                                a.x = 0;
+                                e.setAcceleration(a);
+                            }
+
+                        }
+
                     }
 
-                    if(e.getLocation().x > n.getLocation().x){
-                        //entity on the right of the wall
+                    if(e.getLocation().x >  n.getBounds().get(0).getLocation().x){
+                        //on the right
+
+                        if(e.getVelocity().x < 0){
+                            PVector v = e.getVelocity().copy();
+                            v.x = 0;
+                            e.setVelocity(v);
+
+                            if(e.getAcceleration().x < 0){
+                                PVector a = e.getAcceleration().copy();
+                                a.x = 0;
+                                e.setAcceleration(a);
+                            }
+
+                        }
+
                     }
 
-                    if(e.getLocation().y < n.getLocation().y){
+                    if(e.getLocation().y <=  n.getBounds().get(0).getLocation().y){
                         //entity on the top of the wall
-                    }
-                    if(e.getLocation().y > n.getLocation().y){
-                        //entity below the wall
+
+                        if(e.getVelocity().y > 0){
+                            PVector v = e.getVelocity().copy();
+                            v.y = 0;
+                            e.setVelocity(v);
+
+                            if(e.getAcceleration().y >= 0){
+                                PVector a = e.getAcceleration().copy();
+                                a.y = 0;
+                                e.setAcceleration(a);
+                            }
+
+                        }
                     }
 
+                    if(e.getLocation().y >= n.getBounds().get(0).getLocation().y){
+                        //System.out.println("Below the wall");
+                        //below the wall
+                        if(e.getVelocity().y < 0){
+                            PVector v = e.getVelocity().copy();
+                            v.y = 0;
+                            e.setVelocity(v);
 
+                            if(e.getAcceleration().y <= 0){
+                                PVector a = e.getAcceleration().copy();
+                                a.y = 0;
+                                e.setAcceleration(a);
+                            }
+
+
+                        }
+                    }
                 }
             }
         }

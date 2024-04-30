@@ -14,23 +14,18 @@ public final class Constants {
         }
     }
 
-    public static final float gravity = 0.005F;
-    public static final float airResistance = 0.005F;
+    public static final float gravity = 0.0008F;
+    public static final float airResistance = 0.05F;
 
     public static final int TILE_SIZE = 40;
 
     public enum PLAYER {
         INSTANCE;
+        public final float X_MOVE = 0.005F;
 
-        public final int TILE_COLOR_R = 50;
-        public final int TILE_COLOR_G = 50;
-        public final int TILE_COLOR_B = 50;
+        public final float JUMP_IMPULSE = 0.01F;
 
-        public final float X_MOVE = 0.002F;
-        public final float Y_MOVE = 0.002F;
-        public final float WALL_IMPULSE = 25;
-
-        public final float JUMP_IMPULSE = 10;
+        public final float MAX_SPEED = 15;
         public final int MASS = 10;
     }
 

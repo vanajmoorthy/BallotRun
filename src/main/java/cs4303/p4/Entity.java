@@ -22,8 +22,8 @@ public abstract class Entity extends Collidable {
 
     //values for movement
     //TODO add to constructors
-    private PVector acceleration;
-    private PVector velocity;
+    private @Getter @Setter PVector acceleration;
+    private @Getter @Setter PVector velocity;
     private float mass;
 
     public Entity(float x, float y, EnumMap<Attribute, AttributeModifier> baseAttributes) {
@@ -43,6 +43,22 @@ public abstract class Entity extends Collidable {
      * Updates the velocity
      */
     public void update(){
+
+
+        // update acceleration by applying resistance to it
+        // gravity
+        PVector gravity = new PVector(0, Constants.Screen.height * Constants.gravity);
+        this.applyForce(gravity);
+
+        // drag
+        this.applyDrag();
+
+        // Update velocity based on acceleration
+
+        this.setVelocity(this.getVelocity().add(this.getAcceleration()));
+
+        this.getAcceleration().mult(0);
+
     }
 
     /**
@@ -69,7 +85,6 @@ public abstract class Entity extends Collidable {
     public boolean addItem(Item item) {
         if (inventory.contains(item)) return false;
         if (inventory.size() >= maxSlots) return false;
-
         inventory.add(item);
         return true;
     }
@@ -80,9 +95,9 @@ public abstract class Entity extends Collidable {
      */
     public void applyDrag(){
         PVector velocity = this.getVelocity().copy();
-        float drag = (float) (velocity.mag() * velocity.mag() * 0.5F * Constants.airResistance);
+        float drag = (float) (velocity.mag() * velocity.mag() * -5 * Constants.airResistance);
         velocity.normalize();
-        velocity.mult(-drag);
-        this.setAcceleration(this.getAcceleration().add(velocity));
+        velocity.mult(drag);
+        this.applyForce(velocity);
     }
 }

@@ -1,5 +1,6 @@
 package cs4303.p4;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 import cs4303.p4.physics.BoundingBox;
@@ -47,37 +48,37 @@ public class Player extends Entity {
 
     public void jump() {
         // TODO take account of screen size in jump
-        PVector jump = new PVector(0, Constants.PLAYER.INSTANCE.JUMP_IMPULSE);
+        PVector jump = new PVector(0, -1 * Constants.Screen.height * Constants.PLAYER.INSTANCE.JUMP_IMPULSE);
         super.applyForce(jump);
-
-    }
-
-    /**
-     * Updates the
-     */
-    @Override
-    public void update() {
-
-        // update acceleration by applying resistance to it
-        // gravity
-        // TODO take screen size into account
-        PVector gravity = new PVector(0, Constants.gravity);
-        super.applyForce(gravity);
-
-        // drag
-        // TODO add drag
-        super.applyDrag();
-
-        // Update velocity based on acceleration
-        super.setVelocity(super.getVelocity().add(super.getAcceleration()));
 
     }
 
 
     @Override
     public void move() {
+
+
+        //if at max speed then don't update
+        if(super.getVelocity().mag() >=  Constants.PLAYER.INSTANCE.MAX_SPEED){
+            return;
+        }
+
         // Update position based on velocity
-        super.setLocation(super.getLocation().add(super.getVelocity()));
+        super.setLocation(PVector.add(super.getLocation(),super.getVelocity()));
+
+        //update the positions of the bounding boxes
+        for(BoundingBox b : super.getBounds()){
+            b.moveBox(super.getVelocity());
+        }
+        //TODO edge of screen detection
+        //Stop the user from moving past the edges of the screen
+        //if(super.getLocation().x >= Constants.Screen.width){
+        //    super.setLocation( new PVector( Constants.Screen.width,super.getLocation().y));
+        //}
+
+        //if(super.getLocation().x <= 0){
+        //    super.setLocation( new PVector( 0,super.getLocation().y));
+        //}
 
     }
 

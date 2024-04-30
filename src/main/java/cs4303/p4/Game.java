@@ -14,6 +14,7 @@ import processing.core.PApplet;
 public class Game extends PApplet {
     private GameState state;
 
+
     public static void main(String[] args) {
         String[] appletArgs = new String[] { "Game" };
         Game sketch = new Game();
@@ -22,6 +23,7 @@ public class Game extends PApplet {
 
     @Override
     public void settings() {
+        smooth(8);
         size(
                 Math.max(Constants.Screen.width, Constants.Screen.minWidth),
                 Math.max(Constants.Screen.height, Constants.Screen.minHeight));
