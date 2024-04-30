@@ -1,10 +1,9 @@
-package cs4303.p4;
+package cs4303.p4.entities;
 
-import java.awt.*;
 import java.util.ArrayList;
 
+import cs4303.p4.entities.Entity;
 import cs4303.p4.physics.BoundingBox;
-import lombok.Getter;
 import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
 import processing.core.PApplet;

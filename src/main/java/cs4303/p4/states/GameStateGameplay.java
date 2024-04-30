@@ -1,11 +1,10 @@
 package cs4303.p4.states;
 
-import cs4303.p4.Entity;
-import cs4303.p4.Player;
+import cs4303.p4.entities.Entity;
+import cs4303.p4.entities.Player;
 import cs4303.p4._util.Constants;
 import cs4303.p4.map.Level;
 import cs4303.p4.map.Node;
-import cs4303.p4.physics.BoundingBox;
 import lombok.Getter;
 import processing.core.PApplet;
 import processing.core.PVector;
@@ -132,12 +131,12 @@ public final class GameStateGameplay extends GameState {
                     if(e.getLocation().x < n.getBounds().get(0).getLocation().x){
                         //entity on the left of the wall
 
-                        if(e.getVelocity().x > 0){
+                        if(e.getVelocity().x >= 0){
                             PVector v = e.getVelocity().copy();
                             v.x = 0;
                             e.setVelocity(v);
 
-                            if(e.getAcceleration().x > 0){
+                            if(e.getAcceleration().x >= 0){
                                 PVector a = e.getAcceleration().copy();
                                 a.x = 0;
                                 e.setAcceleration(a);
@@ -150,12 +149,12 @@ public final class GameStateGameplay extends GameState {
                     if(e.getLocation().x >  n.getBounds().get(0).getLocation().x){
                         //on the right
 
-                        if(e.getVelocity().x < 0){
+                        if(e.getVelocity().x <= 0){
                             PVector v = e.getVelocity().copy();
                             v.x = 0;
                             e.setVelocity(v);
 
-                            if(e.getAcceleration().x < 0){
+                            if(e.getAcceleration().x <= 0){
                                 PVector a = e.getAcceleration().copy();
                                 a.x = 0;
                                 e.setAcceleration(a);
@@ -168,7 +167,7 @@ public final class GameStateGameplay extends GameState {
                     if(e.getLocation().y <=  n.getBounds().get(0).getLocation().y){
                         //entity on the top of the wall
 
-                        if(e.getVelocity().y > 0){
+                        if(e.getVelocity().y >= 0){
                             PVector v = e.getVelocity().copy();
                             v.y = 0;
                             e.setVelocity(v);
@@ -185,7 +184,7 @@ public final class GameStateGameplay extends GameState {
                     if(e.getLocation().y >= n.getBounds().get(0).getLocation().y){
                         //System.out.println("Below the wall");
                         //below the wall
-                        if(e.getVelocity().y < 0){
+                        if(e.getVelocity().y <= 0){
                             PVector v = e.getVelocity().copy();
                             v.y = 0;
                             e.setVelocity(v);
