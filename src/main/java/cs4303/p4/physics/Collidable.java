@@ -4,7 +4,11 @@ import processing.core.PVector;
 
 import java.util.ArrayList;
 
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class Collidable {
     private PVector location;
     private ArrayList<BoundingBox> bounds;

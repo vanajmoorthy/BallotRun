@@ -1,9 +1,11 @@
 package cs4303.p4.physics;
 
-import processing.core.PVector;
 import lombok.Getter;
+import lombok.Setter;
+import processing.core.PVector;
 
-
+@Getter
+@Setter
 public class BoundingBox {
     private PVector location;
     private int width;
