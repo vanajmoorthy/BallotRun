@@ -136,14 +136,14 @@ public final class GameStateGameplay extends GameState {
         for(Entity e : this.entities){
             for(Node n: level.getNodes()){
                 if(e.Collision(n)){
-                    System.out.println("collision");
-//                    System.out.println("cords");
-//                    System.out.println(n.getX());
-//                    System.out.println(n.getY());
-//                    System.out.println("e");
-//                    System.out.println((int) e.getLocation().x /  Constants.TILE_SIZE );
-//                    System.out.println((int) e.getLocation().y /  Constants.TILE_SIZE );
-                    if( (e.getPrevTileY() < n.getY()) && (e.getPrevTileX() == n.getX())){
+
+                    System.out.println("cords");
+                    System.out.println( n.getBounds().get(0).getLocation().x);
+                    System.out.println( n.getBounds().get(0).getLocation().y);
+                    System.out.println("e");
+                    System.out.println((int) e.getLocation().x /  Constants.TILE_SIZE );
+                    System.out.println((int) e.getLocation().y /  Constants.TILE_SIZE );
+                    if( (e.getLocation().y < n.getBounds().get(0).getLocation().y) && (e.getPrevTileX() == n.getX())){
                         //entity on the top of the wall
                         System.out.println("ontop");
                         if(e.getVelocity().y >= 0){
