@@ -28,7 +28,7 @@ public final class RichText {
                 currY += textSize * 2;
             } else if (node instanceof TextSpan) {
                 Integer nodeColor = ((TextSpan) node).getColor();
-                sketch.fill(nodeColor != null ? nodeColor : Colors.night.lighter);
+                sketch.fill(nodeColor != null ? nodeColor : Colors.neutral.dark);
 
                 String[] words = ((TextSpan) node).getText().split("\\s+");
                 for (String word : words) {

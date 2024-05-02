@@ -26,12 +26,13 @@ public final class GameStateBase extends GameState {
             Item item = player.getInventory().get(i);
             final int offset = i * 60;
 
-            buttons.add(new GestureDetector(
+            buttons.add(
+                new GestureDetector(
                     (sketch, hitbox, hasHover, hasClick) -> {
                         sketch.fill(
                                 hasHover
-                                        ? Colors.night.lighter
-                                        : Colors.night.primary);
+                                        ? Colors.darkGray.primary
+                                        : Colors.darkGray.dark);
                         sketch.noStroke();
                         sketch.rect(10 + offset, 10, 50, 50, 10);
 
@@ -46,14 +47,16 @@ public final class GameStateBase extends GameState {
                     },
                     new GestureDetector.Hitbox(
                             new PVector(10 + offset, 10),
-                            new PVector(50, 50))));
+                            new PVector(50, 50))
+                )
+            );
         }
     }
 
     public void draw(PApplet sketch) {
         int itemX = Constants.Screen.Base.inventoryWidth - 300;
 
-        sketch.fill(Colors.night.darker);
+        sketch.fill(Colors.black);
         sketch.noStroke();
         sketch.rect(0, 0, itemX, Constants.Screen.Base.inventoryHeight);
 
@@ -68,7 +71,7 @@ public final class GameStateBase extends GameState {
                         ? PApplet.HAND
                         : PApplet.ARROW);
 
-        sketch.fill(Colors.night.dark);
+        sketch.fill(Colors.black);
         sketch.noStroke();
         sketch.rect(itemX, 0, 300, Constants.Screen.Base.inventoryHeight);
 
@@ -84,7 +87,7 @@ public final class GameStateBase extends GameState {
                 sketch.text(modifier.getAttribute().getDisplayName(), itemX + 10 + offset, 50 + 22 * i);
 
                 offset += sketch.textWidth(modifier.getAttribute().getDisplayName());
-                sketch.fill(Colors.platinum.dark);
+                sketch.fill(Colors.white);
                 sketch.text(": " + Math.round(modifier.getValue()), itemX + 10 + offset, 50 + 22 * i);
 
                 i++;
