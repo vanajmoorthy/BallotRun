@@ -2,6 +2,7 @@ package cs4303.p4.map;
 
 import cs4303.p4.physics.BoundingBox;
 import cs4303.p4.physics.Collidable;
+import lombok.Getter;
 import processing.core.PVector;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 // Structure for a graph node (platform)
 //extends collidable to make the graph usable for collision detection
 public class Node extends Collidable{
-    int x, y; // Position of the platform
+    @Getter int x, y; // Position of the platform
     List<Node> neighbors; // Adjacent platforms within jump range
 
     Node(int x, int y,int cellSize) {

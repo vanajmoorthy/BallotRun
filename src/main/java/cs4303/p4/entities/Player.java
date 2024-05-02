@@ -42,7 +42,17 @@ public class Player extends Entity {
         // Calculate player's position relative to camera
         float screenX = getLocation().x - cameraOffsetX;
         sketch.rect(screenX, getLocation().y, 20, 20); // 20x20 player for now
+
+        sketch.stroke(0);
+        sketch.noFill();
+        for(BoundingBox b : super.getBounds()){
+            b.moveBox(super.getVelocity());
+            float t = b.getLocation().x - cameraOffsetX;
+            sketch.rect(t,b.getLocation().y,b.getWidth(),b.getHeight());
+        }
         sketch.popMatrix();
+
+
     }
 
     public void jump() {
@@ -56,11 +66,13 @@ public class Player extends Entity {
     @Override
     public void move() {
 
+        // drag
+        this.applyDrag();
 
-        //if at max speed then don't update
-        if(super.getVelocity().mag() >=  Constants.PLAYER.INSTANCE.MAX_SPEED){
-            return;
-        }
+        // Update velocity based on acceleration
+        this.setVelocity(PVector.add(this.getVelocity(),this.getAcceleration()));
+
+        this.getAcceleration().mult(0);
 
         // Update position based on velocity
         super.setLocation(PVector.add(super.getLocation(),super.getVelocity()));

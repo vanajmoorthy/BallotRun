@@ -14,8 +14,8 @@ public final class Constants {
         }
     }
 
-    public static final float gravity = 0.0008F;
-    public static final float airResistance = 0.05F;
+    public static final float gravity = 0.002F;
+    public static final float airResistance = 0.1F;
 
     public static final int TILE_SIZE = 40;
 
@@ -23,9 +23,9 @@ public final class Constants {
         INSTANCE;
         public final float X_MOVE = 0.005F;
 
-        public final float JUMP_IMPULSE = 0.01F;
+        public final float JUMP_IMPULSE = 0.5F;
 
-        public final float MAX_SPEED = 15;
+        public final float MAX_SPEED = 10;
         public final int MASS = 10;
     }
 

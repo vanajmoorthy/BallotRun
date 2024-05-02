@@ -40,24 +40,13 @@ public abstract class Entity extends Collidable {
     public abstract void draw(PApplet sketch);
 
     /**
-     * Updates the velocity
+     * Applies gravity
      */
-    public void update(){
+    public void applyGravity(){
 
-
-        // update acceleration by applying resistance to it
         // gravity
         PVector gravity = new PVector(0, Constants.Screen.height * Constants.gravity);
         this.applyForce(gravity);
-
-        // drag
-        this.applyDrag();
-
-        // Update velocity based on acceleration
-
-        this.setVelocity(this.getVelocity().add(this.getAcceleration()));
-
-        this.getAcceleration().mult(0);
 
     }
 
@@ -95,9 +84,27 @@ public abstract class Entity extends Collidable {
      */
     public void applyDrag(){
         PVector velocity = this.getVelocity().copy();
-        float drag = (float) (velocity.mag() * velocity.mag() * -5 * Constants.airResistance);
+        float drag = (float) (velocity.mag() * velocity.mag() * -2.5 * Constants.airResistance);
         velocity.normalize();
         velocity.mult(drag);
         this.applyForce(velocity);
+    }
+
+    /**
+     * Get the grid y of the previous tile
+     * @return
+     */
+    public int getPrevTileY(){
+        PVector prevloc = PVector.sub(this.getLocation(),this.getVelocity());
+        return (int) prevloc.y / Constants.TILE_SIZE;
+    }
+
+    /**
+     * Get the grid y of the previous tile
+     * @return
+     */
+    public int getPrevTileX(){
+        PVector prevloc = PVector.sub(this.getLocation(),this.getVelocity());
+        return (int) prevloc.x / Constants.TILE_SIZE;
     }
 }
