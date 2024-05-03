@@ -34,16 +34,16 @@ public class BoundingBox {
 
 
 
-    public float getDistanceToBox(Collidable c){
-        // Calculate distances to the closest points on each edge of the rectangle
-        float distToLeft = dist(c.getLocation().x, c.getLocation().y, this.getLocation().x, constrain(c.getLocation().y, this.getLocation().y, this.getLocation().y + this.height));
-        float distToRight = dist(c.getLocation().x, c.getLocation().y, this.getLocation().x + this.width, constrain(c.getLocation().y, this.getLocation().y, this.getLocation().y + this.height));
-        float distToTop = dist(c.getLocation().x, c.getLocation().y, constrain(c.getLocation().x, this.getLocation().x, this.getLocation().x + this.width), this.getLocation().y);
-        float distToBottom = dist(c.getLocation().x, c.getLocation().y, constrain(c.getLocation().x, this.getLocation().x, this.getLocation().x + this.width), this.getLocation().y + this.height);
+    // public float getDistanceToBox(Collidable c){
+    //     // Calculate distances to the closest points on each edge of the rectangle
+    //     float distToLeft = dist(c.getLocation().x, c.getLocation().y, this.getLocation().x, constrain(c.getLocation().y, this.getLocation().y, this.getLocation().y + this.height));
+    //     float distToRight = dist(c.getLocation().x, c.getLocation().y, this.getLocation().x + this.width, constrain(c.getLocation().y, this.getLocation().y, this.getLocation().y + this.height));
+    //     float distToTop = dist(c.getLocation().x, c.getLocation().y, constrain(c.getLocation().x, this.getLocation().x, this.getLocation().x + this.width), this.getLocation().y);
+    //     float distToBottom = dist(c.getLocation().x, c.getLocation().y, constrain(c.getLocation().x, this.getLocation().x, this.getLocation().x + this.width), this.getLocation().y + this.height);
 
-        // Find the minimum distance among these distances
-        return min(distToLeft, min(distToRight, min(distToTop, distToBottom)));
-    }
+    //     // Find the minimum distance among these distances
+    //     return min(distToLeft, min(distToRight, min(distToTop, distToBottom)));
+    // }
 
 
 

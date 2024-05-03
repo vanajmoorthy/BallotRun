@@ -1,4 +1,4 @@
-package cs4303.p4;
+package cs4303.p4.entities;
 
 import java.util.ArrayList;
 import java.util.List;
