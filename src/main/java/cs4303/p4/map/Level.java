@@ -208,8 +208,11 @@ public class Level {
         int gridX = (int) (playerX / cellSize);
         int gridY = (int) (playerY / cellSize);
 
-        // Assuming the ballot tile's type is stored correctly
-        return levelGrid[gridY][gridX].getType() == TileType.BALLOT;
+        // Ensure the grid coordinates are within bounds before accessing the array
+        if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+            return levelGrid[gridY][gridX].getType() == TileType.BALLOT;
+        }
+        return false; // Return false if the
     }
 
     // Modify the draw method to offset tiles based on the camera position
