@@ -1,15 +1,15 @@
 package cs4303.p4.physics;
 
-import processing.core.PVector;
 import lombok.Getter;
+import lombok.Setter;
+import processing.core.PVector;
 
-import static processing.core.PApplet.*;
-
-
+@Getter
+@Setter
 public class BoundingBox {
-    private  @Getter PVector location;
-    private @Getter int width;
-    private @Getter int height;
+    private PVector location;
+    private int width;
+    private int height;
 
     /**
  * Constructs a new BoundingBox object with the specified location, width, and height.

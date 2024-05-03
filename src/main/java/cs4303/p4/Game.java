@@ -1,6 +1,9 @@
 package cs4303.p4;
 
 import cs4303.p4.entities.Player;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import cs4303.p4._util.Constants;
@@ -25,18 +28,22 @@ public class Game extends PApplet {
     public void settings() {
         smooth(8);
         size(
-                Math.max(Constants.Screen.width, Constants.Screen.minWidth),
-                Math.max(Constants.Screen.height, Constants.Screen.minHeight));
+            Math.max(Constants.Screen.width, Constants.Screen.minWidth),
+            Math.max(Constants.Screen.height, Constants.Screen.minHeight)
+        );
     }
 
     @Override
     public void setup() {
         // state = new GameStateGameplay(this);
         Player player = new Player(0, 0);
-        player.addItem(new Item(ItemType.Chestplate));
-        player.addItem(new Item(ItemType.Constinution));
-        // state = new GameStateBase(player);
-        state = new GameStateGameplay(this);
+        List<Item> items = new ArrayList<Item>();
+        items.add(new Item(ItemType.Chestplate));
+        items.add(new Item(ItemType.Constinution));
+        items.add(new Item(ItemType.ParliamentSword));
+        items.add(new Item(ItemType.CongressSword));
+        state = new GameStateBase(player, items);
+        // state = new GameStateGameplay(this);
     }
 
     @Override

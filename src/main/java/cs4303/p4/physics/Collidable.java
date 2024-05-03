@@ -1,14 +1,17 @@
 package cs4303.p4.physics;
 
-import lombok.Setter;
 import processing.core.PVector;
 
 import java.util.ArrayList;
-import lombok.Getter;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Collidable {
-    private @Getter @Setter PVector location;
-    private @Getter @Setter ArrayList<BoundingBox> bounds;
+    private PVector location;
+    private ArrayList<BoundingBox> bounds;
 
     /**
      * Constructor

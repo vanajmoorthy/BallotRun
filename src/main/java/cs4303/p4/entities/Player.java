@@ -1,4 +1,4 @@
-package cs4303.p4.entities;
+package cs4303.p4;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +51,6 @@ public class Player extends Entity {
             sketch.rect( bx,b.getLocation().y,b.getWidth(),b.getHeight());
         }
         sketch.popMatrix();
-
-
     }
 
     public void jump() {
@@ -61,7 +59,6 @@ public class Player extends Entity {
         super.applyForce(jump);
 
     }
-
 
     @Override
     public void move(List<Node> nodes) {
