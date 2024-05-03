@@ -18,12 +18,29 @@ public enum ItemType {
         "chestplate",
         Rarity.Common,
         "Chestplate",
-        new RichText(
-            Arrays.<TextNode>asList(
-                // new TextSpan("", 0)
-            )
-        ),
+        new RichText(),
         getChestplateBaseAttributes()
+    ),
+    ParliamentSword(
+        "sword_parliament",
+        Rarity.Epic,
+        "The Parliament",
+        new RichText(),
+        getParliamentSwordBaseAttributes()
+    ),
+    CongressSword(
+        "sword_congress",
+        Rarity.Rare,
+        "Sword of Congress",
+        new RichText(),
+        getCongressSwordBaseAttributes()
+    ),
+    FourTigers(
+        "four_tigers_amulet",
+        Rarity.Epic,
+        "Four Tigers Amulet",
+        new RichText(),
+        getFourTigersBaseAttributes()
     ),
     Constinution(
         "constitution",
@@ -53,6 +70,27 @@ public enum ItemType {
         EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
         base.put(Attribute.Health, new AttributeModifier(Attribute.Health, 200));
         base.put(Attribute.Defence, new AttributeModifier(Attribute.Defence, 75));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getParliamentSwordBaseAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.Strength, new AttributeModifier(Attribute.Strength, 50));
+        base.put(Attribute.AttackSpeed, new AttributeModifier(Attribute.AttackSpeed, -20));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getCongressSwordBaseAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.Strength, new AttributeModifier(Attribute.Strength, 10));
+        base.put(Attribute.AttackSpeed, new AttributeModifier(Attribute.AttackSpeed, 25));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getFourTigersBaseAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.AttackSpeed, new AttributeModifier(Attribute.AttackSpeed, 45));
+        base.put(Attribute.Strength, new AttributeModifier(Attribute.Strength, 5));
         return base;
     }
 }

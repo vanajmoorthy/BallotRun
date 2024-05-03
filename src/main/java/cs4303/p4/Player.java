@@ -2,7 +2,6 @@ package cs4303.p4;
 
 import java.util.ArrayList;
 
-import lombok.Getter;
 import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
 import processing.core.PApplet;

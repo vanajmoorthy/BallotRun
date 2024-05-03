@@ -1,5 +1,7 @@
 package cs4303.p4._util;
 
+import lombok.AllArgsConstructor;
+
 public final class Constants {
     public static final class Screen {
         public static final int width = 1000;
@@ -9,8 +11,29 @@ public final class Constants {
         public static final int minHeight = 500;
 
         public static final class Base {
-            public static final int inventoryWidth = 1000;
-            public static final int inventoryHeight = 600;
+            @AllArgsConstructor
+            public static final class SectionHitbox {
+                public final int x;
+                public final int y;
+                public final int width;
+                public final int height;
+            }
+
+            public static final int padding = 10;
+
+            public static final SectionHitbox storage = new SectionHitbox(
+                padding,
+                padding,
+                500,
+                height - 2 * padding
+            );
+
+            public static final SectionHitbox selection = new SectionHitbox(
+                storage.width + 2 * padding,
+                padding,
+                width - storage.width - 3 * padding,
+                height - 2 * padding
+            );
         }
     }
 

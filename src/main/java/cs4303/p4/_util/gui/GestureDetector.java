@@ -17,7 +17,8 @@ public final class GestureDetector {
     @FunctionalInterface
     public static interface GestureInterface {
         public void handle(
-            PApplet sketch
+            PApplet sketch,
+            GestureDetector button
         );
     }
 
@@ -48,6 +49,6 @@ public final class GestureDetector {
     }
 
     public void click(PApplet sketch) {
-        onClick.handle(sketch);
+        onClick.handle(sketch, this);
     }
 }

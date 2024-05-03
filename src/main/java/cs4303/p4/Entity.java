@@ -57,9 +57,17 @@ public abstract class Entity extends Collidable {
 
     public boolean addItem(Item item) {
         if (inventory.contains(item)) return false;
-        if (inventory.size() >= maxSlots) return false;
+        // if (inventory.size() >= maxSlots) return false;
 
         inventory.add(item);
         return true;
+    }
+
+    public boolean removeItem(Item item) {
+        return inventory.remove(item);
+    }
+
+    public void clearInventory() {
+        inventory.clear();
     }
 }
