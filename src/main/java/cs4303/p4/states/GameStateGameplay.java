@@ -118,9 +118,10 @@ public final class GameStateGameplay extends GameState {
 
         movePlayer();
 
-        wallCollisions();
+        for(Entity e : entities){
+            e.move(level.getNodes());
+        }
 
-        player.move();
 
     }
 
@@ -137,68 +138,64 @@ public final class GameStateGameplay extends GameState {
             for(Node n: level.getNodes()){
                 if(e.Collision(n)){
 
-                    System.out.println("cords");
-                    System.out.println( n.getBounds().get(0).getLocation().x);
-                    System.out.println( n.getBounds().get(0).getLocation().y);
-                    System.out.println("e");
-                    System.out.println((int) e.getLocation().x /  Constants.TILE_SIZE );
-                    System.out.println((int) e.getLocation().y /  Constants.TILE_SIZE );
-                    if( (e.getLocation().y < n.getBounds().get(0).getLocation().y) && (e.getPrevTileX() == n.getX())){
+                    if( (e.getLocation().y < n.getBounds().get(0).getLocation().y)&& (e.getTileX() == n.getX())){
                         //entity on the top of the wall
-                        System.out.println("ontop");
                         if(e.getVelocity().y >= 0){
                             PVector v = e.getVelocity().copy();
                             v.y = 0;
                             e.setVelocity(v);
 
-                            if(e.getAcceleration().y >= 0){
-                                PVector a = e.getAcceleration().copy();
-                                a.y = 0;
-                                e.setAcceleration(a);
-                            }
 
                         }
+
+                        if(e.getAcceleration().y >= 0){
+                            PVector a = e.getAcceleration().copy();
+                            a.y = 0;
+                            e.setAcceleration(a);
+                        }
+
                         return;
                     }
 
-                    if((e.getPrevTileY() > n.getY()) && (e.getPrevTileX() == n.getX())){
+                    if((e.getLocation().y > n.getBounds().get(0).getLocation().y) && (e.getTileX() == n.getX())){
                         System.out.println("below");
                         //below the wall
-                        if(e.getVelocity().y <= 0){
+                        if(e.getVelocity().y < 0){
                             PVector v = e.getVelocity().copy();
                             v.y = 0;
                             e.setVelocity(v);
 
-                            if(e.getAcceleration().y <= 0){
-                                PVector a = e.getAcceleration().copy();
-                                a.y = 0;
-                                e.setAcceleration(a);
-                            }
+                        }
 
 
+                        if(e.getAcceleration().y < 0){
+                            PVector a = e.getAcceleration().copy();
+                            a.y = 0;
+                            e.setAcceleration(a);
                         }
                         return;
                     }
                     //work out direction between e and n
-                    if((e.getPrevTileX() < n.getX()) && (e.getPrevTileY() == n.getY())){
+                    if((e.getTileX() < n.getX()) && (e.getTileY() == n.getY())){
+
                         //entity on the left of the wall
-                       // System.out.println("ON THE LEFT");
                         if(e.getVelocity().x >= 0){
                             PVector v = e.getVelocity().copy();
                             v.x = 0;
                             e.setVelocity(v);
 
-                            if(e.getAcceleration().x >= 0){
-                                PVector a = e.getAcceleration().copy();
-                                a.x = 0;
-                                e.setAcceleration(a);
-                            }
+                        }
 
+                        if(e.getAcceleration().x >= 0){
+                            PVector a = e.getAcceleration().copy();
+                            a.x = 0;
+                            e.setAcceleration(a);
                         }
                         return;
                     }
 
-                    if((e.getPrevTileX() >  n.getX())  && (e.getPrevTileY() == n.getY()) ){
+
+                    if((e.getTileX() >=  n.getX())  && (e.getTileY() == n.getY()) ){
                         //on the right
                         System.out.println("ON THE RIGHT");
                         if(e.getVelocity().x <= 0){
@@ -206,12 +203,12 @@ public final class GameStateGameplay extends GameState {
                             v.x = 0;
                             e.setVelocity(v);
 
-                            if(e.getAcceleration().x <= 0){
-                                PVector a = e.getAcceleration().copy();
-                                a.x = 0;
-                                e.setAcceleration(a);
-                            }
+                        }
 
+                        if(e.getAcceleration().x <= 0){
+                            PVector a = e.getAcceleration().copy();
+                            a.x = 0;
+                            e.setAcceleration(a);
                         }
                         return;
                     }

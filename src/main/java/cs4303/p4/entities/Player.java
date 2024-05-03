@@ -1,8 +1,10 @@
 package cs4303.p4.entities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cs4303.p4.entities.Entity;
+import cs4303.p4.map.Node;
 import cs4303.p4.physics.BoundingBox;
 import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
@@ -43,12 +45,10 @@ public class Player extends Entity {
         float screenX = getLocation().x - cameraOffsetX;
         sketch.rect(screenX, getLocation().y, 20, 20); // 20x20 player for now
 
-        sketch.stroke(0);
         sketch.noFill();
-        for(BoundingBox b : super.getBounds()){
-            b.moveBox(super.getVelocity());
-            float t = b.getLocation().x - cameraOffsetX;
-            sketch.rect(t,b.getLocation().y,b.getWidth(),b.getHeight());
+        for(BoundingBox b: getBounds()){
+            float bx =  b.getLocation().x - cameraOffsetX;
+            sketch.rect( bx,b.getLocation().y,b.getWidth(),b.getHeight());
         }
         sketch.popMatrix();
 
@@ -64,23 +64,10 @@ public class Player extends Entity {
 
 
     @Override
-    public void move() {
+    public void move(List<Node> nodes) {
 
-        // drag
-        this.applyDrag();
+        super.move(nodes);
 
-        // Update velocity based on acceleration
-        this.setVelocity(PVector.add(this.getVelocity(),this.getAcceleration()));
-
-        this.getAcceleration().mult(0);
-
-        // Update position based on velocity
-        super.setLocation(PVector.add(super.getLocation(),super.getVelocity()));
-
-        //update the positions of the bounding boxes
-        for(BoundingBox b : super.getBounds()){
-            b.moveBox(super.getVelocity());
-        }
         //TODO edge of screen detection
         //Stop the user from moving past the edges of the screen
         //if(super.getLocation().x >= Constants.Screen.width){

@@ -41,4 +41,18 @@ public class Collidable {
         }
         return false;
     }
+
+    public BoundingBox getBoundingBox(Collidable c){
+        for (BoundingBox b : bounds) {
+            for (BoundingBox b2 : c.getBounds()) {
+                if(b.getLocation().x < b2.getLocation().x + b2.getWidth() &&
+                        b.getLocation().x + b.getWidth() > b2.getLocation().x &&
+                        b.getLocation().y < b2.getLocation().y + b2.getHeight() &&
+                        b.getLocation().y + b.getHeight() > b2.getLocation().y){
+                    return b2;
+                }
+            }
+        }
+        return null;
+    }
 }

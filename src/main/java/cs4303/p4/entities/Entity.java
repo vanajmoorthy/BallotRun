@@ -2,11 +2,14 @@ package cs4303.p4.entities;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 
 import cs4303.p4._util.Constants;
 import cs4303.p4.attributes.Attribute;
 import cs4303.p4.attributes.AttributeModifier;
 import cs4303.p4.items.Item;
+import cs4303.p4.map.Node;
+import cs4303.p4.physics.BoundingBox;
 import cs4303.p4.physics.Collidable;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,8 +56,65 @@ public abstract class Entity extends Collidable {
     /**
      * Updates the position
      */
-    public void move(){
+    public void move(List<Node> nodes){
 
+        // drag
+        this.applyDrag();
+
+        // Update velocity based on acceleration
+        PVector prospectiveV = PVector.add(this.getVelocity(),this.getAcceleration());
+        //update the positions of the bounding boxes
+        for(BoundingBox b : super.getBounds()){
+            b.moveBox(prospectiveV);
+        }
+        //check for collisions between the new location and the map
+        for(Node n: nodes){
+            //if theres a collision change how much movement occurs
+            if(this.Collision(n)){
+
+                //distance the velocity tried to move
+                //float DistanceTravelled = prospectiveV.mag();
+
+                //find the distance between the current location and the collision with
+                //bounding box`
+                //BoundingBox b = this.getBoundingBox(n);
+                //float distToBox = b.getDistanceToBox(this);
+
+                //IF THERES A COLLISION JUST MOVE BY A THIRD THE DISTANCE
+                PVector newv = PVector.div(prospectiveV,3);
+                this.setVelocity(newv);
+
+                this.getAcceleration().mult(0);
+
+                // Update position based on velocity
+                super.setLocation(PVector.add(super.getLocation(),this.getVelocity()));
+
+                //move the bounding box
+                PVector reverse = PVector.mult(prospectiveV,-1);
+                //update the positions of the bounding boxes
+                for(BoundingBox b : super.getBounds()){
+                    b.moveBox(reverse);
+                }
+
+                //update the positions of the bounding boxes
+                for(BoundingBox b : super.getBounds()){
+                    b.moveBox(this.getVelocity());
+                }
+                return;
+            }
+        }
+        System.out.println("no col");
+        this.setVelocity(PVector.add(this.getVelocity(),this.getAcceleration()));
+
+        this.getAcceleration().mult(0);
+
+        // Update position based on velocity
+        super.setLocation(PVector.add(super.getLocation(),this.getVelocity()));
+
+        //update the positions of the bounding boxes
+        for(BoundingBox b : super.getBounds()){
+            b.moveBox(this.getVelocity());
+        }
     }
 
     /**
@@ -65,8 +125,7 @@ public abstract class Entity extends Collidable {
     public void applyForce(PVector force){
         PVector f = force.copy();
         f.div(this.mass);
-        PVector a = this.getAcceleration();
-        a.add(f);
+        PVector a = PVector.add(this.getAcceleration(),f);
         this.setAcceleration(a);
 
     }
@@ -94,17 +153,17 @@ public abstract class Entity extends Collidable {
      * Get the grid y of the previous tile
      * @return
      */
-    public int getPrevTileY(){
-        PVector prevloc = PVector.sub(this.getLocation(),this.getVelocity());
-        return (int) prevloc.y / Constants.TILE_SIZE;
+    public int getTileY(){
+
+        return (int) this.getLocation().y / Constants.TILE_SIZE;
     }
 
     /**
      * Get the grid y of the previous tile
      * @return
      */
-    public int getPrevTileX(){
-        PVector prevloc = PVector.sub(this.getLocation(),this.getVelocity());
-        return (int) prevloc.x / Constants.TILE_SIZE;
+    public int getTileX(){
+
+        return (int) this.getLocation().x / Constants.TILE_SIZE;
     }
 }

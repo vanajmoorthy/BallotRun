@@ -3,6 +3,8 @@ package cs4303.p4.physics;
 import processing.core.PVector;
 import lombok.Getter;
 
+import static processing.core.PApplet.*;
+
 
 public class BoundingBox {
     private  @Getter PVector location;
@@ -28,6 +30,19 @@ public class BoundingBox {
      */
     public void moveBox(PVector move){
         this.location.add(move);
+    }
+
+
+
+    public float getDistanceToBox(Collidable c){
+        // Calculate distances to the closest points on each edge of the rectangle
+        float distToLeft = dist(c.getLocation().x, c.getLocation().y, this.getLocation().x, constrain(c.getLocation().y, this.getLocation().y, this.getLocation().y + this.height));
+        float distToRight = dist(c.getLocation().x, c.getLocation().y, this.getLocation().x + this.width, constrain(c.getLocation().y, this.getLocation().y, this.getLocation().y + this.height));
+        float distToTop = dist(c.getLocation().x, c.getLocation().y, constrain(c.getLocation().x, this.getLocation().x, this.getLocation().x + this.width), this.getLocation().y);
+        float distToBottom = dist(c.getLocation().x, c.getLocation().y, constrain(c.getLocation().x, this.getLocation().x, this.getLocation().x + this.width), this.getLocation().y + this.height);
+
+        // Find the minimum distance among these distances
+        return min(distToLeft, min(distToRight, min(distToTop, distToBottom)));
     }
 
 
