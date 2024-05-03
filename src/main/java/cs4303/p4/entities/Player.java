@@ -1,5 +1,6 @@
 package cs4303.p4.entities;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,13 +43,13 @@ public class Player extends Entity {
         sketch.pushMatrix();
         sketch.fill(0, 0, 255); // Blue color for player
         // Calculate player's position relative to camera
-        float screenX = getLocation().x - cameraOffsetX;
-        sketch.rect(screenX, getLocation().y, 20, 20); // 20x20 player for now
+        //float screenX = getLocation().x - cameraOffsetX;
+        sketch.rect(getLocation().x, getLocation().y, 20, 20); // 20x20 player for now
 
         sketch.noFill();
         for(BoundingBox b: getBounds()){
-            float bx =  b.getLocation().x - cameraOffsetX;
-            sketch.rect( bx,b.getLocation().y,b.getWidth(),b.getHeight());
+            //float bx =  b.getLocation().x - cameraOffsetX;
+            sketch.rect( b.getLocation().x,b.getLocation().y,b.getWidth(),b.getHeight());
         }
         sketch.popMatrix();
     }
@@ -74,6 +75,26 @@ public class Player extends Entity {
         //if(super.getLocation().x <= 0){
         //    super.setLocation( new PVector( 0,super.getLocation().y));
         //}
+
+    }
+
+
+    /**
+     * Updates the postitions of the player and
+     * its bounding boxes
+     * @param offset the camera offset
+     */
+    public void updatePosition(float offset){
+        System.out.println("offset "+ offset);
+        PVector offsetV = new PVector(-1 * offset,0);
+        PVector location = PVector.add(super.getLocation(),offsetV);
+
+        this.setLocation(location);
+
+        System.out.println(this.getLocation().x);
+        for(BoundingBox b : getBounds()){
+            b.moveBox(offsetV);
+        }
 
     }
 

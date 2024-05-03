@@ -38,7 +38,8 @@ public final class GameStateGameplay extends GameState {
         sketch.background(200);
 
         level.draw(); // Draw the current view of the level
-        player.setCameraOffsetX(level.getCameraX());
+        //player.setCameraOffsetX(level.getCameraX());
+        player.updatePosition(level.getCameraX());
         player.draw(sketch);
         update();
     }

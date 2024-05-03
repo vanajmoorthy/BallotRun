@@ -103,7 +103,8 @@ public abstract class Entity extends Collidable {
                 return;
             }
         }
-        System.out.println("no col");
+
+        //update the velocity
         this.setVelocity(PVector.add(this.getVelocity(),this.getAcceleration()));
 
         this.getAcceleration().mult(0);
@@ -111,10 +112,6 @@ public abstract class Entity extends Collidable {
         // Update position based on velocity
         super.setLocation(PVector.add(super.getLocation(),this.getVelocity()));
 
-        //update the positions of the bounding boxes
-        for(BoundingBox b : super.getBounds()){
-            b.moveBox(this.getVelocity());
-        }
     }
 
     /**
