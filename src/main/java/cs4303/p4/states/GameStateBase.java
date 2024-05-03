@@ -5,7 +5,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import cs4303.p4.Player;
+import cs4303.p4.entities.Player;
 import cs4303.p4._util.Colors;
 import cs4303.p4._util.Constants;
 import cs4303.p4._util.gui.GestureDetector;

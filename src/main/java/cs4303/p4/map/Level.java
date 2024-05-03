@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cs4303.p4._util.Constants;
+import lombok.Getter;
 import processing.core.PApplet;
 
 // TODO: make tile object with literally just cell size of tile and draw method
@@ -20,7 +21,7 @@ public class Level {
     private float cameraX; // Camera offset on the X-axis (now float)
     private final float cameraSpeed = 0.3f; // Speed at which the camera moves to the right
 
-    private List<Node> nodes;
+    private @Getter List<Node> nodes;
 
     // Constructor
     public Level(PApplet p) {
@@ -108,14 +109,14 @@ public class Level {
         }
     }
 
-    void buildGraph() {
+    public void buildGraph() {
         nodes = new ArrayList<>(); // Initialize the graph nodes list
 
         // Iterate over levelGrid and add platforms as nodes
         for (int y = 0; y < gridHeight; y++) {
             for (int x = 0; x < gridWidth; x++) {
                 if (levelGrid[y][x].getType() == TileType.PLATFORM) {
-                    Node newNode = new Node(x, y);
+                    Node newNode = new Node(x, y,cellSize);
                     // Connect to existing nodes
                     for (Node node : nodes) {
                         node.addNeighbor(newNode);

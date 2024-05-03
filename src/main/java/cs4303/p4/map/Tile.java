@@ -1,8 +1,9 @@
 package cs4303.p4.map;
 
+import cs4303.p4.physics.Collidable;
 import processing.core.PApplet;
 
-public class Tile {
+public class Tile{
     private int cellSize;
     private TileType type; // Type of the tile (0: empty, 1: platform, 2: enemy/treasure)
 

@@ -1,14 +1,28 @@
 package cs4303.p4.map;
 
+import cs4303.p4.physics.BoundingBox;
+import cs4303.p4.physics.Collidable;
+import lombok.Getter;
+import processing.core.PVector;
+
 import java.util.ArrayList;
 import java.util.List;
 
 // Structure for a graph node (platform)
-public class Node {
-    int x, y; // Position of the platform
+//extends collidable to make the graph usable for collision detection
+public class Node extends Collidable{
+    @Getter int x, y; // Position of the platform
     List<Node> neighbors; // Adjacent platforms within jump range
 
-    Node(int x, int y) {
+    Node(int x, int y,int cellSize) {
+        //creates a collidable object with the pixel location of the platform
+        super(x,y);
+        //creates a bounding box for the node
+        BoundingBox box = new BoundingBox(new PVector(x*cellSize,y*cellSize),cellSize,cellSize);
+        ArrayList<BoundingBox> b = new ArrayList<BoundingBox>();
+        b.add(box);
+        super.setBounds(b);
+
         this.x = x;
         this.y = y;
         neighbors = new ArrayList<>();

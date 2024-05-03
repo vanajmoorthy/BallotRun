@@ -25,11 +25,37 @@ public class Collidable {
     }
 
     /**
-     * Checking for collisions
+     * NOTE returns true the moment a collision is found
+     * if all collisions are needed override
+     * Checking for collisions between the bounding boxes
      * @param c the object to check for collisions with
      * @return true if collision
      */
     public boolean Collision(Collidable c) {
+        for (BoundingBox b : bounds) {
+            for (BoundingBox b2 : c.getBounds()) {
+                if(b.getLocation().x < b2.getLocation().x + b2.getWidth() &&
+                        b.getLocation().x + b.getWidth() > b2.getLocation().x &&
+                        b.getLocation().y < b2.getLocation().y + b2.getHeight() &&
+                        b.getLocation().y + b.getHeight() > b2.getLocation().y){
+                    return true;
+                }
+            }
+        }
         return false;
+    }
+
+    public BoundingBox getBoundingBox(Collidable c){
+        for (BoundingBox b : bounds) {
+            for (BoundingBox b2 : c.getBounds()) {
+                if(b.getLocation().x < b2.getLocation().x + b2.getWidth() &&
+                        b.getLocation().x + b.getWidth() > b2.getLocation().x &&
+                        b.getLocation().y < b2.getLocation().y + b2.getHeight() &&
+                        b.getLocation().y + b.getHeight() > b2.getLocation().y){
+                    return b2;
+                }
+            }
+        }
+        return null;
     }
 }

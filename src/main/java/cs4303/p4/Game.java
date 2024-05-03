@@ -1,5 +1,6 @@
 package cs4303.p4;
 
+import cs4303.p4.entities.Player;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,13 +10,13 @@ import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
 import cs4303.p4.items.ItemType;
 import cs4303.p4.states.GameState;
-import cs4303.p4.states.GameStateBase;
 import cs4303.p4.states.GameStateGameplay;
 import processing.core.PApplet;
 
 @SpringBootApplication
 public class Game extends PApplet {
     private GameState state;
+
 
     public static void main(String[] args) {
         String[] appletArgs = new String[] { "Game" };
@@ -25,6 +26,7 @@ public class Game extends PApplet {
 
     @Override
     public void settings() {
+        smooth(8);
         size(
             Math.max(Constants.Screen.width, Constants.Screen.minWidth),
             Math.max(Constants.Screen.height, Constants.Screen.minHeight)

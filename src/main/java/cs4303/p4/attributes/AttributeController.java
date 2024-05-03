@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 
-import cs4303.p4.Entity;
+import cs4303.p4.entities.Entity;
 import cs4303.p4.attributes.exceptions.InvalidBaseBehaviourException;
 import cs4303.p4.items.Item;
 
