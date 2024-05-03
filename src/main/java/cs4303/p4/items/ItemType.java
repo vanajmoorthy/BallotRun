@@ -35,13 +35,6 @@ public enum ItemType {
         new RichText(),
         getCongressSwordBaseAttributes()
     ),
-    FourTigers(
-        "four_tigers_amulet",
-        Rarity.Epic,
-        "Four Tigers Amulet",
-        new RichText(),
-        getFourTigersBaseAttributes()
-    ),
     Constinution(
         "constitution",
         Rarity.Legendary,
@@ -84,13 +77,6 @@ public enum ItemType {
         EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
         base.put(Attribute.Strength, new AttributeModifier(Attribute.Strength, 10));
         base.put(Attribute.AttackSpeed, new AttributeModifier(Attribute.AttackSpeed, 25));
-        return base;
-    }
-
-    private static EnumMap<Attribute, AttributeModifier> getFourTigersBaseAttributes() {
-        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
-        base.put(Attribute.AttackSpeed, new AttributeModifier(Attribute.AttackSpeed, 45));
-        base.put(Attribute.Strength, new AttributeModifier(Attribute.Strength, 5));
         return base;
     }
 }

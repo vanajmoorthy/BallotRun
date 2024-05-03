@@ -45,7 +45,8 @@ public final class GameStateBase extends GameState {
                         sketch.fill(
                             hasHover
                                 ? Colors.darkGray.primary
-                                : Colors.darkGray.dark);
+                                : Colors.darkGray.dark
+                        );
                         sketch.noStroke();
                         sketch.rect(10 + offset, 10, 50, 50, 10);
 
@@ -65,24 +66,51 @@ public final class GameStateBase extends GameState {
                 )
             );
         }
+
+        buttons.add(
+            new GestureDetector(
+                (sketch, hitbox, hasHover, hasClick) -> {
+                    if (selectedItem != null) {
+                        sketch.fill(
+                            hasHover
+                                ? Colors.darkGray.primary
+                                : Colors.darkGray.light
+                        );
+                        sketch.noStroke();
+                        sketch.rect(
+                            Constants.Screen.Base.selection.x + Constants.Screen.Base.padding,
+                            Constants.Screen.Base.selection.y + Constants.Screen.Base.selection.height - Constants.Screen.Base.padding - 40,
+                            Constants.Screen.Base.selection.width - 2 * Constants.Screen.Base.padding,
+                            40,
+                            10
+                        );
+                    }
+                },
+                (sketch, button) -> {
+                    if (selectedItem != null) {
+                        player.addItem(selectedItem);
+                    }
+                },
+                new GestureDetector.Hitbox(
+                    new PVector(
+                        Constants.Screen.Base.selection.x + Constants.Screen.Base.padding,
+                        Constants.Screen.Base.selection.y + Constants.Screen.Base.selection.height - Constants.Screen.Base.padding - 40
+
+                    ),
+                    new PVector(
+                        Constants.Screen.Base.selection.width - 2 * Constants.Screen.Base.padding,
+                        40
+                    )
+                )
+            )
+        );
     }
 
     public void draw(PApplet sketch) {
-        // all items
+        // screen
         sketch.fill(Colors.black);
         sketch.noStroke();
         sketch.rect(0, 0, Constants.Screen.width, Constants.Screen.height);
-
-        boolean isAnyButtonFocused = false;
-        for (GestureDetector button : buttons) {
-            button.draw(sketch);
-            if (button.hasFocus(sketch)) isAnyButtonFocused = true;
-        }
-        sketch.cursor(
-            isAnyButtonFocused
-                ? PApplet.HAND
-                : PApplet.ARROW
-        );
 
         // selected item
         sketch.fill(Colors.darkGray.dark);
@@ -197,6 +225,18 @@ public final class GameStateBase extends GameState {
                 Constants.Screen.Base.selection.y + Constants.Screen.Base.selection.height / 2
             );
         }
+
+        // all items
+        boolean isAnyButtonFocused = false;
+        for (GestureDetector button : buttons) {
+            button.draw(sketch);
+            if (button.hasFocus(sketch)) isAnyButtonFocused = true;
+        }
+        sketch.cursor(
+            isAnyButtonFocused
+                ? PApplet.HAND
+                : PApplet.ARROW
+        );
     }
 
     public void keyPressed(PApplet sketch) {
