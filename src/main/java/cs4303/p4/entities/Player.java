@@ -1,4 +1,4 @@
-package cs4303.p4;
+package cs4303.p4.entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +25,9 @@ public class Player extends Entity {
         super.setVelocity(new PVector(0, 0));
         this.cameraOffsetX = 0;
 
-        //create bounding box
-        //TODO change this to player size
-        BoundingBox b1 = new BoundingBox(this.getLocation(),20,20);
+        // create bounding box
+        // TODO change this to player size
+        BoundingBox b1 = new BoundingBox(this.getLocation(), 20, 20);
         ArrayList<BoundingBox> b = new ArrayList<BoundingBox>();
         b.add(b1);
         super.setBounds(b);
@@ -46,9 +46,9 @@ public class Player extends Entity {
         sketch.rect(screenX, getLocation().y, 20, 20); // 20x20 player for now
 
         sketch.noFill();
-        for(BoundingBox b: getBounds()){
-            float bx =  b.getLocation().x - cameraOffsetX;
-            sketch.rect( bx,b.getLocation().y,b.getWidth(),b.getHeight());
+        for (BoundingBox b : getBounds()) {
+            float bx = b.getLocation().x - cameraOffsetX;
+            sketch.rect(bx, b.getLocation().y, b.getWidth(), b.getHeight());
         }
         sketch.popMatrix();
     }
@@ -65,18 +65,17 @@ public class Player extends Entity {
 
         super.move(nodes);
 
-        //TODO edge of screen detection
-        //Stop the user from moving past the edges of the screen
-        //if(super.getLocation().x >= Constants.Screen.width){
-        //    super.setLocation( new PVector( Constants.Screen.width,super.getLocation().y));
-        //}
+        // TODO edge of screen detection
+        // Stop the user from moving past the edges of the screen
+        // if(super.getLocation().x >= Constants.Screen.width){
+        // super.setLocation( new PVector(
+        // Constants.Screen.width,super.getLocation().y));
+        // }
 
-        //if(super.getLocation().x <= 0){
-        //    super.setLocation( new PVector( 0,super.getLocation().y));
-        //}
+        // if(super.getLocation().x <= 0){
+        // super.setLocation( new PVector( 0,super.getLocation().y));
+        // }
 
     }
-
-
 
 }

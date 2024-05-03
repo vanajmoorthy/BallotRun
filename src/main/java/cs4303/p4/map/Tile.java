@@ -3,7 +3,7 @@ package cs4303.p4.map;
 import cs4303.p4.physics.Collidable;
 import processing.core.PApplet;
 
-public class Tile{
+public class Tile {
     private int cellSize;
     private TileType type; // Type of the tile (0: empty, 1: platform, 2: enemy/treasure)
 
@@ -39,6 +39,10 @@ public class Tile{
                 // Draw enemy or treasure
                 sketch.ellipse(x * cellSize + cellSize / 2 + lerp * cellSize, y * cellSize + cellSize / 2, cellSize / 2,
                         cellSize / 2);
+                break;
+            case BALLOT:
+                sketch.fill(0, 255, 0); // Green color for the BALLOT tile
+                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
                 break;
             default:
                 break;
