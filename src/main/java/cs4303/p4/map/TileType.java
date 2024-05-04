@@ -4,5 +4,6 @@ enum TileType {
     EMPTY,
     PLATFORM,
     ENTITY,
-    BALLOT
+    BALLOT,
+    START
 }

@@ -44,6 +44,10 @@ public class Tile {
                 sketch.fill(0, 255, 0); // Green color for the BALLOT tile
                 sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
                 break;
+            case START:
+                sketch.fill(255, 0, 0); // Green color for the BALLOT tile
+                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
+                break;
             default:
                 break;
         }

@@ -44,7 +44,7 @@ public final class GameStateGameplay extends GameState {
         // draw the player
         sketch.background(200);
         level.draw(); // Draw the current view of the level
-        //level.drawGraph(sketch);
+        // level.drawGraph(sketch);
         if (level.isCameraDelayCompleted()) {
             boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
             player.moveWithCamera(level.getCameraSpeed(), cameraMoving, level.isCameraMovingRight(),
@@ -53,11 +53,12 @@ public final class GameStateGameplay extends GameState {
 
         player.draw(sketch);
 
-        for (Node n : level.getNodes()) {
-            for (BoundingBox b : n.getBounds()) {
-                sketch.rect(b.getLocation().x, b.getLocation().y, Constants.TILE_SIZE, Constants.TILE_SIZE);
-            }
-        }
+        // for (Node n : level.getNodes()) {
+        // for (BoundingBox b : n.getBounds()) {
+        // sketch.rect(b.getLocation().x, b.getLocation().y, Constants.TILE_SIZE,
+        // Constants.TILE_SIZE);
+        // }
+        // }
         update(0.0f);
     }
 

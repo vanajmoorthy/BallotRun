@@ -38,6 +38,8 @@ public class Node extends Collidable {
     }
 
     public void updateBoundingBoxes(float cameraSpeed, boolean cameraMovingRight, boolean cameraStill) {
+        System.out.println("moving right: " + cameraMovingRight);
+        System.out.println("still: " + cameraStill);
         if (cameraMovingRight && !cameraStill) {
             PVector adjustedPos = getAdjustedPosition(cameraSpeed);
             for (BoundingBox b : getBounds()) {
