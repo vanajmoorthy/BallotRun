@@ -43,14 +43,14 @@ public class Player extends Entity {
         sketch.pushMatrix();
         sketch.fill(0, 0, 255); // Blue color for player
         // Calculate player's position relative to camera
-        //float screenX = getLocation().x - cameraOffsetX;
+        // float screenX = getLocation().x - cameraOffsetX;
         sketch.rect(getLocation().x, getLocation().y, 20, 20); // 20x20 player for now
 
         sketch.noFill();
 
-        for(BoundingBox b: getBounds()){
-            //float bx =  b.getLocation().x - cameraOffsetX;
-            sketch.rect( b.getLocation().x,b.getLocation().y,b.getWidth(),b.getHeight());
+        for (BoundingBox b : getBounds()) {
+            // float bx = b.getLocation().x - cameraOffsetX;
+            sketch.rect(b.getLocation().x, b.getLocation().y, b.getWidth(), b.getHeight());
 
         }
         sketch.popMatrix();
@@ -84,20 +84,18 @@ public class Player extends Entity {
     /**
      * Updates the postitions of the player and
      * its bounding boxes
+     * 
      * @param offset the camera offset
      */
-    public void updatePosition(float offset){
-        //System.out.println("offset "+ offset);
-        PVector offsetV = new PVector(-1 * offset,0);
-        PVector location = PVector.add(super.getLocation(),offsetV);
+    public void updatePosition(float deltaX) {
+        PVector location = getLocation();
+        location.x -= deltaX * 2; // Move player horizontally with the camera
+        setLocation(location);
 
-        this.setLocation(location);
-
-        //System.out.println(this.getLocation().x);
-        for(BoundingBox b : getBounds()){
-            b.moveBox(offsetV);
+        // Also move the bounding boxes if necessary
+        for (BoundingBox b : getBounds()) {
+            b.moveBox(new PVector(deltaX * -2, 0));
         }
-
     }
 
 }

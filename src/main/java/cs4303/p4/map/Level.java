@@ -17,6 +17,7 @@ public class Level {
 
     @Getter
     private float cameraX;
+    @Getter
     private float cameraSpeed = 0.5f;
     private boolean cameraMovingRight = true;
 
@@ -57,6 +58,10 @@ public class Level {
         }
 
         return levelGrid[gridY][gridX].getType() == TileType.PLATFORM;
+    }
+
+    public boolean isCameraDelayCompleted() {
+        return cameraDelayCompleted;
     }
 
     void generateLevel(float difficultyFactor) {
