@@ -1,10 +1,16 @@
 package cs4303.p4;
 
 import cs4303.p4.entities.Player;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ResourceUtils;
 
 import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
@@ -17,7 +23,9 @@ import processing.core.PApplet;
 @SpringBootApplication
 public class Game extends PApplet {
     private GameState state;
+
     private float lastFrameTime;
+
 
     public static void main(String[] args) {
         String[] appletArgs = new String[] { "Game" };
@@ -45,12 +53,24 @@ public class Game extends PApplet {
         items.add(new Item(ItemType.ParliamentSword));
         items.add(new Item(ItemType.CongressSword));
 
+        items.add(new Item(ItemType.Bribe));
+        items.add(new Item(ItemType.HealthTalisman));
+        items.add(new Item(ItemType.GlobalizationCharm));
+        items.add(new Item(ItemType.Bill));
+        items.add(new Item(ItemType.FancySuit));
+        items.add(new Item(ItemType.DeepestConcerns));
+        items.add(new Item(ItemType.TradeTreaty));
+        state = new GameStateBase(player, items);
+        // state = new GameStateGameplay(this);
+
+
         // TODO MAKE THIS NOT A COMMENT
         // state = new GameStateBase(player, items);
         state = new GameStateGameplay(this);
         frameRate(30); // Set the frame rate to 30 fps
 
         lastFrameTime = millis();
+
     }
 
     @Override

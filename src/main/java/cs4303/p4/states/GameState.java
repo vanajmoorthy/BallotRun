@@ -13,6 +13,8 @@ public abstract class GameState {
 
     public abstract void mouseReleased(PApplet sketch);
 
+    public abstract GameState switchState(PApplet sketch);
+
     public abstract void update(float deltaTime);
 
 }

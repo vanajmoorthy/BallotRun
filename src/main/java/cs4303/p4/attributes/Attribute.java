@@ -9,10 +9,10 @@ import lombok.Getter;
 public enum Attribute {
     Health(     '❤', Colors.red.dark, "Health",       10, AttributeModifierBehavior.ADD),
     Defence(    '❂', Colors.green.dark, "Defence",      0, AttributeModifierBehavior.ADD),
-    Strength(   '❁', Colors.rose.darker, "Strength",     1, AttributeModifierBehavior.ADD),
-    AttackSpeed('⚔', Colors.yellow.light, "Attack Speed", 1, AttributeModifierBehavior.MULTIPLY),
-    Speed(      '✧', Colors.slate.lighter, "Speed",        1, AttributeModifierBehavior.MULTIPLY),
-    JumpHeight( '⇑', Colors.sky.primary, "Jump Height",  1, AttributeModifierBehavior.MULTIPLY),
+    Strength(   '❁', Colors.rose.darker, "Strength",     100, AttributeModifierBehavior.ADD),
+    AttackSpeed('⚔', Colors.yellow.light, "Attack Speed", 100, AttributeModifierBehavior.ADD),
+    Speed(      '✧', Colors.slate.lighter, "Speed",        100, AttributeModifierBehavior.ADD),
+    JumpHeight( '⇑', Colors.sky.primary, "Jump Height",  1, AttributeModifierBehavior.ADD),
     Luck(       '✯', Colors.emerald.dark, "Luck",         0, AttributeModifierBehavior.ADD);
 
     private final char symbol;
