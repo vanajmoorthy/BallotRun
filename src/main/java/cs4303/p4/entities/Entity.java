@@ -38,6 +38,10 @@ public abstract class Entity extends Collidable {
         this(x, y, new EnumMap<Attribute, AttributeModifier>(Attribute.class));
     }
 
+    public boolean isInventoryFull() {
+        return inventory.size() >= maxSlots;
+    }
+
 
 
     public abstract void draw(PApplet sketch);
@@ -135,6 +139,10 @@ public abstract class Entity extends Collidable {
         if (inventory.size() >= maxSlots) return false;
         inventory.add(item);
         return true;
+    }
+
+    public boolean removeItem(Item item) {
+        return inventory.remove(item);
     }
 
     /**

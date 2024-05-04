@@ -2,6 +2,7 @@ package cs4303.p4.states;
 
 import cs4303.p4.entities.Entity;
 import cs4303.p4.entities.Player;
+import cs4303.p4.items.Item;
 import cs4303.p4._util.Constants;
 import cs4303.p4.map.Level;
 import cs4303.p4.map.Node;
@@ -10,11 +11,13 @@ import processing.core.PApplet;
 import processing.core.PVector;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public final class GameStateGameplay extends GameState {
     private Player player;
     private Level level;
+    private List<Item> items;
 
     // int cellSize = 40;
 
@@ -25,9 +28,12 @@ public final class GameStateGameplay extends GameState {
     private boolean s_pressed = false;
     private boolean jumped = false;
     private ArrayList<Entity> entities =new ArrayList<Entity>();
-    public GameStateGameplay(PApplet sketch) {
+
+    public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
         // TODO insert a start location
-        player = new Player(500, 50);
+        // player = new Player(500, 50);
+        this.player = player;
+        this.items = items;
         level = new Level(sketch);
         level.buildGraph();
         entities.add(player);
@@ -217,5 +223,10 @@ public final class GameStateGameplay extends GameState {
             }
         }
 
+    }
+
+    @Override
+    public GameState switchState(PApplet sketch) {
+        return new GameStateBase(player, items);
     }
 }

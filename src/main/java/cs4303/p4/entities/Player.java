@@ -3,7 +3,6 @@ package cs4303.p4.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import cs4303.p4.entities.Entity;
 import cs4303.p4.map.Node;
 import cs4303.p4.physics.BoundingBox;
 import cs4303.p4._util.Constants;

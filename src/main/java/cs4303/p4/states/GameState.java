@@ -8,4 +8,5 @@ public abstract class GameState {
     public abstract void keyReleased(PApplet sketch);
     public abstract void mousePressed(PApplet sketch);
     public abstract void mouseReleased(PApplet sketch);
+    public abstract GameState switchState(PApplet sketch);
 }

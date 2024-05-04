@@ -35,6 +35,55 @@ public enum ItemType {
         new RichText(),
         getCongressSwordBaseAttributes()
     ),
+    GlobalizationCharm(
+        "globalization_charm",
+        Rarity.Rare,
+        "Globalization Charm",
+        new RichText(),
+        getGlobalizationCharmBaseAttributes()
+    ),
+    HealthTalisman(
+        "health_talisman",
+        Rarity.Uncommon,
+        "Health Talisman",
+        new RichText(),
+        getHealthTalismanBaseAttributes()
+    ),
+    Bribe(
+        "bribe",
+        Rarity.Uncommon,
+        "Bribe",
+        new RichText(),
+        getBribeBaseAttributes()
+    ),
+    Bill(
+        "bill",
+        Rarity.Rare,
+        "Bill",
+        new RichText(),
+        getBillBaseAttributes()
+    ),
+    FancySuit(
+        "fancy_suit",
+        Rarity.Uncommon,
+        "Fancy Suit",
+        new RichText(),
+        getFancySuitAttributes()
+    ),
+    TradeTreaty(
+        "trade_treaty",
+        Rarity.Epic,
+        "Trade Treaty",
+        new RichText(),
+        getTradeTreatyAttributes()
+    ),
+    DeepestConcerns(
+        "sword_deepest_concerns",
+        Rarity.Legendary,
+        "Deepest Concerns",
+        new RichText(),
+        getDeepestConcernsAttributes()
+    ),
     Constinution(
         "constitution",
         Rarity.Legendary,
@@ -75,8 +124,57 @@ public enum ItemType {
 
     private static EnumMap<Attribute, AttributeModifier> getCongressSwordBaseAttributes() {
         EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.Strength, new AttributeModifier(Attribute.Strength, 35));
+        base.put(Attribute.AttackSpeed, new AttributeModifier(Attribute.AttackSpeed, -10));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getGlobalizationCharmBaseAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
         base.put(Attribute.Strength, new AttributeModifier(Attribute.Strength, 10));
-        base.put(Attribute.AttackSpeed, new AttributeModifier(Attribute.AttackSpeed, 25));
+        base.put(Attribute.Defence, new AttributeModifier(Attribute.Defence, -30));
+        base.put(Attribute.Speed, new AttributeModifier(Attribute.AttackSpeed, 45));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getHealthTalismanBaseAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.Health, new AttributeModifier(Attribute.Health, 50));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getBribeBaseAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.Luck, new AttributeModifier(Attribute.Luck, -20));
+        base.put(Attribute.Strength, new AttributeModifier(Attribute.Strength, 20));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getBillBaseAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.Luck, new AttributeModifier(Attribute.Luck, 20));
+        base.put(Attribute.Speed, new AttributeModifier(Attribute.Speed, -40));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getFancySuitAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.Health, new AttributeModifier(Attribute.Health, 20));
+        base.put(Attribute.Defence, new AttributeModifier(Attribute.Defence, 40));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getTradeTreatyAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.Health, new AttributeModifier(Attribute.Health, 40));
+        base.put(Attribute.Speed, new AttributeModifier(Attribute.Speed, 20));
+        return base;
+    }
+
+    private static EnumMap<Attribute, AttributeModifier> getDeepestConcernsAttributes() {
+        EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
+        base.put(Attribute.Strength, new AttributeModifier(Attribute.Strength, 50));
+        base.put(Attribute.Defence, new AttributeModifier(Attribute.Defence, -40));
         return base;
     }
 }
