@@ -73,13 +73,18 @@ public abstract class Entity extends Collidable {
                 // distance the velocity tried to move
                 // float DistanceTravelled = prospectiveV.mag();
 
-                // find the distance between the current location and the collision with
-                // bounding box`
-                // BoundingBox b = this.getBoundingBox(n);
-                // float distToBox = b.getDistanceToBox(this);
 
-                // IF THERES A COLLISION JUST MOVE BY A THIRD THE DISTANCE
-                PVector newv = PVector.div(prospectiveV, 3);
+                //find the distance between the current location and the collision with
+                //bounding box`
+                BoundingBox b = this.getBoundingBox(n);
+                float distToBox = b.getDistanceToBox(this);
+                System.out.println("Distance to collision" + distToBox);
+                PVector vectorToClosest = b.getVectorToClosestPoint(n);
+                System.out.println("Vector to closest point" + vectorToClosest);
+
+                //IF THERE'S A COLLISION JUST MOVE BY A THIRD THE DISTANCE
+                PVector newv = PVector.div(prospectiveV,3);
+
                 this.setVelocity(newv);
 
                 this.getAcceleration().mult(0);
@@ -87,32 +92,33 @@ public abstract class Entity extends Collidable {
                 // Update position based on velocity
                 super.setLocation(PVector.add(super.getLocation(), this.getVelocity()));
 
-                // move the bounding box
-                PVector reverse = PVector.mult(prospectiveV, -1);
-                // update the positions of the bounding boxes
-                for (BoundingBox b : super.getBounds()) {
-                    b.moveBox(reverse);
+
+                //move the bounding box
+                PVector reverse = PVector.mult(prospectiveV,-1);
+                //update the positions of the bounding boxes
+                for(BoundingBox x : super.getBounds()){
+                    x.moveBox(reverse);
                 }
 
-                // update the positions of the bounding boxes
-                for (BoundingBox b : super.getBounds()) {
-                    b.moveBox(this.getVelocity());
+                //update the positions of the bounding boxes
+                for(BoundingBox c : super.getBounds()){
+                    c.moveBox(this.getVelocity());
+
                 }
                 return;
             }
         }
-        // System.out.println("no col");
-        this.setVelocity(PVector.add(this.getVelocity(), this.getAcceleration()));
+
+
+        //update the velocity
+        this.setVelocity(PVector.add(this.getVelocity(),this.getAcceleration()));
+
 
         this.getAcceleration().mult(0);
 
         // Update position based on velocity
         super.setLocation(PVector.add(super.getLocation(), this.getVelocity()));
 
-        // update the positions of the bounding boxes
-        for (BoundingBox b : super.getBounds()) {
-            b.moveBox(this.getVelocity());
-        }
     }
 
     /**
@@ -155,7 +161,8 @@ public abstract class Entity extends Collidable {
      * 
      * @return
      */
-    public int getTileY() {
+
+    public int getTileY(){
 
         return (int) this.getLocation().y / Constants.TILE_SIZE;
     }
@@ -165,7 +172,8 @@ public abstract class Entity extends Collidable {
      * 
      * @return
      */
-    public int getTileX() {
+
+    public int getTileX(){
 
         return (int) this.getLocation().x / Constants.TILE_SIZE;
     }
