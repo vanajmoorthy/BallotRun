@@ -56,12 +56,14 @@ public class Player extends Entity {
         sketch.popMatrix();
     }
 
+    /**
+     * Jump function
+     * applies the jump force
+     */
     public void jump() {
-        // TODO take account of screen size in jump
         PVector jump = new PVector(0, -1 * Constants.Screen.height *
                 Constants.PLAYER.INSTANCE.JUMP_IMPULSE *
                 (AttributeController.getEntityAttributeValue(this, Attribute.JumpHeight)/100));
-        System.out.println("JUMPING" + jump);
         super.applyForce(jump);
 
     }
