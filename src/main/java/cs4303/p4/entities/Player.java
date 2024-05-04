@@ -87,14 +87,22 @@ public class Player extends Entity {
      * 
      * @param offset the camera offset
      */
-    public void updatePosition(float deltaX) {
+    public void updatePosition(float deltaX, boolean cameraMovingRight) {
         PVector location = getLocation();
-        location.x -= deltaX * 2; // Move player horizontally with the camera
+        if (cameraMovingRight) {
+            location.x -= deltaX * 2; // Move player horizontally with the camera when moving right
+        } else {
+            location.x += deltaX * 2; // Move player in the opposite direction when camera moves left
+        }
         setLocation(location);
 
         // Also move the bounding boxes if necessary
         for (BoundingBox b : getBounds()) {
-            b.moveBox(new PVector(deltaX * -2, 0));
+            if (cameraMovingRight) {
+                b.moveBox(new PVector(-deltaX * 2, 0));
+            } else {
+                b.moveBox(new PVector(deltaX * 2, 0));
+            }
         }
     }
 

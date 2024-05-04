@@ -19,6 +19,7 @@ public class Level {
     private float cameraX;
     @Getter
     private float cameraSpeed = 0.5f;
+    @Getter
     private boolean cameraMovingRight = true;
 
     @Getter
@@ -27,6 +28,7 @@ public class Level {
 
     private float cameraDelayTime = 3.0f; // delay in seconds before camera starts moving
     private float cameraDelayElapsed = 0; // time elapsed since the level started
+    @Getter
     private boolean cameraDelayCompleted = false; // has the delay completed?
 
     public Level(PApplet p, float difficultyFactor, Player player) {
@@ -58,10 +60,6 @@ public class Level {
         }
 
         return levelGrid[gridY][gridX].getType() == TileType.PLATFORM;
-    }
-
-    public boolean isCameraDelayCompleted() {
-        return cameraDelayCompleted;
     }
 
     void generateLevel(float difficultyFactor) {
@@ -252,6 +250,21 @@ public class Level {
                     int cellX = (int) (screenX / cellSize);
                     float lerp = (screenX / cellSize) - cellX;
                     levelGrid[y][x].draw(parent, cellX, y, lerp);
+                }
+            }
+        }
+
+        // Draw bounding boxes for platforms
+        for (int y = 0; y < gridHeight; y++) {
+            for (int x = startCol; x < endCol; x++) {
+                if (levelGrid[y][x].getType() == TileType.PLATFORM) {
+                    float screenX = x * cellSize - cameraX;
+                    float screenY = y * cellSize;
+
+                    // Draw the bounding box
+                    parent.stroke(255, 0, 0); // Set the color to red
+                    parent.noFill();
+                    parent.rect(screenX, screenY, cellSize, cellSize);
                 }
             }
         }
