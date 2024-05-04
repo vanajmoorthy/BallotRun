@@ -85,13 +85,13 @@ public class Player extends Entity {
      * @param offset the camera offset
      */
     public void updatePosition(float offset){
-        System.out.println("offset "+ offset);
+        //System.out.println("offset "+ offset);
         PVector offsetV = new PVector(-1 * offset,0);
         PVector location = PVector.add(super.getLocation(),offsetV);
 
         this.setLocation(location);
 
-        System.out.println(this.getLocation().x);
+        //System.out.println(this.getLocation().x);
         for(BoundingBox b : getBounds()){
             b.moveBox(offsetV);
         }

@@ -45,6 +45,11 @@ public class Collidable {
         return false;
     }
 
+    /**
+     * Returns the bounding box of this collision
+     * @param c the object to check against
+     * @return the bounding box
+     */
     public BoundingBox getBoundingBox(Collidable c){
         for (BoundingBox b : bounds) {
             for (BoundingBox b2 : c.getBounds()) {
@@ -58,4 +63,7 @@ public class Collidable {
         }
         return null;
     }
+
+
+
 }

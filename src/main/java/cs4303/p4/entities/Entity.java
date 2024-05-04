@@ -77,10 +77,13 @@ public abstract class Entity extends Collidable {
 
                 //find the distance between the current location and the collision with
                 //bounding box`
-                //BoundingBox b = this.getBoundingBox(n);
-                //float distToBox = b.getDistanceToBox(this);
+                BoundingBox b = this.getBoundingBox(n);
+                float distToBox = b.getDistanceToBox(this);
+                System.out.println("Distance to collision" + distToBox);
+                PVector vectorToClosest = b.getVectorToClosestPoint(n);
+                System.out.println("Vector to closest point" + vectorToClosest);
 
-                //IF THERES A COLLISION JUST MOVE BY A THIRD THE DISTANCE
+                //IF THERE'S A COLLISION JUST MOVE BY A THIRD THE DISTANCE
                 PVector newv = PVector.div(prospectiveV,3);
                 this.setVelocity(newv);
 
@@ -92,13 +95,13 @@ public abstract class Entity extends Collidable {
                 //move the bounding box
                 PVector reverse = PVector.mult(prospectiveV,-1);
                 //update the positions of the bounding boxes
-                for(BoundingBox b : super.getBounds()){
-                    b.moveBox(reverse);
+                for(BoundingBox x : super.getBounds()){
+                    x.moveBox(reverse);
                 }
 
                 //update the positions of the bounding boxes
-                for(BoundingBox b : super.getBounds()){
-                    b.moveBox(this.getVelocity());
+                for(BoundingBox c : super.getBounds()){
+                    c.moveBox(this.getVelocity());
                 }
                 return;
             }
@@ -151,7 +154,6 @@ public abstract class Entity extends Collidable {
      * @return
      */
     public int getTileY(){
-
         return (int) this.getLocation().y / Constants.TILE_SIZE;
     }
 
@@ -160,7 +162,6 @@ public abstract class Entity extends Collidable {
      * @return
      */
     public int getTileX(){
-
         return (int) this.getLocation().x / Constants.TILE_SIZE;
     }
 }
