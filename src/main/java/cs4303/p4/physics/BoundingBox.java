@@ -15,12 +15,13 @@ public class BoundingBox {
     private int height;
 
     /**
- * Constructs a new BoundingBox object with the specified location, width, and height.
- *
- * @param location The top-left corner of the bounding box in the 2D space.
- * @param width     The width of the bounding box.
- * @param height    The height of the bounding box.
- */
+     * Constructs a new BoundingBox object with the specified location, width, and
+     * height.
+     *
+     * @param location The top-left corner of the bounding box in the 2D space.
+     * @param width    The width of the bounding box.
+     * @param height   The height of the bounding box.
+     */
     public BoundingBox(PVector location, int width, int height) {
         this.location = location;
         this.width = width;
@@ -29,12 +30,12 @@ public class BoundingBox {
 
     /**
      * Moves the box by the move vector
+     * 
      * @param move
      */
-    public void moveBox(PVector move){
+    public void moveBox(PVector move) {
         this.location.add(move);
     }
-
 
      public float getDistanceToBox(Collidable c){
          // Calculate distances to the closest points on each edge of the rectangle
@@ -51,6 +52,7 @@ public class BoundingBox {
         // Calculate the coordinates of the closest points on each edge of the rectangle
         float closestX = constrain(c.getLocation().x, this.getLocation().x, this.getLocation().x + this.width);
         float closestY = constrain(c.getLocation().y, this.getLocation().y, this.getLocation().y + this.height);
+
 
         // Calculate the distances from the collidable to these closest points
         float distToLeft = c.getLocation().x - this.getLocation().x;
@@ -72,6 +74,7 @@ public class BoundingBox {
             return new PVector(0, 1); // Bottom side
         }
     }
+
 
 
 

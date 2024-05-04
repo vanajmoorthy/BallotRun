@@ -18,7 +18,6 @@ import processing.core.PApplet;
 public class Game extends PApplet {
     private GameState state;
 
-
     public static void main(String[] args) {
         String[] appletArgs = new String[] { "Game" };
         Game sketch = new Game();
@@ -30,12 +29,12 @@ public class Game extends PApplet {
         smooth(8);
 
         size(
+
             Math.max(Constants.Screen.width, Constants.Screen.minWidth),
             Math.max(Constants.Screen.height, Constants.Screen.minHeight)
         );
 
 
-    }
 
     @Override
     public void setup() {
@@ -46,10 +45,12 @@ public class Game extends PApplet {
         items.add(new Item(ItemType.Constinution));
         items.add(new Item(ItemType.ParliamentSword));
         items.add(new Item(ItemType.CongressSword));
+
         //TODO MAKE THIS NOT A COMMENT
         //state = new GameStateBase(player, items);
         state = new GameStateGameplay(this);
         frameRate(30); // Set the frame rate to 30 fps
+
     }
 
     @Override
