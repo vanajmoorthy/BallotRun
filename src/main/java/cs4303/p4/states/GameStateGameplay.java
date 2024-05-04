@@ -43,7 +43,7 @@ public final class GameStateGameplay extends GameState {
         player.updatePosition(level.getCameraX());
 
         player.draw(sketch);
-        update();
+        update(0.0f);
     }
 
     /**
@@ -115,8 +115,8 @@ public final class GameStateGameplay extends GameState {
         }
     }
 
-    public void update() {
-        level.updateCamera(); // Update the camera position
+    public void update(float deltaTime) {
+        level.updateCamera(deltaTime); // Update the camera position
 
         player.applyGravity();
 

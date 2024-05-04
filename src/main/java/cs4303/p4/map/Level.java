@@ -17,12 +17,16 @@ public class Level {
 
     @Getter
     private float cameraX;
-    private float cameraSpeed = 2.5f;
+    private float cameraSpeed = 0.5f;
     private boolean cameraMovingRight = true;
 
     @Getter
     private List<Node> nodes;
     private Player player;
+
+    private float cameraDelayTime = 3.0f; // delay in seconds before camera starts moving
+    private float cameraDelayElapsed = 0; // time elapsed since the level started
+    private boolean cameraDelayCompleted = false; // has the delay completed?
 
     public Level(PApplet p, float difficultyFactor, Player player) {
         this.cellSize = Constants.TILE_SIZE;
@@ -180,24 +184,35 @@ public class Level {
     }
 
     // Call this method in main game loop
-    public void updateCamera() {
-        if (cameraMovingRight) {
-            if (cameraX < (gridWidth * cellSize) - parent.width) {
-                cameraX += cameraSpeed; // Move camera right until the end
-            } else {
-                // Hold the camera at the end of the level
-                cameraX = (gridWidth * cellSize) - parent.width;
-                // Check if player has reached the last accessible tile
-                if (playerOnBallot()) {
-                    cameraMovingRight = false; // Reverse the camera direction
-                }
+    public void updateCamera(float deltaTime) { // Assume deltaTime is passed in seconds
+        // Update the elapsed time only if the delay is not completed
+        if (!cameraDelayCompleted) {
+            cameraDelayElapsed += deltaTime;
+            if (cameraDelayElapsed >= cameraDelayTime) {
+                cameraDelayCompleted = true; // Set the delay as completed
             }
-        } else {
-            if (cameraX > 0) {
-                cameraX -= cameraSpeed; // Move camera left until the start
+        }
+
+        // Proceed with camera movement only if the delay is completed
+        if (cameraDelayCompleted) {
+            if (cameraMovingRight) {
+                if (cameraX < (gridWidth * cellSize) - parent.width) {
+                    cameraX += cameraSpeed; // Move camera right until the end
+                } else {
+                    // Hold the camera at the end of the level
+                    cameraX = (gridWidth * cellSize) - parent.width;
+                    // Check if player has reached the last accessible tile
+                    if (playerOnBallot()) {
+                        cameraMovingRight = false; // Reverse the camera direction
+                    }
+                }
             } else {
-                // Hold the camera at the start of the level
-                cameraX = 0;
+                if (cameraX > 0) {
+                    cameraX -= cameraSpeed; // Move camera left until the start
+                } else {
+                    // Hold the camera at the start of the level
+                    cameraX = 0;
+                }
             }
         }
     }
