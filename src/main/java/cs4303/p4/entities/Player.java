@@ -1,5 +1,6 @@
 package cs4303.p4.entities;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +25,9 @@ public class Player extends Entity {
         super.setVelocity(new PVector(0, 0));
         this.cameraOffsetX = 0;
 
-        //create bounding box
-        //TODO change this to player size
-        BoundingBox b1 = new BoundingBox(this.getLocation(),20,20);
+        // create bounding box
+        // TODO change this to player size
+        BoundingBox b1 = new BoundingBox(this.getLocation(), 20, 20);
         ArrayList<BoundingBox> b = new ArrayList<BoundingBox>();
         b.add(b1);
         super.setBounds(b);
@@ -41,13 +42,15 @@ public class Player extends Entity {
         sketch.pushMatrix();
         sketch.fill(0, 0, 255); // Blue color for player
         // Calculate player's position relative to camera
-        float screenX = getLocation().x - cameraOffsetX;
-        sketch.rect(screenX, getLocation().y, 20, 20); // 20x20 player for now
+        // float screenX = getLocation().x - cameraOffsetX;
+        sketch.rect(getLocation().x, getLocation().y, 20, 20); // 20x20 player for now
 
         sketch.noFill();
-        for(BoundingBox b: getBounds()){
-            float bx =  b.getLocation().x - cameraOffsetX;
-            sketch.rect( bx,b.getLocation().y,b.getWidth(),b.getHeight());
+
+        for (BoundingBox b : getBounds()) {
+            // float bx = b.getLocation().x - cameraOffsetX;
+            sketch.rect(b.getLocation().x, b.getLocation().y, b.getWidth(), b.getHeight());
+
         }
         sketch.popMatrix();
     }
@@ -64,18 +67,49 @@ public class Player extends Entity {
 
         super.move(nodes);
 
-        //TODO edge of screen detection
-        //Stop the user from moving past the edges of the screen
-        //if(super.getLocation().x >= Constants.Screen.width){
-        //    super.setLocation( new PVector( Constants.Screen.width,super.getLocation().y));
-        //}
+        // TODO edge of screen detection
+        // Stop the user from moving past the edges of the screen
+        // if(super.getLocation().x >= Constants.Screen.width){
+        // super.setLocation( new PVector(
+        // Constants.Screen.width,super.getLocation().y));
+        // }
 
-        //if(super.getLocation().x <= 0){
-        //    super.setLocation( new PVector( 0,super.getLocation().y));
-        //}
+        // if(super.getLocation().x <= 0){
+        // super.setLocation( new PVector( 0,super.getLocation().y));
+        // }
 
     }
 
+    /**
+     * Updates the postitions of the player and
+     * its bounding boxes
+     * 
+     * @param offset the camera offset
+     */
+    public void updatePosition(float deltaX, boolean cameraMoving, boolean cameraMovingRight, boolean cameraStill) {
+        PVector location = getLocation();
+        if (cameraMoving) {
+            if (cameraMovingRight && !cameraStill) {
+                location.x -= deltaX * 2; // Move player horizontally with the camera when moving right
+            } else if (cameraStill) {
+                location.x = location.x;
+            } else {
+                location.x += deltaX * 2; // Move player in the opposite direction when camera moves left
+            }
+            setLocation(location);
 
+            // Also move the bounding boxes if necessary
+            for (BoundingBox b : getBounds()) {
+                if (cameraMovingRight && !cameraStill) {
+                    b.moveBox(new PVector(-deltaX * 2, 0));
+                } else if (cameraStill) {
+                    b.moveBox(new PVector(0, 0));
+
+                } else {
+                    b.moveBox(new PVector(deltaX * 2, 0));
+                }
+            }
+        }
+    }
 
 }

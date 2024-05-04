@@ -184,15 +184,15 @@ public final class GameStateBase extends GameState {
         this.items = items;
         this.buttons = new ArrayList<GestureDetector>();
         final List<Item> itemsSorted = items
-            .stream()
-            .sorted(
-                (a, b) -> {
-                    int rarity = - a.getType().getRarity().compareTo(b.getType().getRarity());
-                    if (rarity != 0) return rarity;
-                    return a.getType().getDisplayName().compareTo(b.getType().getDisplayName());
-                }
-            )
-            .collect(Collectors.toList());
+                .stream()
+                .sorted(
+                        (a, b) -> {
+                            int rarity = -a.getType().getRarity().compareTo(b.getType().getRarity());
+                            if (rarity != 0)
+                                return rarity;
+                            return a.getType().getDisplayName().compareTo(b.getType().getDisplayName());
+                        })
+                .collect(Collectors.toList());
         for (int i = 0; i < items.size(); i++) {
             Item item = itemsSorted.get(i);
 
@@ -203,6 +203,7 @@ public final class GameStateBase extends GameState {
             int offsetY = (i / itemsPerLine) * (50 + Constants.Screen.Base.padding);
 
             buttons.add(
+
                 new GestureDetector(
                     (sketch, hitbox, hasHover, hasClick) -> {
                         if (hasHover) cursor = PApplet.HAND;
@@ -368,6 +369,64 @@ public final class GameStateBase extends GameState {
                 )
             );
         }
+
+                    new GestureDetector(
+                            (sketch, hitbox, hasHover, hasClick) -> {
+                                sketch.fill(
+                                        hasHover
+                                                ? Colors.darkGray.primary
+                                                : Colors.darkGray.dark);
+                                sketch.noStroke();
+                                sketch.rect(10 + offset, 10, 50, 50, 10);
+
+                                sketch.noFill();
+                                sketch.stroke(item.getType().getRarity().getColor());
+                                sketch.strokeWeight(2);
+                                sketch.rect(10 + offset + 5, 10 + 5, 40, 40, 5);
+                            },
+                            (sketch, button) -> {
+                                // PApplet.println(item.getType().getDisplayName());
+                                selectedItem = item;
+                            },
+                            new GestureDetector.Hitbox(
+                                    new PVector(10 + offset, 10),
+                                    new PVector(50, 50))));
+        }
+
+        buttons.add(
+                new GestureDetector(
+                        (sketch, hitbox, hasHover, hasClick) -> {
+                            if (selectedItem != null) {
+                                sketch.fill(
+                                        hasHover
+                                                ? Colors.darkGray.primary
+                                                : Colors.darkGray.light);
+                                sketch.noStroke();
+                                sketch.rect(
+                                        Constants.Screen.Base.selection.x + Constants.Screen.Base.padding,
+                                        Constants.Screen.Base.selection.y + Constants.Screen.Base.selection.height
+                                                - Constants.Screen.Base.padding - 40,
+                                        Constants.Screen.Base.selection.width - 2 * Constants.Screen.Base.padding,
+                                        40,
+                                        10);
+                            }
+                        },
+                        (sketch, button) -> {
+                            if (selectedItem != null) {
+                                player.addItem(selectedItem);
+                            }
+                        },
+                        new GestureDetector.Hitbox(
+                                new PVector(
+                                        Constants.Screen.Base.selection.x + Constants.Screen.Base.padding,
+                                        Constants.Screen.Base.selection.y + Constants.Screen.Base.selection.height
+                                                - Constants.Screen.Base.padding - 40
+
+                                ),
+                                new PVector(
+                                        Constants.Screen.Base.selection.width - 2 * Constants.Screen.Base.padding,
+                                        40))));
+
     }
 
     public void draw(PApplet sketch) {
@@ -381,12 +440,11 @@ public final class GameStateBase extends GameState {
         sketch.fill(Colors.darkGray.dark);
         sketch.noStroke();
         sketch.rect(
-            Constants.Screen.Base.selection.x,
-            Constants.Screen.Base.selection.y,
-            Constants.Screen.Base.selection.width,
-            Constants.Screen.Base.selection.height,
-            15
-        );
+                Constants.Screen.Base.selection.x,
+                Constants.Screen.Base.selection.y,
+                Constants.Screen.Base.selection.width,
+                Constants.Screen.Base.selection.height,
+                15);
 
         sketch.textSize(20);
         if (selectedItem != null) {
@@ -394,6 +452,7 @@ public final class GameStateBase extends GameState {
         } else {
             drawInventory(sketch);
         }
+
 
         // all items
         for (GestureDetector button : buttons) {
@@ -431,6 +490,26 @@ public final class GameStateBase extends GameState {
                 Constants.Screen.Base.selection.x + Constants.Screen.Base.padding + offsetX,
                 Constants.Screen.Base.selection.y + 2 * Constants.Screen.Base.padding + offsetY
             );
+            // item icon
+            sketch.fill(Colors.darkGray.primary);
+            sketch.noStroke();
+            sketch.rect(
+                    Constants.Screen.Base.selection.x + Constants.Screen.Base.padding,
+                    Constants.Screen.Base.selection.y + Constants.Screen.Base.padding,
+                    itemIconSize,
+                    itemIconSize,
+                    10);
+
+            sketch.noFill();
+            sketch.stroke(selectedItem.getType().getRarity().getColor());
+            sketch.strokeWeight(2);
+            sketch.rect(
+                    Constants.Screen.Base.selection.x + Constants.Screen.Base.padding + 5,
+                    Constants.Screen.Base.selection.y + Constants.Screen.Base.padding + 5,
+                    itemIconSize - 10,
+                    itemIconSize - 10,
+                    5);
+
 
             offsetX += sketch.textWidth(attribute.getDisplayName());
             sketch.fill(Colors.white);
@@ -439,6 +518,10 @@ public final class GameStateBase extends GameState {
                 Constants.Screen.Base.selection.x + Constants.Screen.Base.padding + offsetX,
                 Constants.Screen.Base.selection.y + 2 * Constants.Screen.Base.padding + offsetY
             );
+
+                    selectedItem.getType().getDisplayName(),
+                    Constants.Screen.Base.selection.x + 2 * Constants.Screen.Base.padding + itemIconSize,
+                    Constants.Screen.Base.selection.y + Constants.Screen.Base.padding);
 
             offsetX += sketch.textWidth(": ");
 
@@ -575,9 +658,14 @@ public final class GameStateBase extends GameState {
 
         buttonEqip.draw(sketch);
         buttonClose.draw(sketch);
+
     }
 
     public void keyPressed(PApplet sketch) {
+
+    }
+
+    public void update(float deltaTime) {
 
     }
 

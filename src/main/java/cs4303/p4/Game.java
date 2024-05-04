@@ -24,6 +24,9 @@ import processing.core.PApplet;
 public class Game extends PApplet {
     private GameState state;
 
+    private float lastFrameTime;
+
+
     public static void main(String[] args) {
         String[] appletArgs = new String[] { "Game" };
         Game sketch = new Game();
@@ -33,10 +36,11 @@ public class Game extends PApplet {
     @Override
     public void settings() {
         smooth(8);
+
         size(
-            Math.max(Constants.Screen.width, Constants.Screen.minWidth),
-            Math.max(Constants.Screen.height, Constants.Screen.minHeight)
-        );
+
+                Math.max(Constants.Screen.width, Constants.Screen.minWidth),
+                Math.max(Constants.Screen.height, Constants.Screen.minHeight));
     }
 
     @Override
@@ -48,6 +52,7 @@ public class Game extends PApplet {
         items.add(new Item(ItemType.Constinution));
         items.add(new Item(ItemType.ParliamentSword));
         items.add(new Item(ItemType.CongressSword));
+
         items.add(new Item(ItemType.Bribe));
         items.add(new Item(ItemType.HealthTalisman));
         items.add(new Item(ItemType.GlobalizationCharm));
@@ -57,6 +62,15 @@ public class Game extends PApplet {
         items.add(new Item(ItemType.TradeTreaty));
         state = new GameStateBase(player, items);
         // state = new GameStateGameplay(this);
+
+
+        // TODO MAKE THIS NOT A COMMENT
+        // state = new GameStateBase(player, items);
+        state = new GameStateGameplay(this);
+        frameRate(30); // Set the frame rate to 30 fps
+
+        lastFrameTime = millis();
+
     }
 
     @Override
@@ -81,6 +95,11 @@ public class Game extends PApplet {
 
     @Override
     public void draw() {
+        float currentTime = millis();
+        float deltaTime = (currentTime - lastFrameTime) / 1000.0f; // convert milliseconds to seconds
+        lastFrameTime = currentTime;
+
+        state.update(deltaTime);
         state.draw(this);
     }
 }

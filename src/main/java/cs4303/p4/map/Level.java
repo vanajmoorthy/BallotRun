@@ -1,41 +1,47 @@
 package cs4303.p4.map;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cs4303.p4._util.Constants;
+import cs4303.p4.entities.Player;
 import lombok.Getter;
 import processing.core.PApplet;
 
-// TODO: make tile object with literally just cell size of tile and draw method
-// Implement sliding window
+import java.util.ArrayList;
+import java.util.List;
 
-// Assumes player can jump 2 "cells"
 public class Level {
-    private int cellSize; // Size of each cell in the grid
+    private int cellSize;
     private int gridWidth;
     private int gridHeight;
     private Tile[][] levelGrid;
     private PApplet parent;
 
-    private float cameraX; // Camera offset on the X-axis (now float)
-    private final float cameraSpeed = 0.3f; // Speed at which the camera moves to the right
+    @Getter
+    private float cameraX;
+    @Getter
+    private float cameraSpeed = 2.5f;
+    @Getter
+    private boolean cameraMovingRight = true;
+    @Getter
+    private boolean cameraStill = false;
 
-    private @Getter List<Node> nodes;
+    @Getter
+    private List<Node> nodes;
+    private Player player;
 
-    // Constructor
-    public Level(PApplet p) {
+    private float cameraDelayTime = 3.0f; // delay in seconds before camera starts moving
+    private float cameraDelayElapsed = 0; // time elapsed since the level started
+    @Getter
+    private boolean cameraDelayCompleted = false; // has the delay completed?
+
+    public Level(PApplet p, float difficultyFactor, Player player) {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
-        this.gridWidth = (p.width / cellSize) * 3;
+        this.gridWidth = (p.width / cellSize) * 2;
         this.gridHeight = p.height / cellSize;
         levelGrid = new Tile[gridHeight][gridWidth];
         initializeGrid();
-        generateLevel();
-    }
-
-    public float getCameraX() {
-        return cameraX;
+        this.player = player;
+        generateLevel(difficultyFactor);
     }
 
     private void initializeGrid() {
@@ -58,13 +64,14 @@ public class Level {
         return levelGrid[gridY][gridX].getType() == TileType.PLATFORM;
     }
 
-    void generateLevel() {
+    void generateLevel(float difficultyFactor) {
         int lastPlatformX = 0; // Keep track of the last platform's x-coordinate
 
         // Ensure the player can always progress by creating a base path
         for (int x = 1; x < gridWidth - 1; x++) {
             // Every few cells, guarantee a platform within jump reach
-            if ((x - lastPlatformX) >= 2) { // Ensure a platform is placed every two cells
+            if ((x - lastPlatformX) >= 2 + (int) (difficultyFactor * 2)) { // Increase the gap between platforms based
+                                                                           // on difficulty
                 levelGrid[gridHeight - 3][x].setType(TileType.PLATFORM);
                 lastPlatformX = x; // Update the last platform position
             }
@@ -72,9 +79,17 @@ public class Level {
 
         // Additional random platforms for complexity (could overlap the base path)
         for (int x = 1; x < gridWidth - 1; x++) {
-            for (int y = gridHeight - 5; y > 1; y -= 2) { // Avoid interfering with the guaranteed path
-                if (parent.random(1) < 0.1) { // Less frequent random platforms
-                    levelGrid[y][x].setType(TileType.PLATFORM);
+            for (int y = gridHeight - 5; y > 1; y -= 2) {
+                if (parent.random(1) < 0.1 / difficultyFactor) { // Decrease the probability of random platforms based
+                                                                 // on difficulty
+                    int platformWidth = (int) (2 + parent.random(4 - (int) (difficultyFactor * 2))); // Vary platform
+                                                                                                     // width based on
+                                                                                                     // difficulty
+                    for (int i = 0; i < platformWidth; i++) {
+                        if (x + i < gridWidth) {
+                            levelGrid[y][x + i].setType(TileType.PLATFORM);
+                        }
+                    }
                 }
             }
         }
@@ -83,8 +98,16 @@ public class Level {
         for (int x = 1; x < gridWidth - 1; x++) {
             // Start from ground level and check upwards, ignore top two rows
             for (int y = gridHeight - 1; y > 1; y -= 2) {
-                if (parent.random(1) < 0.3) { // With a 30% probability, place a platform
-                    levelGrid[y][x].setType(TileType.PLATFORM);
+                if (parent.random(1) < 0.3 / difficultyFactor) { // Decrease the probability of platforms based on
+                                                                 // difficulty
+                    int platformHeight = (int) (1 + parent.random(4 - (int) (difficultyFactor * 2))); // Vary platform
+                                                                                                      // height based on
+                                                                                                      // difficulty
+                    for (int i = 0; i < platformHeight; i++) {
+                        if (y - i > 0) {
+                            levelGrid[y - i][x].setType(TileType.PLATFORM);
+                        }
+                    }
 
                     // Ensure there is a platform within 2 spaces to the left or right for
                     // reversibility
@@ -99,12 +122,28 @@ public class Level {
             }
         }
 
-        // Add enemies or treasures: placeholder
-        for (int i = 0; i < 10; i++) {
+        int ballotX = gridWidth - 1; // Random position 4 tiles before the end
+        int ballotY = gridHeight - 2; // Second last row, assuming it's accessible
+        if (ballotX < gridWidth) {
+            levelGrid[ballotY][ballotX].setType(TileType.BALLOT);
+            levelGrid[ballotY - 1][ballotX].setType(TileType.EMPTY);
+            levelGrid[ballotY][ballotX - 1].setType(TileType.EMPTY);
+            levelGrid[ballotY - 1][ballotX - 1].setType(TileType.EMPTY);
+
+            for (int i = 1; i <= 3; i++) { // Create a path of platforms leading to the ballot
+                if (ballotX - i > 0) {
+                    levelGrid[ballotY + 1][ballotX - i].setType(TileType.PLATFORM);
+                }
+            }
+        }
+
+        // Add enemies, etc
+        int numObstacles = (int) (10 * difficultyFactor); // Increase the number of obstacles based on difficulty
+        for (int i = 0; i < numObstacles; i++) {
             int randX = (int) parent.random(gridWidth);
             int randY = (int) parent.random(gridHeight - 2); // Avoid placing items on the ground
             if (levelGrid[randY][randX].getType() == TileType.EMPTY) {
-                levelGrid[randY][randX].setType(TileType.ENTITY); // Enemy or treasure
+                levelGrid[randY][randX].setType(TileType.ENTITY); // Enemy, hazard, or treasure
             }
         }
     }
@@ -116,7 +155,7 @@ public class Level {
         for (int y = 0; y < gridHeight; y++) {
             for (int x = 0; x < gridWidth; x++) {
                 if (levelGrid[y][x].getType() == TileType.PLATFORM) {
-                    Node newNode = new Node(x, y,cellSize);
+                    Node newNode = new Node(x, y, cellSize);
                     // Connect to existing nodes
                     for (Node node : nodes) {
                         node.addNeighbor(newNode);
@@ -128,17 +167,87 @@ public class Level {
         }
     }
 
-    // Call this method in main game loop
-    public void updateCamera() {
-        // Increment the camera position by a fraction of the camera speed each frame
-        cameraX += cameraSpeed;
+    // Method to draw the graph
+    public void drawGraph(PApplet sketch) {
+        sketch.stroke(255, 0, 0); // Set line color to red for visibility
+        sketch.strokeWeight(2); // Set line thickness
 
-        // Ensure the camera does not go past the end of the level
-        cameraX = Math.min(cameraX, (gridWidth * cellSize) - parent.width);
+        for (Node node : nodes) {
+            float nodeScreenX = node.getX() * cellSize - cameraX;
+            float nodeScreenY = node.getY() * cellSize;
+
+            // Draw connections to neighbors
+            for (Node neighbor : node.getNeighbors()) {
+                float neighborScreenX = neighbor.getX() * cellSize - cameraX;
+                float neighborScreenY = neighbor.getY() * cellSize;
+
+                // Draw a line between the current node and its neighbor
+                sketch.line(nodeScreenX + cellSize / 2, nodeScreenY + cellSize / 2,
+                        neighborScreenX + cellSize / 2, neighborScreenY + cellSize / 2);
+            }
+        }
+    }
+
+    // Call this method in main game loop
+    public void updateCamera(float deltaTime) { // Assume deltaTime is passed in seconds
+        // Update the elapsed time only if the delay is not completed
+
+        if (!cameraDelayCompleted) {
+            cameraDelayElapsed += deltaTime;
+            if (cameraDelayElapsed >= cameraDelayTime) {
+                cameraDelayCompleted = true; // Set the delay as completed
+            }
+
+        }
+
+        // Proceed with camera movement only if the delay is completed
+        if (cameraDelayCompleted) {
+            if (cameraMovingRight) {
+                for (Node n : nodes) {
+                    n.updateBoundingBoxes(cameraSpeed, cameraMovingRight, cameraStill);
+                }
+                if (cameraX < (gridWidth * cellSize) - parent.width) {
+                    cameraX += cameraSpeed; // Move camera right until the end
+                } else {
+                    // Hold the camera at the end of the level
+                    cameraX = (gridWidth * cellSize) - parent.width;
+                    // Check if player has reached the last accessible tile
+                    cameraStill = true;
+                    if (playerOnBallot()) {
+                        System.out.println("on ballot!");
+                        cameraStill = false;
+                        cameraMovingRight = false; // Reverse the camera direction
+
+                    }
+                }
+            } else {
+                if (cameraX > 0) {
+                    cameraX -= cameraSpeed; // Move camera left until the start
+                } else {
+                    // Hold the camera at the start of the level
+                    cameraX = 0;
+                }
+            }
+        }
+    }
+
+    private boolean playerOnBallot() {
+        float playerX = player.getLocation().x;
+        float playerY = player.getLocation().y;
+        int gridX = (int) (playerX / cellSize);
+        int gridY = (int) (playerY / cellSize);
+
+        System.out.println("player: " + playerX + ":" + playerY);
+        // Ensure the grid coordinates are within bounds before accessing the array
+        if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+            return levelGrid[gridY][gridX].getType() == TileType.BALLOT;
+        }
+        return false; // Return false if the
     }
 
     // Modify the draw method to offset tiles based on the camera position
     public void draw() {
+
         // Only draw the part of the level that's currently within the camera's view
         int startCol = (int) (cameraX / cellSize);
         int endCol = Math.min(startCol + parent.width / cellSize, gridWidth);
@@ -157,5 +266,6 @@ public class Level {
                 }
             }
         }
+
     }
 }
