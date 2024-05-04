@@ -5,6 +5,7 @@ import cs4303.p4.entities.Player;
 import cs4303.p4._util.Constants;
 import cs4303.p4.map.Level;
 import cs4303.p4.map.Node;
+import cs4303.p4.physics.BoundingBox;
 import lombok.Getter;
 import processing.core.PApplet;
 import processing.core.PVector;
@@ -40,12 +41,18 @@ public final class GameStateGameplay extends GameState {
         level.draw(); // Draw the current view of the level
 
         if (level.isCameraDelayCompleted()) {
-            if (level.isCameraMovingRight() || level.getCameraX() > 0) {
-                player.updatePosition(level.getCameraSpeed(), level.isCameraMovingRight());
-            }
+            boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
+            player.updatePosition(level.getCameraSpeed(), cameraMoving, level.isCameraMovingRight(),
+                    level.isCameraStill());
         }
 
         player.draw(sketch);
+
+        for (Node n : level.getNodes()) {
+            for (BoundingBox b : n.getBounds()) {
+                sketch.rect(b.getLocation().x, b.getLocation().y, Constants.TILE_SIZE, Constants.TILE_SIZE);
+            }
+        }
         update(0.0f);
     }
 

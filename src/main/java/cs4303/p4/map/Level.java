@@ -18,9 +18,11 @@ public class Level {
     @Getter
     private float cameraX;
     @Getter
-    private float cameraSpeed = 0.5f;
+    private float cameraSpeed = 2.5f;
     @Getter
     private boolean cameraMovingRight = true;
+    @Getter
+    private boolean cameraStill = false;
 
     @Getter
     private List<Node> nodes;
@@ -189,24 +191,33 @@ public class Level {
     // Call this method in main game loop
     public void updateCamera(float deltaTime) { // Assume deltaTime is passed in seconds
         // Update the elapsed time only if the delay is not completed
+
         if (!cameraDelayCompleted) {
             cameraDelayElapsed += deltaTime;
             if (cameraDelayElapsed >= cameraDelayTime) {
                 cameraDelayCompleted = true; // Set the delay as completed
             }
+
         }
 
         // Proceed with camera movement only if the delay is completed
         if (cameraDelayCompleted) {
             if (cameraMovingRight) {
+                for (Node n : nodes) {
+                    n.updateBoundingBoxes(cameraSpeed, cameraMovingRight, cameraStill);
+                }
                 if (cameraX < (gridWidth * cellSize) - parent.width) {
                     cameraX += cameraSpeed; // Move camera right until the end
                 } else {
                     // Hold the camera at the end of the level
                     cameraX = (gridWidth * cellSize) - parent.width;
                     // Check if player has reached the last accessible tile
+                    cameraStill = true;
                     if (playerOnBallot()) {
+                        System.out.println("on ballot!");
+                        cameraStill = false;
                         cameraMovingRight = false; // Reverse the camera direction
+
                     }
                 }
             } else {
@@ -226,6 +237,7 @@ public class Level {
         int gridX = (int) (playerX / cellSize);
         int gridY = (int) (playerY / cellSize);
 
+        System.out.println("player: " + playerX + ":" + playerY);
         // Ensure the grid coordinates are within bounds before accessing the array
         if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
             return levelGrid[gridY][gridX].getType() == TileType.BALLOT;
@@ -235,6 +247,7 @@ public class Level {
 
     // Modify the draw method to offset tiles based on the camera position
     public void draw() {
+
         // Only draw the part of the level that's currently within the camera's view
         int startCol = (int) (cameraX / cellSize);
         int endCol = Math.min(startCol + parent.width / cellSize, gridWidth);
@@ -254,19 +267,5 @@ public class Level {
             }
         }
 
-        // Draw bounding boxes for platforms
-        for (int y = 0; y < gridHeight; y++) {
-            for (int x = startCol; x < endCol; x++) {
-                if (levelGrid[y][x].getType() == TileType.PLATFORM) {
-                    float screenX = x * cellSize - cameraX;
-                    float screenY = y * cellSize;
-
-                    // Draw the bounding box
-                    parent.stroke(255, 0, 0); // Set the color to red
-                    parent.noFill();
-                    parent.rect(screenX, screenY, cellSize, cellSize);
-                }
-            }
-        }
     }
 }

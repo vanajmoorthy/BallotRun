@@ -41,7 +41,7 @@ public class Collidable {
                         b.getLocation().y < b2.getLocation().y + b2.getHeight() &&
                         b.getLocation().y + b.getHeight() > b2.getLocation().y) {
 
-                    System.out.println("collision " + b2.getLocation());
+                    // System.out.println("cowdwllision " + b2.getLocation());
                     return true;
                 }
             }
