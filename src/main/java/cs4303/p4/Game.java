@@ -66,7 +66,7 @@ public class Game extends PApplet {
 
         // TODO MAKE THIS NOT A COMMENT
         // state = new GameStateBase(player, items);
-        state = new GameStateGameplay(this);
+        state = new GameStateGameplay(this, player, items);
         frameRate(30); // Set the frame rate to 30 fps
 
         lastFrameTime = millis();

@@ -31,12 +31,13 @@ public final class GameStateGameplay extends GameState {
 
     private ArrayList<Entity> entities = new ArrayList<Entity>();
 
-    public GameStateGameplay(PApplet sketch) {
+    public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
         // TODO insert a start location
-        player = new Player(500, 50);
+        this.player = player;
+        this.items = items;
+        entities.add(player);
         level = new Level(sketch, 1.2f, player);
         level.buildGraph();
-        entities.add(player);
     }
 
     public void draw(PApplet sketch) {
