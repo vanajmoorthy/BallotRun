@@ -1,9 +1,10 @@
 package cs4303.p4.entities;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
+import cs4303.p4.attributes.Attribute;
+import cs4303.p4.attributes.AttributeController;
 import cs4303.p4.map.Node;
 import cs4303.p4.physics.BoundingBox;
 import cs4303.p4._util.Constants;
@@ -57,7 +58,10 @@ public class Player extends Entity {
 
     public void jump() {
         // TODO take account of screen size in jump
-        PVector jump = new PVector(0, -1 * Constants.Screen.height * Constants.PLAYER.INSTANCE.JUMP_IMPULSE);
+        PVector jump = new PVector(0, -1 * Constants.Screen.height *
+                Constants.PLAYER.INSTANCE.JUMP_IMPULSE *
+                (AttributeController.getEntityAttributeValue(this, Attribute.JumpHeight)/100));
+        System.out.println("JUMPING" + jump);
         super.applyForce(jump);
 
     }
@@ -86,7 +90,7 @@ public class Player extends Entity {
      * 
      * @param offset the camera offset
      */
-    public void updatePosition(float deltaX, boolean cameraMoving, boolean cameraMovingRight, boolean cameraStill) {
+    public void moveWithCamera(float deltaX, boolean cameraMoving, boolean cameraMovingRight, boolean cameraStill) {
         PVector location = getLocation();
         if (cameraMoving) {
             if (cameraMovingRight && !cameraStill) {

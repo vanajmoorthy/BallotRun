@@ -44,10 +44,10 @@ public final class GameStateGameplay extends GameState {
         // draw the player
         sketch.background(200);
         level.draw(); // Draw the current view of the level
-
+        //level.drawGraph(sketch);
         if (level.isCameraDelayCompleted()) {
             boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
-            player.updatePosition(level.getCameraSpeed(), cameraMoving, level.isCameraMovingRight(),
+            player.moveWithCamera(level.getCameraSpeed(), cameraMoving, level.isCameraMovingRight(),
                     level.isCameraStill());
         }
 

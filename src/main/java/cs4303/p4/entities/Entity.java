@@ -6,6 +6,7 @@ import java.util.List;
 
 import cs4303.p4._util.Constants;
 import cs4303.p4.attributes.Attribute;
+import cs4303.p4.attributes.AttributeController;
 import cs4303.p4.attributes.AttributeModifier;
 import cs4303.p4.items.Item;
 import cs4303.p4.map.Node;
@@ -66,7 +67,12 @@ public abstract class Entity extends Collidable {
         this.applyDrag();
 
         // Update velocity based on acceleration
-        PVector prospectiveV = PVector.add(this.getVelocity(), this.getAcceleration());
+        PVector prospectiveV = PVector.add(this.getVelocity(),
+                this.getAcceleration().mult(
+                        AttributeController.getEntityAttributeValue(this,
+                        Attribute.Speed)/100
+                ));
+
         // update the positions of the bounding boxes
         for (BoundingBox b : super.getBounds()) {
             b.moveBox(prospectiveV);
@@ -77,10 +83,10 @@ public abstract class Entity extends Collidable {
             if (this.Collision(n)) {
 
                 // distance the velocity tried to move
-                // float DistanceTravelled = prospectiveV.mag();
-
+                float DistanceTravelled = prospectiveV.mag();
                 // find the distance between the current location and the collision with
                 // bounding box`
+
                 BoundingBox b = this.getBoundingBox(n);
                 float distToBox = b.getDistanceToBox(this);
                 // System.out.println("Distance to collision" + distToBox);

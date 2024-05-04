@@ -28,7 +28,7 @@ public class Level {
     private List<Node> nodes;
     private Player player;
 
-    private float cameraDelayTime = 3.0f; // delay in seconds before camera starts moving
+    private float cameraDelayTime = 3.5f; // delay in seconds before camera starts moving
     private float cameraDelayElapsed = 0; // time elapsed since the level started
     @Getter
     private boolean cameraDelayCompleted = false; // has the delay completed?
