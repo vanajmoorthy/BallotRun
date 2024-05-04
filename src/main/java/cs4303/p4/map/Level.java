@@ -31,7 +31,12 @@ public class Level {
     private float cameraDelayTime = 3.5f; // delay in seconds before camera starts moving
     private float cameraDelayElapsed = 0; // time elapsed since the level started
     @Getter
-    private boolean cameraDelayCompleted = false; // has the delay completed?
+    private boolean cameraDelayCompleted = false;
+
+    @Getter
+    private float postBallotDelayTime = 2.5f; // Delay in seconds before camera moves back
+    private float postBallotDelayElapsed = 0; // Time elapsed after reaching the ballot
+    private boolean ballotReached = false;
 
     public Level(PApplet p, float difficultyFactor, Player player) {
         this.cellSize = Constants.TILE_SIZE;
@@ -158,6 +163,10 @@ public class Level {
             // accessibility
             if (rightMostPlatformY > 0) {
                 levelGrid[rightMostPlatformY - 1][gridWidth - 1].setType(TileType.EMPTY);
+                levelGrid[rightMostPlatformY][gridWidth - 2].setType(TileType.EMPTY);
+                levelGrid[rightMostPlatformY][gridWidth - 3].setType(TileType.EMPTY);
+                levelGrid[rightMostPlatformY][gridWidth - 4].setType(TileType.EMPTY);
+
             }
 
             // Add additional tiles for accessibility
@@ -270,20 +279,28 @@ public class Level {
                     cameraStill = true;
                     if (playerOnBallot()) {
                         System.out.println("on ballot!");
-                        cameraStill = false;
-                        cameraMovingRight = false; // Reverse the camera direction
 
+                        cameraMovingRight = false;
+                        ballotReached = true; // Set the flag to indicate ballot reached
                     }
                 }
             } else {
-                if (cameraX > 0) {
-                    cameraX -= cameraSpeed; // Move camera left until the start
-                    for (Node n : nodes) {
-                        n.updateBoundingBoxes(cameraSpeed, cameraMovingRight, cameraStill);
+                if (ballotReached) {
+                    postBallotDelayElapsed += deltaTime;
+                    if (postBallotDelayElapsed >= postBallotDelayTime) {
+                        cameraStill = false;
+                        ballotReached = false; // Reset the flag
+                        postBallotDelayElapsed = 0; // Reset the elapsed time
                     }
                 } else {
-                    // Hold the camera at the start of the level
-                    cameraX = 0;
+                    if (cameraX > 0) {
+                        cameraX -= cameraSpeed; // Move camera left until the start
+                        for (Node n : nodes) {
+                            n.updateBoundingBoxes(cameraSpeed, cameraMovingRight, cameraStill);
+                        }
+                    } else {
+                        cameraX = 0;
+                    }
                 }
             }
         }
