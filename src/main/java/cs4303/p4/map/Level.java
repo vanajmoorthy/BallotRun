@@ -52,6 +52,10 @@ public class Level {
     private TimedText ballotMessage;
     private TimedText startingMessage;
 
+    private boolean showGameOverScreen = false;
+    private float gameOverDelay = 3.0f; // 3 seconds before resetting
+    private float gameOverTimer = 0;
+
     public Level(PApplet p, float difficultyFactor, Player player) {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
@@ -251,18 +255,32 @@ public class Level {
     }
 
     public void update(float deltaTime) {
-        if (!gameOver) {
+        if (showGameOverScreen) {
+            gameOverTimer += deltaTime;
+            if (gameOverTimer >= gameOverDelay) {
+                // Time is up, reset the game
+                resetGame();
+            }
+        } else {
+            // Normal update logic
             if (!cameraDelayCompleted) {
                 cameraDelayElapsed += deltaTime;
-                startingMessage.update(deltaTime); // Ensure this is always called before checking the condition
+                startingMessage.update(deltaTime);
                 if (cameraDelayElapsed >= cameraDelayTime) {
                     cameraDelayCompleted = true;
-                    startingMessage.active = false; // Deactivate the message once the delay is completed
+                    startingMessage.active = false;
                 }
             }
 
             if (cameraDelayCompleted) {
                 updateCamera(deltaTime);
+            }
+
+            if (playerOnBallot()) {
+                if (!ballotMessage.isActive()) {
+                    ballotMessage.reset();
+                    ballotMessage.start();
+                }
             }
 
             ballotMessage.update(deltaTime);
@@ -273,8 +291,14 @@ public class Level {
     private void checkPlayerPosition() {
         if (player.isOffMap(cameraX, gridWidth, cellSize, cameraMovingRight)) {
             gameOver = true;
-            restartLevel();
+            showGameOverScreen = true;
+            gameOverTimer = 0; // reset the timer
         }
+    }
+
+    private void resetGame() {
+        showGameOverScreen = false;
+        player.setHealth(0); // Or whatever logic you need to reset the player and the game
     }
 
     public void restartLevel() {
@@ -282,8 +306,13 @@ public class Level {
             node.resetBoundingBox(); // Reset each node's bounding boxes to the start positions
         }
 
-        player.resetPosition(); // Reset player's position
+        player.resetPlayer(); // Reset player's position
         player.resetBoundingBox();
+
+        for (Entity entity : entities) {
+            entity.getLocation().x += cameraX;
+        }
+
         cameraX = 0;
         cameraMovingRight = true;
         cameraStill = false;
@@ -296,6 +325,7 @@ public class Level {
         // Reset and start the starting message
         startingMessage.reset();
         startingMessage.start();
+
     }
 
     // Call this method in main game loop
@@ -361,13 +391,27 @@ public class Level {
     }
 
     public void draw() {
-        if (!gameOver) {
-            drawMap();
-            if (!cameraDelayCompleted && startingMessage.isActive()) { // Ensure we check if it's active
-                startingMessage.draw(parent);
+        if (showGameOverScreen) {
+            drawGameOverScreen();
+        } else {
+            if (!gameOver) {
+                drawMap();
+                if (!cameraDelayCompleted && startingMessage.isActive()) {
+                    startingMessage.draw(parent);
+                }
+                if (ballotMessage.isActive()) {
+                    ballotMessage.draw(parent);
+                }
             }
         }
-        ballotMessage.draw(parent);
+    }
+
+    private void drawGameOverScreen() {
+        parent.background(50, 50, 50); // Dark background
+        parent.fill(255, 0, 0); // Red text
+        parent.textAlign(PApplet.CENTER, PApplet.CENTER);
+        parent.textSize(32);
+        parent.text("LEVEL FAILED", parent.width / 2, parent.height / 2);
     }
 
     // Modify the draw method to offset tiles based on the camera position
