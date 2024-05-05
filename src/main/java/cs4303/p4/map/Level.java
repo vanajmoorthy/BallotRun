@@ -220,7 +220,7 @@ public class Level {
         // Iterate over levelGrid and add platforms as nodes
         for (int y = 0; y < gridHeight; y++) {
             for (int x = 0; x < gridWidth; x++) {
-                if (levelGrid[y][x].getType() == TileType.PLATFORM || levelGrid[y][x].getType() == TileType.START) {
+                if (levelGrid[y][x].getType() == TileType.PLATFORM) {
                     Node newNode = new Node(x, y, cellSize);
                     // Connect to existing nodes
                     for (Node node : nodes) {
@@ -419,7 +419,7 @@ public class Level {
 
         // Only draw the part of the level that's currently within the camera's view
         int startCol = (int) (cameraX / cellSize);
-        int endCol = Math.min(startCol + parent.width / cellSize, gridWidth);
+        int endCol = Math.min(startCol + parent.width / cellSize + 1, gridWidth);
 
         for (int y = 0; y < gridHeight; y++) {
             for (int x = startCol; x < endCol; x++) {

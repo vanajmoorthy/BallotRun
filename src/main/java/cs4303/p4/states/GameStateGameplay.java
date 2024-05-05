@@ -107,7 +107,7 @@ public final class GameStateGameplay extends GameState {
 
     public GameState draw(PApplet sketch) {
         // draw the player
-        sketch.background(200);
+        sketch.background(Colors.black);
         cursor = PApplet.ARROW;
         level.draw(); // Draw the current view of the level
         // level.drawGraph(sketch);

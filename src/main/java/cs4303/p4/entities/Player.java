@@ -7,6 +7,7 @@ import cs4303.p4.attributes.Attribute;
 import cs4303.p4.attributes.AttributeController;
 import cs4303.p4.map.Node;
 import cs4303.p4.physics.BoundingBox;
+import cs4303.p4._util.Colors;
 import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
 import processing.core.PApplet;
@@ -41,7 +42,8 @@ public class Player extends Entity {
     @Override
     public void draw(PApplet sketch) {
         sketch.pushMatrix();
-        sketch.fill(0, 0, 255); // Blue color for player
+        sketch.noStroke();
+        sketch.fill(Colors.blue.primary); // Blue color for player
         // Calculate player's position relative to camera
         // float screenX = getLocation().x - cameraOffsetX;
         sketch.rect(getLocation().x, getLocation().y, 20, 20); // 20x20 player for now

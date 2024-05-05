@@ -1,5 +1,6 @@
 package cs4303.p4.map;
 
+import cs4303.p4._util.Colors;
 import processing.core.PApplet;
 
 public class Tile {
@@ -23,28 +24,17 @@ public class Tile {
 
     // Draw method for the tile
     public void draw(PApplet sketch, int x, int y, float lerp) {
-        sketch.stroke(0);
-        // Draw based on type
-        switch (type) {
-            case EMPTY:
-                sketch.fill(255, 0, 0);
-                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
-                break;
-            case PLATFORM:
-                // Draw platform
-                sketch.fill(255);
-                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
-                break;
-            case BALLOT:
-                sketch.fill(0, 255, 0); // Green color for the BALLOT tile
-                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
-                break;
-            case START:
-                sketch.fill(255, 0, 0); // Green color for the BALLOT tile
-                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
-                break;
-            default:
-                break;
+        if (type == TileType.PLATFORM) {
+            sketch.stroke(Colors.darkGray.primary);
+            sketch.strokeWeight(1.5f);
+            sketch.fill(Colors.darkGray.dark);
+            sketch.rect(
+                x * cellSize + lerp * cellSize,
+                y * cellSize,
+                cellSize,
+                cellSize,
+                2
+            );
         }
     }
 }
