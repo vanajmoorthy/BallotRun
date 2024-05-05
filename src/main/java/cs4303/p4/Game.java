@@ -39,9 +39,8 @@ public class Game extends PApplet {
         smooth(8);
 
         size(
-            Math.max(Constants.Screen.width, Constants.Screen.minWidth),
-            Math.max(Constants.Screen.height, Constants.Screen.minHeight)
-        );
+                Math.max(Constants.Screen.width, Constants.Screen.minWidth),
+                Math.max(Constants.Screen.height, Constants.Screen.minHeight));
     }
 
     @Override
@@ -82,6 +81,7 @@ public class Game extends PApplet {
 
         state.update(deltaTime);
         GameState newState = state.draw(this);
-        if (newState != null) state = newState;
+        if (newState != null)
+            state = newState;
     }
 }
