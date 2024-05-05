@@ -145,7 +145,7 @@ public final class GameStateGameplay extends GameState {
             player.setHealth(0);
 
         return player.getHealth() <= 0
-                ? new GameStateBase(player, items)
+                ? new GameStateLoss(player, items)
                 : didReachBallotBox && level.playerOnEntrance()
                         ? new GameStateWin(player, items)
                         : null;
