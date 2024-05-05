@@ -303,6 +303,11 @@ public class Level {
 
         player.resetPosition(); // Reset player's position
         player.resetBoundingBox();
+
+        for (Entity entity : entities) {
+            entity.getLocation().x += cameraX;
+        }
+
         cameraX = 0;
         cameraMovingRight = true;
         cameraStill = false;
@@ -315,6 +320,7 @@ public class Level {
         // Reset and start the starting message
         startingMessage.reset();
         startingMessage.start();
+
     }
 
     // Call this method in main game loop
