@@ -54,6 +54,10 @@ public class Level {
     private TimedText ballotMessage;
     private TimedText startingMessage;
 
+    private boolean showGameOverScreen = false;
+    private float gameOverDelay = 3.0f; // 3 seconds before resetting
+    private float gameOverTimer = 0;
+
     public Level(PApplet p, float difficultyFactor, Player player) {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
@@ -253,13 +257,20 @@ public class Level {
     }
 
     public void update(float deltaTime) {
-        if (!gameOver) {
+        if (showGameOverScreen) {
+            gameOverTimer += deltaTime;
+            if (gameOverTimer >= gameOverDelay) {
+                // Time is up, reset the game
+                resetGame();
+            }
+        } else {
+            // Normal update logic
             if (!cameraDelayCompleted) {
                 cameraDelayElapsed += deltaTime;
                 startingMessage.update(deltaTime);
                 if (cameraDelayElapsed >= cameraDelayTime) {
                     cameraDelayCompleted = true;
-                    startingMessage.active = false; // Ensure the starting message is deactivated
+                    startingMessage.active = false;
                 }
             }
 
@@ -267,8 +278,6 @@ public class Level {
                 updateCamera(deltaTime);
             }
 
-            // Check if the player is on the ballot and update the ballot message
-            // accordingly
             if (playerOnBallot()) {
                 if (!ballotMessage.isActive()) {
                     ballotMessage.reset();
@@ -276,7 +285,7 @@ public class Level {
                 }
             }
 
-            ballotMessage.update(deltaTime); // Update the ballot message
+            ballotMessage.update(deltaTime);
             checkPlayerPosition();
         }
     }
@@ -284,9 +293,14 @@ public class Level {
     private void checkPlayerPosition() {
         if (player.isOffMap(cameraX, gridWidth, cellSize, cameraMovingRight)) {
             gameOver = true;
-            // restartLevel();
-            player.setHealth(0);
+            showGameOverScreen = true;
+            gameOverTimer = 0; // reset the timer
         }
+    }
+
+    private void resetGame() {
+        showGameOverScreen = false;
+        player.setHealth(0); // Or whatever logic you need to reset the player and the game
     }
 
     private void drawRestartButton() {
@@ -396,17 +410,28 @@ public class Level {
     }
 
     public void draw() {
-        if (!gameOver) {
-            drawMap();
-            if (!cameraDelayCompleted && startingMessage.isActive()) {
-                startingMessage.draw(parent);
+        if (showGameOverScreen) {
+            drawGameOverScreen();
+        } else {
+            if (!gameOver) {
+                drawMap();
+                if (!cameraDelayCompleted && startingMessage.isActive()) {
+                    startingMessage.draw(parent);
+                }
+                if (ballotMessage.isActive()) {
+                    ballotMessage.draw(parent);
+                }
             }
-
-            if (ballotMessage.isActive()) { // Check if ballot message is active before drawing
-                ballotMessage.draw(parent);
-            }
+            drawRestartButton();
         }
-        drawRestartButton();
+    }
+
+    private void drawGameOverScreen() {
+        parent.background(50, 50, 50); // Dark background
+        parent.fill(255, 0, 0); // Red text
+        parent.textAlign(PApplet.CENTER, PApplet.CENTER);
+        parent.textSize(32);
+        parent.text("LEVEL FAILED", parent.width / 2, parent.height / 2);
     }
 
     // Modify the draw method to offset tiles based on the camera position
