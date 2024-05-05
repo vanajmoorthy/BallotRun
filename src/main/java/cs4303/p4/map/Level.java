@@ -1,12 +1,17 @@
 package cs4303.p4.map;
 
 import cs4303.p4._util.Constants;
+import cs4303.p4.entities.BallotBox;
+import cs4303.p4.entities.Entity;
+import cs4303.p4.entities.Entrance;
 import cs4303.p4.entities.Player;
 import lombok.Getter;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 
 public class Level {
     private int cellSize;
@@ -27,6 +32,10 @@ public class Level {
     @Getter
     private List<Node> nodes;
     private Player player;
+    private BallotBox ballotBox;
+    private Entrance entrance;
+    @Getter
+    private final List<Entity> entities;
 
     private float cameraDelayTime = 3.5f; // delay in seconds before camera starts moving
     private float cameraDelayElapsed = 0; // time elapsed since the level started
@@ -46,6 +55,7 @@ public class Level {
         levelGrid = new Tile[gridHeight][gridWidth];
         initializeGrid();
         this.player = player;
+        this.entities = new ArrayList<Entity>();
         generateLevel(difficultyFactor);
     }
 
@@ -135,71 +145,47 @@ public class Level {
                 break; // Break at the first platform found from the top down
             }
         }
-
-        // Set the start tile
-        if (highestPlatformY != -1) {
-            levelGrid[highestPlatformY][0].setType(TileType.START);
-        } else {
-            // If no platform exists, choose a random position in the leftmost column
+        // Spawn a platform if leftmost column has no tiles
+        if (highestPlatformY == -1) {
             int randomY = PApplet.floor(parent.random(2, gridHeight));
-            levelGrid[randomY][0].setType(TileType.START);
+            levelGrid[randomY][0].setType(TileType.PLATFORM);
+            highestPlatformY = randomY;
             System.out.println("No platform found in the leftmost column. Setting start tile at random position.");
         }
+        // Spawn entrance
+        Entrance entrance = new Entrance(
+            Constants.TILE_SIZE / 2,
+            (highestPlatformY) * Constants.TILE_SIZE
+        );
+        entrance.getLocation().x -= entrance.getBounds().get(0).getWidth() / 2;
+        entrance.getLocation().y -= entrance.getBounds().get(0).getHeight();
+        entities.add(entrance);
+        this.entrance = entrance;
 
-        // Finding the rightmost column that contains at least one platform
-        int rightMostPlatformY = -1;
-        for (int y = gridHeight - 1; y >= 0; y--) {
+        // Find the highest platform in the rightmost column
+        highestPlatformY = -1;
+        for (int y = 0; y < gridHeight; y++) {
             if (levelGrid[y][gridWidth - 1].getType() == TileType.PLATFORM) {
-                rightMostPlatformY = y - 1; // Get the row just above the found platform
-                break;
+                highestPlatformY = y;
+                break; // Break at the first platform found from the top down
             }
         }
-
-        // Place the ballot on the lowest platform in the rightmost column, if available
-        if (rightMostPlatformY != -1) {
-            levelGrid[rightMostPlatformY][gridWidth - 1].setType(TileType.BALLOT);
-
-            // Ensure there is no platform directly above the ballot for
-            // accessibility
-            if (rightMostPlatformY > 0) {
-                levelGrid[rightMostPlatformY - 1][gridWidth - 1].setType(TileType.EMPTY);
-                levelGrid[rightMostPlatformY][gridWidth - 2].setType(TileType.EMPTY);
-                levelGrid[rightMostPlatformY][gridWidth - 3].setType(TileType.EMPTY);
-                levelGrid[rightMostPlatformY][gridWidth - 4].setType(TileType.EMPTY);
-
-            }
-
-            // Add additional tiles for accessibility
-            if (rightMostPlatformY + 1 < gridHeight) {
-                levelGrid[rightMostPlatformY + 1][gridWidth - 1].setType(TileType.PLATFORM);
-                // Additional platforms to the left and right, if space allows
-                if (gridWidth - 2 >= 0) {
-                    levelGrid[rightMostPlatformY + 1][gridWidth - 2].setType(TileType.PLATFORM);
-                }
-                if (gridWidth < gridWidth) {
-                    levelGrid[rightMostPlatformY + 1][gridWidth].setType(TileType.PLATFORM);
-                }
-            }
-        } else {
-            // Fallback if no platform is available in the last column
-            // Place the ballot on a default position or handle the absence of a suitable
-            // location
-            int ballotX = gridWidth - 1; // Random position 4 tiles before the end
-            int ballotY = gridHeight - 2; // Second last row, assuming it's accessible
-            if (ballotX < gridWidth) {
-                levelGrid[ballotY][ballotX].setType(TileType.BALLOT);
-                levelGrid[ballotY - 1][ballotX].setType(TileType.EMPTY);
-                levelGrid[ballotY][ballotX - 1].setType(TileType.EMPTY);
-                levelGrid[ballotY - 1][ballotX - 1].setType(TileType.EMPTY);
-
-                for (int i = 1; i <= 3; i++) { // Create a path of platforms leading to the ballot
-                    if (ballotX - i > 0) {
-                        levelGrid[ballotY + 1][ballotX - i].setType(TileType.PLATFORM);
-                    }
-                }
-            }
-            System.out.println("No suitable platform found in the rightmost column for the ballot.");
+        // Spawn a platform if rightmost column has no tiles
+        if (highestPlatformY == -1) {
+            int randomY = PApplet.floor(parent.random(2, gridHeight));
+            levelGrid[randomY][gridWidth - 1].setType(TileType.PLATFORM);
+            highestPlatformY = randomY;
+            System.out.println("No platform found in the rightmost column. Setting start tile at random position.");
         }
+        // Spawn ballot box
+        BallotBox ballotBox = new BallotBox(
+            (gridWidth - 1) * Constants.TILE_SIZE + Constants.TILE_SIZE / 2,
+            (highestPlatformY) * Constants.TILE_SIZE
+        );
+        ballotBox.getLocation().x -= ballotBox.getBounds().get(0).getWidth() / 2;
+        ballotBox.getLocation().y -= ballotBox.getBounds().get(0).getHeight();
+        entities.add(ballotBox);
+        this.ballotBox = ballotBox;
 
         // Add enemies, etc
         int numObstacles = (int) (10 * difficultyFactor); // Increase the number of obstacles based on difficulty
@@ -307,21 +293,7 @@ public class Level {
     }
 
     private boolean playerOnBallot() {
-        float playerX = player.getLocation().x;
-        float playerY = player.getLocation().y;
-
-        // Convert player position to grid coordinates
-        int gridX = (int) ((playerX + cameraX) / cellSize);
-        int gridY = (int) (playerY / cellSize);
-
-        // Debug output
-        System.out.println("Player grid position: " + gridX + ", " + gridY);
-
-        // Check grid boundaries
-        if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
-            return levelGrid[gridY][gridX].getType() == TileType.BALLOT;
-        }
-        return false; // Return false if out of bounds
+        return player.getLocation().dist(ballotBox.getLocation()) < 20;
     }
 
     // Modify the draw method to offset tiles based on the camera position

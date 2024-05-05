@@ -35,8 +35,9 @@ public final class GameStateGameplay extends GameState {
         // TODO insert a start location
         this.player = player;
         this.items = items;
-        entities.add(player);
         level = new Level(sketch, 1.2f, player);
+        entities.add(player);
+        entities.addAll(level.getEntities());
         level.buildGraph();
     }
 
@@ -45,13 +46,16 @@ public final class GameStateGameplay extends GameState {
         sketch.background(200);
         level.draw(); // Draw the current view of the level
         // level.drawGraph(sketch);
-        if (level.isCameraDelayCompleted()) {
-            boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
-            player.moveWithCamera(level.getCameraSpeed(), cameraMoving, level.isCameraMovingRight(),
-                    level.isCameraStill());
-        }
 
-        player.draw(sketch);
+        for (Entity entity : entities) {
+            if (level.isCameraDelayCompleted()) {
+                boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
+                entity.moveWithCamera(level.getCameraSpeed(), cameraMoving, level.isCameraMovingRight(),
+                        level.isCameraStill());
+            }
+
+            entity.draw(sketch);            
+        }
 
         // for (Node n : level.getNodes()) {
         // for (BoundingBox b : n.getBounds()) {
