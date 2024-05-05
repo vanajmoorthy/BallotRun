@@ -29,6 +29,8 @@ public final class GameStateGameplay extends GameState {
     private boolean s_pressed = false;
     private boolean jumped = false;
 
+    private boolean didReachBallotBox = false;
+
     private ArrayList<Entity> entities = new ArrayList<Entity>();
 
     public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
@@ -54,8 +56,10 @@ public final class GameStateGameplay extends GameState {
                         level.isCameraStill());
             }
 
-            entity.draw(sketch);            
+            entity.draw(sketch);
         }
+
+        if (level.playerOnBallot()) didReachBallotBox = true;
 
         // for (Node n : level.getNodes()) {
         // for (BoundingBox b : n.getBounds()) {
@@ -66,7 +70,14 @@ public final class GameStateGameplay extends GameState {
         // }
         update(0.0f);
 
-        return null;
+        if (player.getLocation().y > Constants.Screen.height) player.setHealth(0);
+
+        return
+            player.getHealth() <= 0
+                ? new GameStateBase(player, items)
+                : didReachBallotBox && level.playerOnEntrance()
+                    ? new GameStateWin(player, items)
+                    : null;
     }
 
     /**

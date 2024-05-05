@@ -356,8 +356,12 @@ public class Level {
         }
     }
 
-    private boolean playerOnBallot() {
+    public boolean playerOnBallot() {
         return player.getLocation().dist(ballotBox.getLocation()) < 20;
+    }
+
+    public boolean playerOnEntrance() {
+        return player.getLocation().dist(entrance.getLocation()) < 20;
     }
 
     public void draw() {
