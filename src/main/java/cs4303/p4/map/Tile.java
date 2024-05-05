@@ -25,6 +25,8 @@ public class Tile {
 
     // Draw method for the tile
     public void draw(PApplet sketch, int x, int y, float lerp) {
+        sketch.stroke(0, 0, 0);
+
         // Draw based on type
         switch (type) {
             case EMPTY:
@@ -35,11 +37,6 @@ public class Tile {
                 // Draw platform
                 sketch.fill(255);
                 sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
-                break;
-            case ENTITY:
-                // Draw enemy or treasure
-                sketch.ellipse(x * cellSize + cellSize / 2 + lerp * cellSize, y * cellSize + cellSize / 2, cellSize / 2,
-                        cellSize / 2);
                 break;
             case BALLOT:
                 sketch.fill(0, 255, 0); // Green color for the BALLOT tile

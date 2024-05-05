@@ -38,6 +38,8 @@ public class Level {
     private float postBallotDelayElapsed = 0; // Time elapsed after reaching the ballot
     private boolean ballotReached = false;
 
+    private boolean gameOver = false;
+
     public Level(PApplet p, float difficultyFactor, Player player) {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
@@ -201,15 +203,18 @@ public class Level {
             System.out.println("No suitable platform found in the rightmost column for the ballot.");
         }
 
-        // Add enemies, etc
-        int numObstacles = (int) (10 * difficultyFactor); // Increase the number of obstacles based on difficulty
-        for (int i = 0; i < numObstacles; i++) {
-            int randX = (int) parent.random(gridWidth);
-            int randY = (int) parent.random(gridHeight - 2); // Avoid placing items on the ground
-            if (levelGrid[randY][randX].getType() == TileType.EMPTY) {
-                levelGrid[randY][randX].setType(TileType.ENTITY); // Enemy, hazard, or treasure
-            }
-        }
+        // // Add enemies, etc
+        // int numObstacles = (int) (10 * difficultyFactor); // Increase the number of
+        // obstacles based on difficulty
+        // for (int i = 0; i < numObstacles; i++) {
+        // int randX = (int) parent.random(gridWidth);
+        // int randY = (int) parent.random(gridHeight - 2); // Avoid placing items on
+        // the ground
+        // if (levelGrid[randY][randX].getType() == TileType.EMPTY) {
+        // levelGrid[randY][randX].setType(TileType.ENTITY); // Enemy, hazard, or
+        // treasure
+        // }
+        // }
     }
 
     public void buildGraph() {
@@ -250,6 +255,65 @@ public class Level {
                         neighborScreenX + cellSize / 2, neighborScreenY + cellSize / 2);
             }
         }
+    }
+
+    public void update(float deltaTime) {
+        if (!gameOver) {
+            if (!cameraDelayCompleted) {
+                cameraDelayElapsed += deltaTime;
+                if (cameraDelayElapsed >= cameraDelayTime) {
+                    cameraDelayCompleted = true; // This will allow the camera to start moving
+                }
+            }
+
+            if (cameraDelayCompleted) {
+                updateCamera(deltaTime);
+            }
+
+            // player.update(deltaTime); // This needs to be called to apply gravity etc.
+            checkPlayerPosition();
+        }
+    }
+
+    private void checkPlayerPosition() {
+        if (player.isOffMap(cameraX, gridWidth, cellSize, cameraMovingRight)) {
+            gameOver = true;
+            restartLevel();
+        }
+    }
+
+    private void drawRestartButton() {
+        parent.fill(255, 0, 0);
+        parent.rect(parent.width - 110, 10, 100, 30);
+        parent.fill(255);
+        parent.textAlign(PApplet.CENTER);
+        parent.text("Restart", parent.width - 60, 30);
+    }
+
+    public void checkRestartButtonPressed(float mouseX, float mouseY) {
+        if (mouseX >= parent.width - 80 && mouseX <= parent.width - 10 &&
+                mouseY >= 10 && mouseY <= 40) {
+            System.out.println("pressed!");
+
+            restartLevel();
+        }
+    }
+
+    private void restartLevel() {
+        for (Node node : nodes) {
+            node.resetBoundingBox(); // Reset each node's bounding boxes to the start positions
+        }
+
+        player.resetPosition(); // Reset player's position
+        player.resetBoundingBox();
+        cameraX = 0;
+        cameraMovingRight = true;
+        cameraStill = false;
+
+        gameOver = false; // Reset game over state
+        cameraDelayElapsed = 0; // Reset camera delay elapsed time
+        cameraDelayCompleted = false; // Reset camera delay completed flag
+        updateCamera(0); // Call with deltaTime 0 or a small value to initialize the state.
     }
 
     // Call this method in main game loop
@@ -315,7 +379,7 @@ public class Level {
         int gridY = (int) (playerY / cellSize);
 
         // Debug output
-        System.out.println("Player grid position: " + gridX + ", " + gridY);
+        // System.out.println("Player grid position: " + gridX + ", " + gridY);
 
         // Check grid boundaries
         if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
@@ -324,8 +388,15 @@ public class Level {
         return false; // Return false if out of bounds
     }
 
-    // Modify the draw method to offset tiles based on the camera position
     public void draw() {
+        if (!gameOver) {
+            drawMap();
+        }
+        drawRestartButton();
+    }
+
+    // Modify the draw method to offset tiles based on the camera position
+    public void drawMap() {
 
         // Only draw the part of the level that's currently within the camera's view
         int startCol = (int) (cameraX / cellSize);

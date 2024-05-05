@@ -44,7 +44,7 @@ public final class GameStateGameplay extends GameState {
         // draw the player
         sketch.background(200);
         level.draw(); // Draw the current view of the level
-        // level.drawGraph(sketch);
+        // leocvel.drawGraph(sketch);
         if (level.isCameraDelayCompleted()) {
             boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
             player.moveWithCamera(level.getCameraSpeed(), cameraMoving, level.isCameraMovingRight(),
@@ -55,6 +55,7 @@ public final class GameStateGameplay extends GameState {
 
         // for (Node n : level.getNodes()) {
         // for (BoundingBox b : n.getBounds()) {
+        // sketch.stroke(0, 0, 0);
         // sketch.rect(b.getLocation().x, b.getLocation().y, Constants.TILE_SIZE,
         // Constants.TILE_SIZE);
         // }
@@ -105,7 +106,7 @@ public final class GameStateGameplay extends GameState {
     }
 
     public void mousePressed(PApplet sketch) {
-
+        level.checkRestartButtonPressed(sketch.mouseX, sketch.mouseY);
     }
 
     public void mouseReleased(PApplet sketch) {
@@ -134,7 +135,7 @@ public final class GameStateGameplay extends GameState {
     }
 
     public void update(float deltaTime) {
-        level.updateCamera(deltaTime); // Update the camera position
+        level.update(deltaTime);
 
         player.applyGravity();
 
