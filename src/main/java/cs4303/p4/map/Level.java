@@ -13,8 +13,6 @@ import processing.core.PVector;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
-
 public class Level {
     private int cellSize;
     private int gridWidth;
@@ -279,24 +277,7 @@ public class Level {
         }
     }
 
-    private void drawRestartButton() {
-        parent.fill(255, 0, 0);
-        parent.rect(parent.width - 110, 10, 100, 30);
-        parent.fill(255);
-        parent.textAlign(PApplet.CENTER);
-        parent.text("Restart", parent.width - 60, 30);
-    }
-
-    public void checkRestartButtonPressed(float mouseX, float mouseY) {
-        if (mouseX >= parent.width - 80 && mouseX <= parent.width - 10 &&
-                mouseY >= 10 && mouseY <= 40) {
-            System.out.println("pressed!");
-
-            restartLevel();
-        }
-    }
-
-    private void restartLevel() {
+    public void restartLevel() {
         for (Node node : nodes) {
             node.resetBoundingBox(); // Reset each node's bounding boxes to the start positions
         }
@@ -386,7 +367,6 @@ public class Level {
                 startingMessage.draw(parent);
             }
         }
-        drawRestartButton();
         ballotMessage.draw(parent);
     }
 
