@@ -40,7 +40,7 @@ public final class GameStateGameplay extends GameState {
         level.buildGraph();
     }
 
-    public void draw(PApplet sketch) {
+    public GameState draw(PApplet sketch) {
         // draw the player
         sketch.background(200);
         level.draw(); // Draw the current view of the level
@@ -60,6 +60,8 @@ public final class GameStateGameplay extends GameState {
         // }
         // }
         update(0.0f);
+
+        return null;
     }
 
     /**
@@ -233,10 +235,5 @@ public final class GameStateGameplay extends GameState {
             }
         }
 
-    }
-
-    @Override
-    public GameState switchState(PApplet sketch) {
-        return new GameStateBase(player, items);
     }
 }

@@ -2,6 +2,7 @@ package cs4303.p4.items;
 
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import cs4303.p4._util.gui.text.RichText;
 import cs4303.p4._util.gui.text.TextNode;
@@ -102,6 +103,11 @@ public enum ItemType {
     private final RichText lore;
     private final EnumMap<Attribute, AttributeModifier> baseAttributes;
 
+    public static ItemType random() {
+        int itemI = ThreadLocalRandom.current().nextInt(0, ItemType.values().length);
+        return ItemType.values()[itemI];
+    }
+
     private static EnumMap<Attribute, AttributeModifier> getChestplateBaseAttributes() {
         EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
         base.put(Attribute.Defence, new AttributeModifier(Attribute.Defence, 30));
@@ -153,7 +159,7 @@ public enum ItemType {
     private static EnumMap<Attribute, AttributeModifier> getBillBaseAttributes() {
         EnumMap<Attribute, AttributeModifier> base = new EnumMap<Attribute, AttributeModifier>(Attribute.class);
         base.put(Attribute.Luck, new AttributeModifier(Attribute.Luck, 20));
-        base.put(Attribute.Speed, new AttributeModifier(Attribute.Speed, -40));
+        base.put(Attribute.Speed, new AttributeModifier(Attribute.Speed, -20));
         return base;
     }
 

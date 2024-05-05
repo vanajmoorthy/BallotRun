@@ -18,6 +18,8 @@ import cs4303.p4.items.ItemType;
 import cs4303.p4.states.GameState;
 import cs4303.p4.states.GameStateBase;
 import cs4303.p4.states.GameStateGameplay;
+import cs4303.p4.states.GameStateTitle;
+import cs4303.p4.states.GameStateWin;
 import processing.core.PApplet;
 
 @SpringBootApplication
@@ -25,7 +27,6 @@ public class Game extends PApplet {
     private GameState state;
 
     private float lastFrameTime;
-
 
     public static void main(String[] args) {
         String[] appletArgs = new String[] { "Game" };
@@ -38,39 +39,19 @@ public class Game extends PApplet {
         smooth(8);
 
         size(
-
-                Math.max(Constants.Screen.width, Constants.Screen.minWidth),
-                Math.max(Constants.Screen.height, Constants.Screen.minHeight));
+            Math.max(Constants.Screen.width, Constants.Screen.minWidth),
+            Math.max(Constants.Screen.height, Constants.Screen.minHeight)
+        );
     }
 
     @Override
     public void setup() {
-        // state = new GameStateGameplay(this);
-        Player player = new Player(0, 0);
-        List<Item> items = new ArrayList<Item>();
-        items.add(new Item(ItemType.Chestplate));
-        items.add(new Item(ItemType.Constinution));
-        items.add(new Item(ItemType.ParliamentSword));
-        items.add(new Item(ItemType.CongressSword));
-
-        items.add(new Item(ItemType.Bribe));
-        items.add(new Item(ItemType.HealthTalisman));
-        items.add(new Item(ItemType.GlobalizationCharm));
-        items.add(new Item(ItemType.Bill));
-        items.add(new Item(ItemType.FancySuit));
-        items.add(new Item(ItemType.DeepestConcerns));
-        items.add(new Item(ItemType.TradeTreaty));
-        state = new GameStateBase(player, items);
-        // state = new GameStateGameplay(this);
-
+        state = new GameStateTitle();
 
         // TODO MAKE THIS NOT A COMMENT
-        // state = new GameStateBase(player, items);
-        state = new GameStateGameplay(this, player, items);
         frameRate(30); // Set the frame rate to 30 fps
 
         lastFrameTime = millis();
-
     }
 
     @Override
@@ -100,6 +81,7 @@ public class Game extends PApplet {
         lastFrameTime = currentTime;
 
         state.update(deltaTime);
-        state.draw(this);
+        GameState newState = state.draw(this);
+        if (newState != null) state = newState;
     }
 }

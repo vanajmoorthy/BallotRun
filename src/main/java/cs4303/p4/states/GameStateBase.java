@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.util.ResourceUtils;
 
@@ -27,13 +26,14 @@ public final class GameStateBase extends GameState {
     private List<GestureDetector> buttons;
 
     private int cursor = PApplet.ARROW;
+    private boolean didStartGame = false;
 
     private final GestureDetector buttonEqip = new GestureDetector(
         (sketch, hitbox, hasHover, hasClick) -> {
             boolean inventoryHasSpace = !player.isInventoryFull();
             boolean isItemEquipped = selectedItem != null && player.getInventory().contains(selectedItem);
 
-            if (hasHover && inventoryHasSpace) cursor = PApplet.HAND;
+            if (hasHover && (isItemEquipped || inventoryHasSpace)) cursor = PApplet.HAND;
 
             sketch.fill(
                 hasHover && (isItemEquipped || inventoryHasSpace)
@@ -112,7 +112,7 @@ public final class GameStateBase extends GameState {
             );
         },
         (sketch, button) -> {
-
+            didStartGame = true;
         },
         new GestureDetector.Hitbox(
             new PVector(
@@ -370,7 +370,7 @@ public final class GameStateBase extends GameState {
         }
     }
 
-    public void draw(PApplet sketch) {
+    public GameState draw(PApplet sketch) {
         // screen
         cursor = PApplet.ARROW;
         sketch.fill(Colors.black);
@@ -401,6 +401,10 @@ public final class GameStateBase extends GameState {
         }
 
         sketch.cursor(cursor);
+        return
+            didStartGame
+                ? new GameStateGameplay(sketch, player, items)
+                : null;
     }
 
     private void drawInventory(PApplet sketch) {
@@ -608,10 +612,6 @@ public final class GameStateBase extends GameState {
 
     public void mouseReleased(PApplet sketch) {
 
-    }
-
-    public GameState switchState(PApplet sketch) {
-        return new GameStateGameplay(sketch, player, items);
     }
 
     @Override
