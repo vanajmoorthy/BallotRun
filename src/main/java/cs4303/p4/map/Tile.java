@@ -23,7 +23,7 @@ public class Tile {
 
     // Draw method for the tile
     public void draw(PApplet sketch, int x, int y, float lerp) {
-        sketch.noStroke();
+        sketch.stroke(0);
         // Draw based on type
         switch (type) {
             case EMPTY:
