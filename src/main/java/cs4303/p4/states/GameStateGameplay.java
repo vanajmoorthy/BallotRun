@@ -41,6 +41,7 @@ public final class GameStateGameplay extends GameState {
         entities.add(player);
         entities.addAll(level.getEntities());
         level.buildGraph();
+        player.resetPlayer(); // Reset player's position
     }
 
     public GameState draw(PApplet sketch) {
@@ -59,7 +60,8 @@ public final class GameStateGameplay extends GameState {
             entity.draw(sketch);
         }
 
-        if (level.playerOnBallot()) didReachBallotBox = true;
+        if (level.playerOnBallot())
+            didReachBallotBox = true;
 
         // for (Node n : level.getNodes()) {
         // for (BoundingBox b : n.getBounds()) {
@@ -70,14 +72,14 @@ public final class GameStateGameplay extends GameState {
         // }
         update(0.0f);
 
-        if (player.getLocation().y > Constants.Screen.height) player.setHealth(0);
+        if (player.getLocation().y > Constants.Screen.height)
+            player.setHealth(0);
 
-        return
-            player.getHealth() <= 0
+        return player.getHealth() <= 0
                 ? new GameStateBase(player, items)
                 : didReachBallotBox && level.playerOnEntrance()
-                    ? new GameStateWin(player, items)
-                    : null;
+                        ? new GameStateWin(player, items)
+                        : null;
     }
 
     /**

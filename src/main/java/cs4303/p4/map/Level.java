@@ -256,10 +256,10 @@ public class Level {
         if (!gameOver) {
             if (!cameraDelayCompleted) {
                 cameraDelayElapsed += deltaTime;
-                startingMessage.update(deltaTime); // Ensure this is always called before checking the condition
+                startingMessage.update(deltaTime);
                 if (cameraDelayElapsed >= cameraDelayTime) {
                     cameraDelayCompleted = true;
-                    startingMessage.active = false; // Deactivate the message once the delay is completed
+                    startingMessage.active = false; // Ensure the starting message is deactivated
                 }
             }
 
@@ -267,7 +267,16 @@ public class Level {
                 updateCamera(deltaTime);
             }
 
-            ballotMessage.update(deltaTime);
+            // Check if the player is on the ballot and update the ballot message
+            // accordingly
+            if (playerOnBallot()) {
+                if (!ballotMessage.isActive()) {
+                    ballotMessage.reset();
+                    ballotMessage.start();
+                }
+            }
+
+            ballotMessage.update(deltaTime); // Update the ballot message
             checkPlayerPosition();
         }
     }
@@ -275,7 +284,8 @@ public class Level {
     private void checkPlayerPosition() {
         if (player.isOffMap(cameraX, gridWidth, cellSize, cameraMovingRight)) {
             gameOver = true;
-            restartLevel();
+            // restartLevel();
+            player.setHealth(0);
         }
     }
 
@@ -301,7 +311,7 @@ public class Level {
             node.resetBoundingBox(); // Reset each node's bounding boxes to the start positions
         }
 
-        player.resetPosition(); // Reset player's position
+        player.resetPlayer(); // Reset player's position
         player.resetBoundingBox();
 
         for (Entity entity : entities) {
@@ -388,12 +398,15 @@ public class Level {
     public void draw() {
         if (!gameOver) {
             drawMap();
-            if (!cameraDelayCompleted && startingMessage.isActive()) { // Ensure we check if it's active
+            if (!cameraDelayCompleted && startingMessage.isActive()) {
                 startingMessage.draw(parent);
+            }
+
+            if (ballotMessage.isActive()) { // Check if ballot message is active before drawing
+                ballotMessage.draw(parent);
             }
         }
         drawRestartButton();
-        ballotMessage.draw(parent);
     }
 
     // Modify the draw method to offset tiles based on the camera position

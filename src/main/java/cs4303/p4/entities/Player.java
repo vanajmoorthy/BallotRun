@@ -135,11 +135,12 @@ public class Player extends Entity {
         return false;
     }
 
-    public void resetPosition() {
+    public void resetPlayer() {
         setLocation(new PVector(0, 0));
         setVelocity(new PVector(0, 0));
         setAcceleration(new PVector(0, 0));
-
+        this.setHealth(Math.round(AttributeController.getEntityAttributeValue(this, Attribute.Health)));
+        this.resetBoundingBox();
     }
 
     public void resetBoundingBox() {
