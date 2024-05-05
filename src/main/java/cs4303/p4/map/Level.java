@@ -1,5 +1,6 @@
 package cs4303.p4.map;
 
+import cs4303.p4._util.gui.TimedText;
 import cs4303.p4._util.Constants;
 import cs4303.p4.entities.BallotBox;
 import cs4303.p4.entities.Entity;
@@ -7,6 +8,7 @@ import cs4303.p4.entities.Entrance;
 import cs4303.p4.entities.Player;
 import lombok.Getter;
 import processing.core.PApplet;
+import processing.core.PVector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +45,14 @@ public class Level {
     private boolean cameraDelayCompleted = false;
 
     @Getter
-    private float postBallotDelayTime = 2.5f; // Delay in seconds before camera moves back
+    private float postBallotDelayTime = 3.0f; // Delay in seconds before camera moves back
     private float postBallotDelayElapsed = 0; // Time elapsed after reaching the ballot
     private boolean ballotReached = false;
 
     private boolean gameOver = false;
+
+    private TimedText ballotMessage;
+    private TimedText startingMessage;
 
     public Level(PApplet p, float difficultyFactor, Player player) {
         this.cellSize = Constants.TILE_SIZE;
@@ -59,6 +64,12 @@ public class Level {
         this.player = player;
         this.entities = new ArrayList<Entity>();
         generateLevel(difficultyFactor);
+        this.ballotMessage = new TimedText("Now go back to your start position", postBallotDelayTime,
+                new PVector(Constants.Screen.width / 2, Constants.Screen.height / 2));
+
+        this.startingMessage = new TimedText("Starting...", cameraDelayTime,
+                new PVector(parent.width / 2, parent.height / 2));
+        this.startingMessage.start();
     }
 
     private void initializeGrid() {
@@ -156,9 +167,8 @@ public class Level {
         }
         // Spawn entrance
         Entrance entrance = new Entrance(
-            Constants.TILE_SIZE / 2,
-            (highestPlatformY) * Constants.TILE_SIZE
-        );
+                Constants.TILE_SIZE / 2,
+                (highestPlatformY) * Constants.TILE_SIZE);
         entrance.getLocation().x -= entrance.getBounds().get(0).getWidth() / 2;
         entrance.getLocation().y -= entrance.getBounds().get(0).getHeight();
         entities.add(entrance);
@@ -181,9 +191,8 @@ public class Level {
         }
         // Spawn ballot box
         BallotBox ballotBox = new BallotBox(
-            (gridWidth - 1) * Constants.TILE_SIZE + Constants.TILE_SIZE / 2,
-            (highestPlatformY) * Constants.TILE_SIZE
-        );
+                (gridWidth - 1) * Constants.TILE_SIZE + Constants.TILE_SIZE / 2,
+                (highestPlatformY) * Constants.TILE_SIZE);
         ballotBox.getLocation().x -= ballotBox.getBounds().get(0).getWidth() / 2;
         ballotBox.getLocation().y -= ballotBox.getBounds().get(0).getHeight();
         entities.add(ballotBox);
@@ -247,8 +256,10 @@ public class Level {
         if (!gameOver) {
             if (!cameraDelayCompleted) {
                 cameraDelayElapsed += deltaTime;
+                startingMessage.update(deltaTime); // Ensure this is always called before checking the condition
                 if (cameraDelayElapsed >= cameraDelayTime) {
-                    cameraDelayCompleted = true; // This will allow the camera to start moving
+                    cameraDelayCompleted = true;
+                    startingMessage.active = false; // Deactivate the message once the delay is completed
                 }
             }
 
@@ -256,7 +267,7 @@ public class Level {
                 updateCamera(deltaTime);
             }
 
-            // player.update(deltaTime); // This needs to be called to apply gravity etc.
+            ballotMessage.update(deltaTime);
             checkPlayerPosition();
         }
     }
@@ -300,6 +311,10 @@ public class Level {
         cameraDelayElapsed = 0; // Reset camera delay elapsed time
         cameraDelayCompleted = false; // Reset camera delay completed flag
         updateCamera(0); // Call with deltaTime 0 or a small value to initialize the state.
+
+        // Reset and start the starting message
+        startingMessage.reset();
+        startingMessage.start();
     }
 
     // Call this method in main game loop
@@ -367,8 +382,12 @@ public class Level {
     public void draw() {
         if (!gameOver) {
             drawMap();
+            if (!cameraDelayCompleted && startingMessage.isActive()) { // Ensure we check if it's active
+                startingMessage.draw(parent);
+            }
         }
         drawRestartButton();
+        ballotMessage.draw(parent);
     }
 
     // Modify the draw method to offset tiles based on the camera position
