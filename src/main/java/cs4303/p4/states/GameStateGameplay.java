@@ -38,79 +38,81 @@ public final class GameStateGameplay extends GameState {
 
     private int cursor = PApplet.ARROW;
 
-    private GestureDetector buttonRestart = new GestureDetector(
-        (sketch, hitbox, hasHover, hasClick) -> {
-            if (hasHover) cursor = PApplet.HAND;
+    private int currentLevel = 1;
+    private float difficultyFactor = 1.0f; // Start with a base difficulty
+    private int score = 0;
 
-            sketch.fill(
-                hasHover
-                    ? Colors.darkGray.primary
-                    : Colors.darkGray.dark
-            );
-            sketch.noStroke();
-            sketch.rect(
-                Constants.Screen.width - 10 - 40,
-                10,
-                40,
-                40,
-                10
-            );
+    private GestureDetector buttonRestart = new GestureDetector((sketch, hitbox, hasHover, hasClick) -> {
+        if (hasHover)
+            cursor = PApplet.HAND;
 
-            sketch.noFill();
-            sketch.stroke(Colors.white);
-            sketch.strokeWeight(2);
-            sketch.rect(
-                Constants.Screen.width - 10 - 40 + 4,
-                10 + 4,
-                32,
-                32,
-                6
-            );
+        sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
+        sketch.noStroke();
+        sketch.rect(Constants.Screen.width - 10 - 40, 10, 40, 40, 10);
 
-            sketch.filter(PApplet.INVERT);
-            try {
-                sketch.image(
-                    sketch.loadImage(
-                        ResourceUtils.getFile("classpath:icons/reload.png").getAbsolutePath()
-                    ),
-                    Constants.Screen.width - 10 - 40 + 5,
-                    10 + 5,
-                    30,
-                    30
-                );
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            sketch.filter(PApplet.INVERT);
+        sketch.noFill();
+        sketch.stroke(Colors.white);
+        sketch.strokeWeight(2);
+        sketch.rect(Constants.Screen.width - 10 - 40 + 4, 10 + 4, 32, 32, 6);
 
-        },
-        (sketch, button) -> {
-            level.restartLevel();
-        },
-        new GestureDetector.Hitbox(
-            new PVector(
-                Constants.Screen.width - 10 - 40,
-                10
-            ),
-            new PVector(40, 40)
-        )
-    );
+        sketch.filter(PApplet.INVERT);
+        try {
+            sketch.image(sketch.loadImage(ResourceUtils.getFile("classpath:icons/reload.png").getAbsolutePath()),
+                    Constants.Screen.width - 10 - 40 + 5, 10 + 5, 30, 30);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        sketch.filter(PApplet.INVERT);
+
+    }, (sketch, button) -> {
+        level.restartLevel();
+    }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40, 10), new PVector(40, 40)));
 
     public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
         // TODO insert a start location
         this.player = player;
         this.items = items;
-        level = new Level(sketch, 1.2f, player);
-        entities.add(player);
-        entities.addAll(level.getEntities());
+        startLevel(sketch);
+
+    }
+
+    public void startLevel(PApplet sketch) {
+        entities.clear(); // Clear all entities before adding new ones
+        difficultyFactor += 0.1; // Increment difficulty factor for each new level
+        int newWidth = (int) (currentLevel / 1.8); // Increase grid width with each level
+        level = new Level(sketch, difficultyFactor, player, newWidth);
         level.buildGraph();
+        entities.add(player); // Re-add the player
+        entities.addAll(level.getEntities()); // Add new level entities
         player.resetPlayer(); // Reset player's position
+        didReachBallotBox = false;
+        System.out.println("Width: " + newWidth);
+        System.out.println("Current level: " + currentLevel);
+
+    }
+
+    public void resetGame(PApplet sketch) {
+        currentLevel = 1;
+        difficultyFactor = 1.0f;
+        score = 0;
+        startLevel(sketch);
+    }
+
+    private int calculateScore() {
+        return (int) (100 * difficultyFactor); // Example scoring function
     }
 
     public GameState draw(PApplet sketch) {
         // draw the player
         sketch.background(Colors.black);
         cursor = PApplet.ARROW;
+
+        // Display current level and difficulty
+        sketch.fill(255); // White text
+        sketch.textSize(14);
+        sketch.textAlign(PApplet.LEFT, PApplet.TOP);
+        sketch.text("Level: " + currentLevel + " | Difficulty: " + String.format("%.2f", difficultyFactor), 10, 10);
+
         level.draw(); // Draw the current view of the level
         // level.drawGraph(sketch);
 
@@ -132,7 +134,8 @@ public final class GameStateGameplay extends GameState {
 
         sketch.cursor(cursor);
 
-        if (level.playerOnBallot()) didReachBallotBox = true;
+        if (level.playerOnBallot())
+            didReachBallotBox = true;
 
         // for (Node n : level.getNodes()) {
         // for (BoundingBox b : n.getBounds()) {
@@ -146,11 +149,16 @@ public final class GameStateGameplay extends GameState {
         if (player.getLocation().y > Constants.Screen.height)
             player.setHealth(0);
 
-        return player.getHealth() <= 0
-                ? new GameStateLoss(player, items)
-                : didReachBallotBox && level.playerOnEntrance()
-                        ? new GameStateWin(player, items)
-                        : null;
+        if (player.getHealth() <= 0) {
+            return new GameStateLoss(player, items); // Pass the current score to the loss state
+        } else if (didReachBallotBox && level.playerOnEntrance()) {
+            score += calculateScore(); // Calculate score based on current level difficulty
+            currentLevel++; // Increment level count
+            startLevel(sketch); // Start new level
+            return null; // Continue in gameplay state
+        }
+
+        return null;
     }
 
     /**

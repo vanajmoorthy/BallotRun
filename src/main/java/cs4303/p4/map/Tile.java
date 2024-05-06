@@ -25,16 +25,15 @@ public class Tile {
     // Draw method for the tile
     public void draw(PApplet sketch, int x, int y, float lerp) {
         if (type == TileType.PLATFORM) {
-            sketch.stroke(Colors.darkGray.primary);
+            sketch.stroke(Colors.darkGray.light);
             sketch.strokeWeight(1.5f);
-            sketch.fill(Colors.darkGray.dark);
+            sketch.fill(Colors.darkGray.lighter);
             sketch.rect(
-                x * cellSize + lerp * cellSize,
-                y * cellSize,
-                cellSize,
-                cellSize,
-                2
-            );
+                    x * cellSize + lerp * cellSize,
+                    y * cellSize,
+                    cellSize,
+                    cellSize,
+                    2);
         }
     }
 }

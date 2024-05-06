@@ -15,8 +15,8 @@ import java.util.List;
 
 public class Level {
     private int cellSize;
-    private int gridWidth;
-    private int gridHeight;
+    public static int gridWidth;
+    public static int gridHeight;
     private Tile[][] levelGrid;
     private PApplet parent;
 
@@ -50,11 +50,11 @@ public class Level {
     private TimedText ballotMessage;
     private TimedText startingMessage;
 
-    public Level(PApplet p, float difficultyFactor, Player player) {
+    public Level(PApplet p, float difficultyFactor, Player player, int width) {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
-        this.gridWidth = (p.width / cellSize) * 2;
-        this.gridHeight = p.height / cellSize;
+        Level.gridWidth = (p.width / cellSize) * Math.max(width, 2);
+        Level.gridHeight = p.height / cellSize;
         levelGrid = new Tile[gridHeight][gridWidth];
         initializeGrid();
         this.player = player;

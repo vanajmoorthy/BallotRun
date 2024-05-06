@@ -36,6 +36,7 @@ public class Game extends PApplet {
         frameRate(30); // Set the frame rate to 30 fps
 
         lastFrameTime = millis();
+
     }
 
     @Override

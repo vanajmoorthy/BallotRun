@@ -131,7 +131,7 @@ public class Player extends Entity {
         }
 
         // Check if off the right side
-        if (!cameraMovingRight && playerX > (gridWidth * cellSize) / 2) {
+        if (!cameraMovingRight && playerX > (gridWidth * cellSize)) {
             System.out.println("off right");
 
             return true;
@@ -143,6 +143,7 @@ public class Player extends Entity {
         setLocation(new PVector(0, 0));
         setVelocity(new PVector(0, 0));
         setAcceleration(new PVector(0, 0));
+        this.cameraOffsetX = 0;
         this.setHealth(Math.round(AttributeController.getEntityAttributeValue(this, Attribute.Health)));
         this.resetBoundingBox();
     }
