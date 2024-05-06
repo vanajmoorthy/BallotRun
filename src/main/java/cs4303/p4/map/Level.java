@@ -249,11 +249,9 @@ public class Level {
     }
 
     public void update(float deltaTime) {
-        System.out.println("Camera Delay Elapsed: " + cameraDelayElapsed);
         // Normal update logic
         if (!cameraDelayCompleted) {
             cameraDelayElapsed += deltaTime;
-            System.out.println("Updating Camera Delay: " + cameraDelayElapsed);
             startingMessage.update(deltaTime);
             if (cameraDelayElapsed >= cameraDelayTime) {
                 cameraDelayCompleted = true;

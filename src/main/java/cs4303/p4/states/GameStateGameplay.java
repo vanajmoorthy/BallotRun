@@ -111,7 +111,9 @@ public final class GameStateGameplay extends GameState {
         sketch.fill(255); // White text
         sketch.textSize(14);
         sketch.textAlign(PApplet.LEFT, PApplet.TOP);
-        sketch.text("Level: " + currentLevel + " | Difficulty: " + String.format("%.2f", difficultyFactor), 10, 10);
+        String gameInfo = String.format("Level: %d | Difficulty: %.2f | Score: %d", currentLevel, difficultyFactor,
+                score);
+        sketch.text(gameInfo, 10, 10);
 
         level.draw(); // Draw the current view of the level
         // level.drawGraph(sketch);
@@ -221,18 +223,17 @@ public final class GameStateGameplay extends GameState {
 
         if (a_pressed) {
             PVector left = new PVector(-1 * Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width *
-                    AttributeController.getEntityAttributeValue(player, Attribute.Speed)/100, 0);
+                    AttributeController.getEntityAttributeValue(player, Attribute.Speed) / 100, 0);
             player.applyForce(left);
         }
 
         if (d_pressed) {
 
-            PVector right = new PVector(Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width  *
-                    AttributeController.getEntityAttributeValue(player, Attribute.Speed)/100, 0);
+            PVector right = new PVector(Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width *
+                    AttributeController.getEntityAttributeValue(player, Attribute.Speed) / 100, 0);
             player.applyForce(right);
         }
     }
-
 
     public void update(float deltaTime) {
         level.update(deltaTime);
