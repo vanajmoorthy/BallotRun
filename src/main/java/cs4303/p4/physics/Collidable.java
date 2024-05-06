@@ -41,7 +41,6 @@ public class Collidable {
                         b.getLocation().y < b2.getLocation().y + b2.getHeight() &&
                         b.getLocation().y + b.getHeight() > b2.getLocation().y) {
 
-                    // System.out.println("cowdwllision " + b2.getLocation());
                     return true;
                 }
             }
@@ -52,7 +51,7 @@ public class Collidable {
     /**
      * Returns the bounding box of this collision
      * @param c the object to check against
-     * @return the bounding box
+     * @return the bounding box of this entity which collides
      */
     public BoundingBox getBoundingBox(Collidable c){
         for (BoundingBox b : bounds) {
@@ -61,7 +60,7 @@ public class Collidable {
                         b.getLocation().x + b.getWidth() > b2.getLocation().x &&
                         b.getLocation().y < b2.getLocation().y + b2.getHeight() &&
                         b.getLocation().y + b.getHeight() > b2.getLocation().y){
-                    return b2;
+                    return b;
                 }
             }
         }

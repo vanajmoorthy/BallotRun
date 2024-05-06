@@ -1,5 +1,6 @@
 package cs4303.p4.entities;
 
+import java.security.interfaces.RSAKey;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -62,59 +63,98 @@ public abstract class Entity extends Collidable {
      * Updates the position
      */
     public void move(List<Node> nodes) {
+        System.out.println(this.getVelocity());
+        //gravity
+        this.applyGravity();
 
-        // drag
+        //drag
         this.applyDrag();
 
         // Update velocity based on acceleration
-        PVector prospectiveV = PVector.add(this.getVelocity(),
-                this.getAcceleration().mult(
-                        AttributeController.getEntityAttributeValue(this,
-                        Attribute.Speed)/100
-                ));
+        PVector prospectiveV = PVector.add(this.getVelocity(),this.getAcceleration());
+
 
         // update the positions of the bounding boxes
-        for (BoundingBox b : super.getBounds()) {
+        for (BoundingBox b : super.getBounds()){
             b.moveBox(prospectiveV);
+
         }
+
         // check for collisions between the new location and the map
         for (Node n : nodes) {
             // if theres a collision change how much movement occurs
             if (this.Collision(n)) {
+                //create an entity to move
+                BoundingBox bCopy = new BoundingBox(
+                        this.getLocation().copy(),this.getBounds().get(0).getWidth(),this.getBounds().get(0).getHeight());
 
-                // distance the velocity tried to move
-                float DistanceTravelled = prospectiveV.mag();
-                // find the distance between the current location and the collision with
-                // bounding box`
+                ArrayList<BoundingBox> bnds = new ArrayList<BoundingBox>();
+                bnds.add(bCopy);
+                Entity temp = new Entity(this.getLocation().copy().x,this.getLocation().copy().y) {
+                    @Override
+                    public void draw(PApplet sketch) {
 
-                BoundingBox b = this.getBoundingBox(n);
-                float distToBox = b.getDistanceToBox(this);
-                // System.out.println("Distance to collision" + distToBox);
-                PVector vectorToClosest = b.getVectorToClosestPoint(n);
-                // System.out.println("Vector to closest point" + vectorToClosest);
+                    }
+                };
 
-                // IF THERE'S A COLLISION JUST MOVE BY A THIRD THE DISTANCE
-                PVector newv = PVector.div(prospectiveV, 3);
+                temp.setBounds(bnds);
 
-                this.setVelocity(newv);
 
-                this.getAcceleration().mult(0);
+                //normalise and flip the direction
+                System.out.println("actual velocity" + prospectiveV);
+                PVector unitOfVelocity = prospectiveV.copy().normalize().mult(-1);
+                //PVector unitOfVelocity = prospectiveV.copy().mult((float) -0.01);
 
-                // Update position based on velocity
-                super.setLocation(PVector.add(super.getLocation(), this.getVelocity()));
+                System.out.println("unitOfVelocity: " + unitOfVelocity);
+                // Round each component of the vector up to the nearest integer
+                int roundedX = (int) (unitOfVelocity.x < 0 ? Math.round(unitOfVelocity.x) : Math.round(unitOfVelocity.x));
+                int roundedY = (int) (unitOfVelocity.y < 0 ? Math.round(unitOfVelocity.y) : Math.round(unitOfVelocity.y));
+                int roundedZ = (int) (unitOfVelocity.z < 0 ? Math.round(unitOfVelocity.z) : Math.round(unitOfVelocity.z));
 
-                // move the bounding box
-                PVector reverse = PVector.mult(prospectiveV, -1);
-                // update the positions of the bounding boxes
+                // Create a new PVector with rounded componentsdddd
+                PVector roundedVector = new PVector(roundedX, roundedY, roundedZ);
+               // System.out.println("the rounded vector" + roundedVector);
+                PVector trackingMovement = new PVector(0,0);
+
+                //move it backwards  by the unit vector till no collision
+                Boolean collide = true;
+                while(collide) {
+
+                    bCopy.moveBox(roundedVector);
+                    PVector tempLoc = temp.getLocation();
+                    temp.setLocation(tempLoc.add(roundedVector));
+                    trackingMovement.add(roundedVector);
+
+                    if(!temp.Collision(n)){
+                        //figure out if the collision is with a node below
+                        BoundingBox b = n.getBoundingBox(this);
+
+                        collide = false;
+                    }
+                }
+
+                PVector v = PVector.add(prospectiveV,trackingMovement);
+
+
+
+                this.setVelocity(v);
+
+
+                // move the bounding box back to its original position
+                PVector reverse = PVector.mult(prospectiveV.copy(), -1);
                 for (BoundingBox x : super.getBounds()) {
                     x.moveBox(reverse);
                 }
 
-                // update the positions of the bounding boxes
+                // Update position based on velocity
+                super.setLocation(PVector.add(super.getLocation(), this.getVelocity()));
+
+                // update the positions of the bounding boxes to how much movement is occuring
                 for (BoundingBox c : super.getBounds()) {
                     c.moveBox(this.getVelocity());
-
                 }
+                this.setAcceleration(new PVector(0,0));
+                this.setVelocity(new PVector(0,0));
                 return;
             }
         }
@@ -122,11 +162,10 @@ public abstract class Entity extends Collidable {
         // update the velocity
         this.setVelocity(PVector.add(this.getVelocity(), this.getAcceleration()));
 
-        this.getAcceleration().mult(0);
-
         // Update position based on velocity
         super.setLocation(PVector.add(super.getLocation(), this.getVelocity()));
 
+        this.setAcceleration(new PVector(0,0));
     }
 
     /**

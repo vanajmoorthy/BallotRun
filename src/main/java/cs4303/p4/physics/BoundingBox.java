@@ -70,13 +70,13 @@ public class BoundingBox {
 
         // Determine the side of the rectangle where the closest point is located
         if (minDistance == distToLeft) {
-            return new PVector(-1, 0); // Left side
+            return new PVector(-1 * 5, 0); // Left side
         } else if (minDistance == distToRight) {
-            return new PVector(1, 0); // Right side
+            return new PVector(1 * 5, 0); // Right side
         } else if (minDistance == distToTop) {
-            return new PVector(0, -1); // Top side
+            return new PVector(0, -1 * 5); // Top side
         } else {
-            return new PVector(0, 1); // Bottom side
+            return new PVector(0, 1 * 5); // Bottom side
         }
     }
 

@@ -15,6 +15,7 @@ import processing.core.PVector;
 public class Player extends Entity {
     private float cameraOffsetX;
 
+
     public Player(float x, float y) {
         super(x, y);
         super.setInventory(new ArrayList<Item>());
@@ -46,13 +47,13 @@ public class Player extends Entity {
         // float screenX = getLocation().x - cameraOffsetX;
         sketch.rect(getLocation().x, getLocation().y, 20, 20); // 20x20 player for now
 
-        sketch.noFill();
-
-        for (BoundingBox b : getBounds()) {
-            // float bx = b.getLocation().x - cameraOffsetX;
-            sketch.rect(b.getLocation().x, b.getLocation().y, b.getWidth(), b.getHeight());
-
-        }
+//        sketch.noFill();
+//
+//        for (BoundingBox b : getBounds()) {
+//            // float bx = b.getLocation().x - cameraOffsetX;
+//            sketch.rect(b.getLocation().x, b.getLocation().y, b.getWidth(), b.getHeight());
+//
+//        }
         sketch.popMatrix();
     }
 
@@ -72,6 +73,7 @@ public class Player extends Entity {
     public void move(List<Node> nodes) {
 
         super.move(nodes);
+
 
         // TODO edge of screen detection
         // Stop the user from moving past the edges of the screen

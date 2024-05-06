@@ -1,5 +1,7 @@
 package cs4303.p4.states;
 
+import cs4303.p4.attributes.Attribute;
+import cs4303.p4.attributes.AttributeController;
 import cs4303.p4.entities.Entity;
 import cs4303.p4.entities.Player;
 import cs4303.p4.items.Item;
@@ -122,21 +124,21 @@ public final class GameStateGameplay extends GameState {
         }
 
         if (a_pressed) {
-            PVector left = new PVector(-1 * Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width, 0);
+            PVector left = new PVector(-1 * Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width *
+                    AttributeController.getEntityAttributeValue(player, Attribute.Speed)/100, 0);
             player.applyForce(left);
         }
 
         if (d_pressed) {
 
-            PVector right = new PVector(Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width, 0);
+            PVector right = new PVector(Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width  *
+                    AttributeController.getEntityAttributeValue(player, Attribute.Speed)/100, 0);
             player.applyForce(right);
         }
     }
 
-    public void update(float deltaTime) {
+    public void update(float deltaTime){
         level.updateCamera(deltaTime); // Update the camera position
-
-        player.applyGravity();
 
         movePlayer();
 
