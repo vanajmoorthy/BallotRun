@@ -39,7 +39,7 @@ public final class GameStateGameplay extends GameState {
     private int cursor = PApplet.ARROW;
 
     private int currentLevel = 1;
-    private float difficultyFactor = 1.0f; // Start with a base difficulty
+    private float difficultyFactor = 1.2f; // Start with a base difficulty
     private int score = 0;
 
     private GestureDetector buttonRestart = new GestureDetector(
@@ -154,7 +154,6 @@ public final class GameStateGameplay extends GameState {
 
     public void startLevel(PApplet sketch) {
         entities.clear(); // Clear all entities before adding new ones
-        difficultyFactor += 0.1; // Increment difficulty factor for each new level
         int newWidth = (int) (currentLevel / 1.8); // Increase grid width with each level
         level = new Level(sketch, difficultyFactor, player, newWidth);
         level.buildGraph();
@@ -168,7 +167,6 @@ public final class GameStateGameplay extends GameState {
 
     public void resetGame(PApplet sketch) {
         currentLevel = 1;
-        difficultyFactor = 1.0f;
         score = 0;
         startLevel(sketch);
     }
@@ -186,7 +184,7 @@ public final class GameStateGameplay extends GameState {
         sketch.fill(255); // White text
         sketch.textSize(14);
         sketch.textAlign(PApplet.LEFT, PApplet.TOP);
-        String gameInfo = String.format("Level: %d | Difficulty: %.2f | Score: %d", currentLevel, difficultyFactor,
+        String gameInfo = String.format("Difficulty: %.2f | Score: %d", difficultyFactor,
                 score);
         sketch.text(gameInfo, 10, 10);
 
@@ -223,16 +221,24 @@ public final class GameStateGameplay extends GameState {
         if (player.getLocation().y > Constants.Screen.height)
             player.setHealth(0);
 
-        if (player.getHealth() <= 0) {
-            return new GameStateLoss(player, items); // Pass the current score to the loss state
-        } else if (didReachBallotBox && level.playerOnEntrance()) {
-            score += calculateScore(); // Calculate score based on current level difficulty
-            currentLevel++; // Increment level count
-            startLevel(sketch); // Start new level
-            return null; // Continue in gameplay state
-        }
+        // if (player.getHealth() <= 0) {
+        // return new GameStateLoss(player, items); // Pass the current score to the
+        // loss state
+        // } else if (didReachBallotBox && level.playerOnEntrance()) {
+        // score += calculateScore(); // Calculate score based on current level
+        // difficulty
+        // currentLevel++; // Increment level count
+        // startLevel(sketch); // Start new level
+        // return null; // Continue in gameplay state
+        // }
 
-        return null;
+        return player.getHealth() <= 0
+                ? new GameStateBase(player, items)
+                : didReachBallotBox && level.playerOnEntrance()
+                        ? new GameStateWin(player, items)
+                        : null;
+
+        // return null;
     }
 
     /**
