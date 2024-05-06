@@ -199,6 +199,7 @@ public final class GameStateGameplay extends GameState {
         buttonPause.draw(sketch);
 
         sketch.cursor(cursor);
+        player.updateAttack(sketch);
 
         if (level.playerOnBallot())
             didReachBallotBox = true;
@@ -243,6 +244,8 @@ public final class GameStateGameplay extends GameState {
             this.a_pressed = true;
         } else if (key == 'd' || key == 'D') {
             this.d_pressed = true;
+        } else if (key == ' ') {
+            player.startAttack(); // Trigger attack when space is pressed
         }
     }
 
