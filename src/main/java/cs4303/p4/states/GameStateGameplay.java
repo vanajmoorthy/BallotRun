@@ -51,107 +51,96 @@ public final class GameStateGameplay extends GameState {
     private int score = 0;
 
     private GestureDetector buttonRestart = new GestureDetector(
-        (sketch, hitbox, hasHover, hasClick) -> {
-            if (hasHover && !isPaused)
-                cursor = PApplet.HAND;
+            (sketch, hitbox, hasHover, hasClick) -> {
+                if (hasHover && !isPaused)
+                    cursor = PApplet.HAND;
 
-            sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
-            sketch.noStroke();
-            sketch.rect(Constants.Screen.width - 10 - 40, 10, 40, 40, 10);
+                sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
+                sketch.noStroke();
+                sketch.rect(Constants.Screen.width - 10 - 40, 10, 40, 40, 10);
 
-            sketch.noFill();
-            sketch.stroke(Colors.white);
-            sketch.strokeWeight(2);
-            sketch.rect(Constants.Screen.width - 10 - 40 + 4, 10 + 4, 32, 32, 6);
+                sketch.noFill();
+                sketch.stroke(Colors.white);
+                sketch.strokeWeight(2);
+                sketch.rect(Constants.Screen.width - 10 - 40 + 4, 10 + 4, 32, 32, 6);
 
-            sketch.filter(PApplet.INVERT);
-            try {
-                sketch.image(
-                    sketch.loadImage(
-                        ResourceUtils.getFile("classpath:icons/reload.png").getAbsolutePath()
-                    ),
-                    Constants.Screen.width - 10 - 40 + 5,
-                    10 + 5,
-                    30,
-                    30
-                );
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            sketch.filter(PApplet.INVERT);
+                sketch.filter(PApplet.INVERT);
+                try {
+                    sketch.image(
+                            sketch.loadImage(
+                                    ResourceUtils.getFile("classpath:icons/reload.png").getAbsolutePath()),
+                            Constants.Screen.width - 10 - 40 + 5,
+                            10 + 5,
+                            30,
+                            30);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                sketch.filter(PApplet.INVERT);
 
-        },
-        (sketch, button) -> {
-            if (!isPaused) level.restartLevel();
-        },
-        new GestureDetector.Hitbox(
-            new PVector(
-                Constants.Screen.width - 10 - 40,
-                10
-            ),
-            new PVector(40, 40)
-        )
-    );
+            },
+            (sketch, button) -> {
+                if (!isPaused)
+                    level.restartLevel();
+            },
+            new GestureDetector.Hitbox(
+                    new PVector(
+                            Constants.Screen.width - 10 - 40,
+                            10),
+                    new PVector(40, 40)));
 
     private GestureDetector buttonPause = new GestureDetector(
-        (sketch, hitbox, hasHover, hasClick) -> {
-            if (hasHover)
-                cursor = PApplet.HAND;
+            (sketch, hitbox, hasHover, hasClick) -> {
+                if (hasHover)
+                    cursor = PApplet.HAND;
 
-            sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
-            sketch.noStroke();
-            sketch.rect(
-                Constants.Screen.width - 10 - 40 - 50,
-                10,
-                40,
-                40,
-                10
-            );
+                sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
+                sketch.noStroke();
+                sketch.rect(
+                        Constants.Screen.width - 10 - 40 - 50,
+                        10,
+                        40,
+                        40,
+                        10);
 
-            sketch.noFill();
-            sketch.stroke(Colors.white);
-            sketch.strokeWeight(2);
-            sketch.rect(
-                Constants.Screen.width - 10 - 40 - 50 + 4,
-                10 + 4,
-                32,
-                32,
-                6
-            );
+                sketch.noFill();
+                sketch.stroke(Colors.white);
+                sketch.strokeWeight(2);
+                sketch.rect(
+                        Constants.Screen.width - 10 - 40 - 50 + 4,
+                        10 + 4,
+                        32,
+                        32,
+                        6);
 
-            sketch.filter(PApplet.INVERT);
-            try {
-                sketch.image(
-                    sketch.loadImage(
-                        ResourceUtils
-                            .getFile(
-                                isPaused
-                                    ? "classpath:icons/play.png"
-                                    : "classpath:icons/pause.png"
-                            ).getAbsolutePath()
-                    ),
-                    Constants.Screen.width - 10 - 40 - 50 + 5,
-                    10 + 5,
-                    30,
-                    30
-                );
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            sketch.filter(PApplet.INVERT);
+                sketch.filter(PApplet.INVERT);
+                try {
+                    sketch.image(
+                            sketch.loadImage(
+                                    ResourceUtils
+                                            .getFile(
+                                                    isPaused
+                                                            ? "classpath:icons/play.png"
+                                                            : "classpath:icons/pause.png")
+                                            .getAbsolutePath()),
+                            Constants.Screen.width - 10 - 40 - 50 + 5,
+                            10 + 5,
+                            30,
+                            30);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                sketch.filter(PApplet.INVERT);
 
-        },
-        (sketch, button) -> {
-            isPaused = !isPaused;
-        },
-        new GestureDetector.Hitbox(
-            new PVector(
-                Constants.Screen.width - 10 - 40 - 50,
-                10
-            ),
-            new PVector(40, 40)
-        )
-    );
+            },
+            (sketch, button) -> {
+                isPaused = !isPaused;
+            },
+            new GestureDetector.Hitbox(
+                    new PVector(
+                            Constants.Screen.width - 10 - 40 - 50,
+                            10),
+                    new PVector(40, 40)));
 
     public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
         // TODO insert a start location
@@ -172,24 +161,23 @@ public final class GameStateGameplay extends GameState {
         System.out.println("Width: " + newWidth);
         System.out.println("Current level: " + currentLevel);
 
-
     }
 
-    public void placeEnemies(int numberOfEnemies){
-        for(int i = 0; i < numberOfEnemies; i++){
+    public void placeEnemies(int numberOfEnemies) {
+        for (int i = 0; i < numberOfEnemies; i++) {
             Boolean foundTile = false;
-            while(!foundTile){
+            while (!foundTile) {
                 Random random = new Random();
                 int randomIndex = random.nextInt(level.getNodes().size());
                 Node selectedNode = level.getNodes().get(randomIndex);
 
-                //check the tile above the node has space
+                // check the tile above the node has space
                 Tile[][] grid = level.getLevelGrid();
-                Tile t = grid[selectedNode.getX()][selectedNode.getY()-1];
-                if(t.getType() == TileType.EMPTY){
+                Tile t = grid[selectedNode.getX()][selectedNode.getY() - 1];
+                if (t.getType() == TileType.EMPTY) {
 
                     Enemy enemy = new Enemy(selectedNode.getX() * Constants.TILE_SIZE,
-                            (selectedNode.getY()-1) * Constants.TILE_SIZE,320);
+                            (selectedNode.getY() - 1) * Constants.TILE_SIZE, 320);
 
                     entities.add(enemy);
                     enemies.add(enemy);
@@ -231,6 +219,16 @@ public final class GameStateGameplay extends GameState {
             entity.draw(sketch);
         }
 
+        for (Entity entity : level.getEntranceAndBallot()) {
+            if (level.isCameraDelayCompleted() && !isPaused) {
+                boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
+                entity.moveWithCamera(level.getCameraSpeed() / 2, cameraMoving, level.isCameraMovingRight(),
+                        level.isCameraStill());
+            }
+
+            entity.draw(sketch);
+        }
+
         buttonRestart.draw(sketch);
         buttonPause.draw(sketch);
 
@@ -253,7 +251,7 @@ public final class GameStateGameplay extends GameState {
             player.setHealth(0);
 
         if (player.getHealth() <= 0) {
-            return new GameStateBase(player, items);
+            return new GameStateLoss(player, items);
         } else if (didReachBallotBox && level.playerOnEntrance()) {
             score += calculateScore(sketch);
             return new GameStateWin(player, items, score);
@@ -347,30 +345,28 @@ public final class GameStateGameplay extends GameState {
             player.move(level.getNodes());
 
             for (Enemy e : enemies) {
-                Projectile b = e.fire(player,this.level.getNodes());
-                if(b != null) {
+                Projectile b = e.fire(player, this.level.getNodes());
+                if (b != null) {
                     projectiles.add(b);
                 }
 
             }
 
-            //if any projectiles crash into a wall
-            //delete them
+            // if any projectiles crash into a wall
+            // delete them
             ArrayList<Projectile> toRemove = new ArrayList<Projectile>();
-            for(Projectile p : this.projectiles){
-                for(Node n : this.level.getNodes()){
-                    if(p.Collision(n)){
+            for (Projectile p : this.projectiles) {
+                for (Node n : this.level.getNodes()) {
+                    if (p.Collision(n)) {
                         toRemove.add(p);
                     }
                 }
             }
             projectiles.removeAll(toRemove);
 
-            //TODO remove the enemy from the arraylist of enemies when killed
-
+            // TODO remove the enemy from the arraylist of enemies when killed
 
         }
     }
-
 
 }
