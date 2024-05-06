@@ -6,6 +6,7 @@ import cs4303.p4.entities.BallotBox;
 import cs4303.p4.entities.Entity;
 import cs4303.p4.entities.Entrance;
 import cs4303.p4.entities.Player;
+import cs4303.p4.physics.BoundingBox;
 import lombok.Getter;
 import processing.core.PApplet;
 import processing.core.PVector;
@@ -362,11 +363,23 @@ public class Level {
     }
 
     public boolean playerOnBallot() {
-        return player.getLocation().dist(ballotBox.getLocation()) < 20;
+        BoundingBox boxPlayer = player.getBounds().get(0);
+        BoundingBox boxBallotBox = ballotBox.getBounds().get(0);
+        return
+            boxPlayer.getLocation().x + boxPlayer.getWidth() >= boxBallotBox.getLocation().x &&
+            boxPlayer.getLocation().y + boxPlayer.getHeight() >= boxBallotBox.getLocation().y &&
+            boxBallotBox.getLocation().x + boxBallotBox.getWidth() >= boxPlayer.getLocation().x &&
+            boxBallotBox.getLocation().x + boxBallotBox.getHeight() >= boxPlayer.getLocation().x;
     }
 
     public boolean playerOnEntrance() {
-        return player.getLocation().dist(entrance.getLocation()) < 20;
+        BoundingBox boxPlayer = player.getBounds().get(0);
+        BoundingBox boxEntrance = entrance.getBounds().get(0);
+        return
+            boxPlayer.getLocation().x + boxPlayer.getWidth() >= boxEntrance.getLocation().x &&
+            boxPlayer.getLocation().y + boxPlayer.getHeight() >= boxEntrance.getLocation().y &&
+            boxEntrance.getLocation().x + boxEntrance.getWidth() >= boxPlayer.getLocation().x &&
+            boxEntrance.getLocation().x + boxEntrance.getHeight() >= boxPlayer.getLocation().x;
     }
 
     public void draw() {
