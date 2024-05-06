@@ -37,16 +37,16 @@ public final class Constants {
         }
     }
 
-    public static final float gravity = 0.006F;
-    public static final float airResistance = 0.1F;
+    public static final float gravity = 0.003F;
+    public static final float airResistance = 0.15F;
 
     public static final int TILE_SIZE = 40;
 
     public enum PLAYER {
         INSTANCE;
-        public final float X_MOVE = 0.006f;
+        public final float X_MOVE = 0.002f;
 
-        public final float JUMP_IMPULSE = 0.3F;
+        public final float JUMP_IMPULSE = 0.2F;
 
 
         public final int MASS = 15;

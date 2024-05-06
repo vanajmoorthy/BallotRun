@@ -18,6 +18,8 @@ import lombok.Setter;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import static processing.core.PApplet.constrain;
+
 @Getter
 @Setter
 public abstract class Entity extends Collidable {
@@ -63,20 +65,24 @@ public abstract class Entity extends Collidable {
      * Updates the position
      */
     public void move(List<Node> nodes) {
-        System.out.println(this.getVelocity());
+
         //gravity
         this.applyGravity();
 
         //drag
         this.applyDrag();
 
-        // Update velocity based on acceleration
+        // work out the new velocity
         PVector prospectiveV = PVector.add(this.getVelocity(),this.getAcceleration());
+        float constrainedX = constrain(prospectiveV.x, -30, 30);
+        float constrainedY = constrain(prospectiveV.y, -30, 30);
+        float constrainedZ = constrain(prospectiveV.z, -30, 30);
 
+        PVector constrainedProspectiveV = new PVector(constrainedX, constrainedY, constrainedZ);
 
         // update the positions of the bounding boxes
         for (BoundingBox b : super.getBounds()){
-            b.moveBox(prospectiveV);
+            b.moveBox(constrainedProspectiveV);
 
         }
 
@@ -86,7 +92,7 @@ public abstract class Entity extends Collidable {
             if (this.Collision(n)) {
                 //create an entity to move
                 BoundingBox bCopy = new BoundingBox(
-                        this.getLocation().copy(),this.getBounds().get(0).getWidth(),this.getBounds().get(0).getHeight());
+                        this.getBounds().get(0).getLocation().copy(),this.getBounds().get(0).getWidth(),this.getBounds().get(0).getHeight());
 
                 ArrayList<BoundingBox> bnds = new ArrayList<BoundingBox>();
                 bnds.add(bCopy);
@@ -101,39 +107,37 @@ public abstract class Entity extends Collidable {
 
 
                 //normalise and flip the direction
-                System.out.println("actual velocity" + prospectiveV);
-                PVector unitOfVelocity = prospectiveV.copy().normalize().mult(-1);
-                //PVector unitOfVelocity = prospectiveV.copy().mult((float) -0.01);
+                System.out.println("actual velocity" + constrainedProspectiveV);
+                //PVector unitOfVelocity = prospectiveV.copy().normalize().mult(-1);
 
-                System.out.println("unitOfVelocity: " + unitOfVelocity);
-                // Round each component of the vector up to the nearest integer
-                int roundedX = (int) (unitOfVelocity.x < 0 ? Math.round(unitOfVelocity.x) : Math.round(unitOfVelocity.x));
-                int roundedY = (int) (unitOfVelocity.y < 0 ? Math.round(unitOfVelocity.y) : Math.round(unitOfVelocity.y));
-                int roundedZ = (int) (unitOfVelocity.z < 0 ? Math.round(unitOfVelocity.z) : Math.round(unitOfVelocity.z));
+                PVector unitOfVelocity = constrainedProspectiveV.copy().normalize().mult((float) -0.01);
 
-                // Create a new PVector with rounded componentsdddd
-                PVector roundedVector = new PVector(roundedX, roundedY, roundedZ);
-               // System.out.println("the rounded vector" + roundedVector);
                 PVector trackingMovement = new PVector(0,0);
 
                 //move it backwards  by the unit vector till no collision
                 Boolean collide = true;
                 while(collide) {
 
-                    bCopy.moveBox(roundedVector);
+                    bCopy.moveBox(unitOfVelocity);
                     PVector tempLoc = temp.getLocation();
-                    temp.setLocation(tempLoc.add(roundedVector));
-                    trackingMovement.add(roundedVector);
+                    temp.setLocation(tempLoc.add(unitOfVelocity));
+                    trackingMovement.add(unitOfVelocity);
 
                     if(!temp.Collision(n)){
                         //figure out if the collision is with a node below
                         BoundingBox b = n.getBoundingBox(this);
+                        if(b.getLocation().y > this.getLocation().y){
 
+                            //must be below
+                            //eliminate the x direction of tracking movement
+                            float j = trackingMovement.y;
+                            trackingMovement = new PVector(0,j);
+                        }
                         collide = false;
                     }
                 }
 
-                PVector v = PVector.add(prospectiveV,trackingMovement);
+                PVector v = PVector.add(constrainedProspectiveV,trackingMovement);
 
 
 
@@ -141,7 +145,7 @@ public abstract class Entity extends Collidable {
 
 
                 // move the bounding box back to its original position
-                PVector reverse = PVector.mult(prospectiveV.copy(), -1);
+                PVector reverse = PVector.mult(constrainedProspectiveV.copy(), -1);
                 for (BoundingBox x : super.getBounds()) {
                     x.moveBox(reverse);
                 }
@@ -154,13 +158,13 @@ public abstract class Entity extends Collidable {
                     c.moveBox(this.getVelocity());
                 }
                 this.setAcceleration(new PVector(0,0));
-                this.setVelocity(new PVector(0,0));
+                //this.setVelocity(new PVector(0,0));
                 return;
             }
         }
 
         // update the velocity
-        this.setVelocity(PVector.add(this.getVelocity(), this.getAcceleration()));
+        this.setVelocity(constrainedProspectiveV);
 
         // Update position based on velocity
         super.setLocation(PVector.add(super.getLocation(), this.getVelocity()));
@@ -227,5 +231,16 @@ public abstract class Entity extends Collidable {
     public int getTileX() {
 
         return (int) this.getLocation().x / Constants.TILE_SIZE;
+    }
+
+
+    public void setVelocity(PVector v){
+        // Ensure no component of prospectiveV exceeds 35
+        float constrainedX = constrain(v.x, -30, 30);
+        float constrainedY = constrain(v.y, -30, 30);
+        float constrainedZ = constrain(v.z, -30, 30);
+
+        PVector constrainedProspectiveV = new PVector(constrainedX, constrainedY, constrainedZ);
+        this.velocity = constrainedProspectiveV;
     }
 }
