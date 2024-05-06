@@ -126,13 +126,13 @@ public abstract class Entity extends Collidable {
                         //figure out if the collision is with a node below
                         BoundingBox b = n.getBoundingBox(this);
                         if(b.getLocation().y > this.getLocation().y){
-
                             //must be below
                             //eliminate the x direction of tracking movement
-                            float j = trackingMovement.y;
-                            trackingMovement = new PVector(0,j);
+                            trackingMovement = new PVector((float) (0.05 * trackingMovement.x),trackingMovement.y);
+
                         }
                         collide = false;
+
                     }
                 }
 
