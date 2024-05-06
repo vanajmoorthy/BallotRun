@@ -23,7 +23,7 @@ public class Level {
     @Getter
     private float cameraX;
     @Getter
-    private float cameraSpeed = 2.5f;
+    private float cameraSpeed = 0.5f;
     @Getter
     private boolean cameraMovingRight = true;
     @Getter
@@ -37,7 +37,7 @@ public class Level {
     @Getter
     private final List<Entity> entities;
 
-    private float cameraDelayTime = 100; // delay in seconds before camera starts moving
+    private float cameraDelayTime = 3.0f; // delay in seconds before camera starts moving
     private float cameraDelayElapsed = 0; // time elapsed since the level started
     @Getter
     private boolean cameraDelayCompleted = false;
@@ -249,13 +249,16 @@ public class Level {
     }
 
     public void update(float deltaTime) {
+        System.out.println("Camera Delay Elapsed: " + cameraDelayElapsed);
         // Normal update logic
         if (!cameraDelayCompleted) {
             cameraDelayElapsed += deltaTime;
+            System.out.println("Updating Camera Delay: " + cameraDelayElapsed);
             startingMessage.update(deltaTime);
             if (cameraDelayElapsed >= cameraDelayTime) {
                 cameraDelayCompleted = true;
                 startingMessage.active = false;
+                System.out.println("Camera Delay Completed");
             }
         }
 
