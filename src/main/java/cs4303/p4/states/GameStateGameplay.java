@@ -2,6 +2,7 @@ package cs4303.p4.states;
 
 import cs4303.p4.attributes.Attribute;
 import cs4303.p4.attributes.AttributeController;
+import cs4303.p4.entities.Enemy;
 import cs4303.p4.entities.Entity;
 import cs4303.p4.entities.Player;
 import cs4303.p4.items.Item;
@@ -10,12 +11,17 @@ import cs4303.p4._util.Constants;
 import cs4303.p4._util.gui.GestureDetector;
 import cs4303.p4.map.Level;
 import cs4303.p4.map.Node;
+import cs4303.p4.map.Tile;
+import cs4303.p4.map.TileType;
+import cs4303.p4.physics.Bullet;
+import cs4303.p4.physics.Projectile;
 import processing.core.PApplet;
 import processing.core.PVector;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.util.ResourceUtils;
 
@@ -24,6 +30,9 @@ public final class GameStateGameplay extends GameState {
     private Level level;
     private List<Item> items;
     private ArrayList<Entity> entities = new ArrayList<Entity>();
+    private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+
+    private ArrayList<Projectile> projectiles = new ArrayList<Projectile>();
 
     // flags to decouple movement
     private boolean w_pressed = false;
@@ -42,9 +51,9 @@ public final class GameStateGameplay extends GameState {
     private int score = 0;
 
     private GestureDetector buttonRestart = new GestureDetector(
-        (sketch, hitbox, hasHover, hasClick) -> {
-            if (hasHover && !isPaused)
-                cursor = PApplet.HAND;
+            (sketch, hitbox, hasHover, hasClick) -> {
+                if (hasHover && !isPaused)
+                    cursor = PApplet.HAND;
 
             sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
             sketch.noStroke();
@@ -97,9 +106,9 @@ public final class GameStateGameplay extends GameState {
     );
 
     private GestureDetector buttonPause = new GestureDetector(
-        (sketch, hitbox, hasHover, hasClick) -> {
-            if (hasHover)
-                cursor = PApplet.HAND;
+            (sketch, hitbox, hasHover, hasClick) -> {
+                if (hasHover)
+                    cursor = PApplet.HAND;
 
             sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
             sketch.noStroke();
@@ -174,6 +183,33 @@ public final class GameStateGameplay extends GameState {
         didReachBallotBox = false;
         System.out.println("Width: " + newWidth);
         System.out.println("Current level: " + currentLevel);
+
+    }
+
+    public void placeEnemies(int numberOfEnemies) {
+        for (int i = 0; i < numberOfEnemies; i++) {
+            Boolean foundTile = false;
+            while (!foundTile) {
+                Random random = new Random();
+                int randomIndex = random.nextInt(level.getNodes().size());
+                Node selectedNode = level.getNodes().get(randomIndex);
+
+                // check the tile above the node has space
+                Tile[][] grid = level.getLevelGrid();
+                Tile t = grid[selectedNode.getX()][selectedNode.getY() - 1];
+                if (t.getType() == TileType.EMPTY) {
+
+                    Enemy enemy = new Enemy(selectedNode.getX() * Constants.TILE_SIZE,
+                            (selectedNode.getY() - 1) * Constants.TILE_SIZE, 320);
+
+                    entities.add(enemy);
+                    enemies.add(enemy);
+
+                    foundTile = true;
+                }
+            }
+
+        }
     }
 
     private int calculateScore(PApplet sketch) {
@@ -206,6 +242,20 @@ public final class GameStateGameplay extends GameState {
             entity.draw(sketch);
         }
 
+        for (Entity entity : level.getEntranceAndBallot()) {
+            if (level.isCameraDelayCompleted() && !isPaused) {
+                boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
+                entity.moveWithCamera(level.getCameraSpeed() / 2, cameraMoving, level.isCameraMovingRight(),
+                        level.isCameraStill());
+            }
+
+            entity.draw(sketch);
+        }
+
+        buttonRestart.draw(sketch);
+        buttonPause.draw(sketch);
+
+        sketch.cursor(cursor);
         player.updateAttack(sketch);
 
         if (level.playerOnBallot())
@@ -238,7 +288,7 @@ public final class GameStateGameplay extends GameState {
             player.setHealth(0);
 
         if (player.getHealth() <= 0) {
-            return new GameStateBase(player, items);
+            return new GameStateLoss(player, items);
         } else if (didReachBallotBox && level.playerOnEntrance()) {
             score += calculateScore(sketch);
             return new GameStateWin(player, items, score);
@@ -328,101 +378,31 @@ public final class GameStateGameplay extends GameState {
             level.update(deltaTime);
 
             movePlayer();
+            player.move(level.getNodes());
 
-            for (Entity e : entities) {
-                e.move(level.getNodes());
+            for (Enemy e : enemies) {
+                Projectile b = e.fire(player, this.level.getNodes());
+                if (b != null) {
+                    projectiles.add(b);
+                }
+
             }
-        }
-    }
 
-    /**
-     * Checks if the player collides with the map
-     * apply force depending on the direction of the collision
-     * 
-     * @return true on collision
-     */
-    private void wallCollisions() {
-
-        // move the bounding box of the player
-        for (Entity e : this.entities) {
-            for (Node n : level.getNodes()) {
-                if (e.Collision(n)) {
-
-                    if ((e.getLocation().y < n.getBounds().get(0).getLocation().y) && (e.getTileX() == n.getX())) {
-                        // entity on the top of the wall
-                        if (e.getVelocity().y >= 0) {
-                            PVector v = e.getVelocity().copy();
-                            v.y = 0;
-                            e.setVelocity(v);
-
-                        }
-
-                        if (e.getAcceleration().y >= 0) {
-                            PVector a = e.getAcceleration().copy();
-                            a.y = 0;
-                            e.setAcceleration(a);
-                        }
-
-                        return;
+            // if any projectiles crash into a wall
+            // delete them
+            ArrayList<Projectile> toRemove = new ArrayList<Projectile>();
+            for (Projectile p : this.projectiles) {
+                for (Node n : this.level.getNodes()) {
+                    if (p.Collision(n)) {
+                        toRemove.add(p);
                     }
-
-                    if ((e.getLocation().y > n.getBounds().get(0).getLocation().y) && (e.getTileX() == n.getX())) {
-                        System.out.println("below");
-                        // below the wall
-                        if (e.getVelocity().y < 0) {
-                            PVector v = e.getVelocity().copy();
-                            v.y = 0;
-                            e.setVelocity(v);
-
-                        }
-
-                        if (e.getAcceleration().y < 0) {
-                            PVector a = e.getAcceleration().copy();
-                            a.y = 0;
-                            e.setAcceleration(a);
-                        }
-                        return;
-                    }
-                    // work out direction between e and n
-                    if ((e.getTileX() < n.getX()) && (e.getTileY() == n.getY())) {
-
-                        // entity on the left of the wall
-                        if (e.getVelocity().x >= 0) {
-                            PVector v = e.getVelocity().copy();
-                            v.x = 0;
-                            e.setVelocity(v);
-
-                        }
-
-                        if (e.getAcceleration().x >= 0) {
-                            PVector a = e.getAcceleration().copy();
-                            a.x = 0;
-                            e.setAcceleration(a);
-                        }
-                        return;
-                    }
-
-                    if ((e.getTileX() >= n.getX()) && (e.getTileY() == n.getY())) {
-                        // on the right
-                        System.out.println("ON THE RIGHT");
-                        if (e.getVelocity().x <= 0) {
-                            PVector v = e.getVelocity().copy();
-                            v.x = 0;
-                            e.setVelocity(v);
-
-                        }
-
-                        if (e.getAcceleration().x <= 0) {
-                            PVector a = e.getAcceleration().copy();
-                            a.x = 0;
-                            e.setAcceleration(a);
-                        }
-                        return;
-                    }
-
                 }
             }
-        }
+            projectiles.removeAll(toRemove);
 
+            // TODO remove the enemy from the arraylist of enemies when killed
+
+        }
     }
+
 }

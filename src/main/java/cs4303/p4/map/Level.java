@@ -17,7 +17,8 @@ public class Level {
     private int cellSize;
     public static int gridWidth;
     public static int gridHeight;
-    private Tile[][] levelGrid;
+    @Getter
+    private  Tile[][] levelGrid;
     private PApplet parent;
 
     @Getter
@@ -36,6 +37,8 @@ public class Level {
     private Entrance entrance;
     @Getter
     private final List<Entity> entities;
+    @Getter
+    private final List<Entity> entranceAndBallot;
 
     private float cameraDelayTime = 3.0f; // delay in seconds before camera starts moving
     private float cameraDelayElapsed = 0; // time elapsed since the level started
@@ -59,6 +62,8 @@ public class Level {
         initializeGrid();
         this.player = player;
         this.entities = new ArrayList<Entity>();
+        this.entranceAndBallot = new ArrayList<Entity>();
+
         generateLevel(difficultyFactor);
         this.ballotMessage = new TimedText("Now go back to your start position", postBallotDelayTime,
                 new PVector(Constants.Screen.width / 2, Constants.Screen.height / 2));
@@ -167,7 +172,7 @@ public class Level {
                 (highestPlatformY) * Constants.TILE_SIZE);
         entrance.getLocation().x -= entrance.getBounds().get(0).getWidth() / 2;
         entrance.getLocation().y -= entrance.getBounds().get(0).getHeight();
-        entities.add(entrance);
+        entranceAndBallot.add(entrance);
         this.entrance = entrance;
 
         // Find the highest platform in the rightmost column
@@ -191,7 +196,7 @@ public class Level {
                 (highestPlatformY) * Constants.TILE_SIZE);
         ballotBox.getLocation().x -= ballotBox.getBounds().get(0).getWidth() / 2;
         ballotBox.getLocation().y -= ballotBox.getBounds().get(0).getHeight();
-        entities.add(ballotBox);
+        entranceAndBallot.add(ballotBox);
         this.ballotBox = ballotBox;
 
         // // Add enemies, etc
@@ -256,7 +261,6 @@ public class Level {
             if (cameraDelayElapsed >= cameraDelayTime) {
                 cameraDelayCompleted = true;
                 startingMessage.active = false;
-                System.out.println("Camera Delay Completed");
             }
         }
 
@@ -289,7 +293,7 @@ public class Level {
         player.resetPlayer(); // Reset player's position
         player.resetBoundingBox();
 
-        for (Entity entity : entities) {
+        for (Entity entity : entranceAndBallot) {
             entity.getLocation().x += cameraX;
         }
 

@@ -14,10 +14,9 @@ public class Entrance extends Entity {
         super(x, y);
         ArrayList<BoundingBox> bounds = new ArrayList<BoundingBox>();
         bounds.add(new BoundingBox(
-            super.getLocation(),
-            30,
-            45
-        ));
+                super.getLocation(),
+                30,
+                45));
         super.setBounds(bounds);
         super.setAcceleration(new PVector(0, 0));
         super.setVelocity(new PVector(0, 0));
@@ -31,10 +30,9 @@ public class Entrance extends Entity {
         sketch.fill(Colors.lime.darker);
         sketch.noStroke();
         sketch.rect(
-            super.getLocation().x,
-            super.getLocation().y,
-            30,
-            45
-        );
+                super.getLocation().x,
+                super.getLocation().y,
+                30,
+                45);
     }
 }

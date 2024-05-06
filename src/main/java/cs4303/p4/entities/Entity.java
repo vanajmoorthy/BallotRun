@@ -64,7 +64,6 @@ public abstract class Entity extends Collidable {
      * Updates the position
      */
     public void move(List<Node> nodes) {
-
         // gravity
         this.applyGravity();
 

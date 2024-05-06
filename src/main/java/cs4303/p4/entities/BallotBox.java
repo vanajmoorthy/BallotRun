@@ -14,10 +14,9 @@ public class BallotBox extends Entity {
         super(x, y);
         ArrayList<BoundingBox> bounds = new ArrayList<BoundingBox>();
         bounds.add(new BoundingBox(
-            super.getLocation(),
-            35,
-            35
-        ));
+                super.getLocation(),
+                35,
+                35));
         super.setBounds(bounds);
         super.setAcceleration(new PVector(0, 0));
         super.setVelocity(new PVector(0, 0));
@@ -32,10 +31,9 @@ public class BallotBox extends Entity {
         sketch.stroke(Colors.gray.primary);
         sketch.strokeWeight(2);
         sketch.rect(
-            super.getLocation().x,
-            super.getLocation().y,
-            35,
-            35
-        );
+                super.getLocation().x,
+                super.getLocation().y,
+                35,
+                35);
     }
 }

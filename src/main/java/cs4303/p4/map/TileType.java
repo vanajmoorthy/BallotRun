@@ -1,6 +1,6 @@
 package cs4303.p4.map;
 
-enum TileType {
+public enum TileType {
     EMPTY,
     PLATFORM;
 }

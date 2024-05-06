@@ -20,7 +20,7 @@ public class Player extends Entity {
     private float attackRadius = 50; // Example attack radius
     private float currentAttackRadius = 0;
     private long lastAttackTime = 0; // Track the last attack time
-    private static final long ATTACK_COOLDOWN = 500; // 500 milliseconds between attacks
+    private static long ATTACK_COOLDOWN; // 500 milliseconds between attacks
 
     public Player(float x, float y) {
         super(x, y);
@@ -33,8 +33,9 @@ public class Player extends Entity {
         super.setVelocity(new PVector(0, 0));
         this.cameraOffsetX = 0;
 
+
+        ATTACK_COOLDOWN = (500 * (long) AttributeController.getEntityAttributeValue(this, Attribute.AttackSpeed))/100;
         // create bounding box
-        // TODO change this to player size
         BoundingBox b1 = new BoundingBox(this.getLocation(), 20, 20);
         ArrayList<BoundingBox> b = new ArrayList<BoundingBox>();
         b.add(b1);
@@ -107,23 +108,6 @@ public class Player extends Entity {
 
     }
 
-    @Override
-    public void move(List<Node> nodes) {
-
-        super.move(nodes);
-
-        // TODO edge of screen detection
-        // Stop the user from moving past the edges of the screen
-        // if(super.getLocation().x >= Constants.Screen.width){
-        // super.setLocation( new PVector(
-        // Constants.Screen.width,super.getLocation().y));
-        // }
-
-        // if(super.getLocation().x <= 0){
-        // super.setLocation( new PVector( 0,super.getLocation().y));
-        // }
-
-    }
 
     /**
      * Updates the postitions of the player and
