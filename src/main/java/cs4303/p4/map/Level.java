@@ -37,7 +37,7 @@ public class Level {
     @Getter
     private final List<Entity> entities;
 
-    private float cameraDelayTime = 3.5f; // delay in seconds before camera starts moving
+    private float cameraDelayTime = 100; // delay in seconds before camera starts moving
     private float cameraDelayElapsed = 0; // time elapsed since the level started
     @Getter
     private boolean cameraDelayCompleted = false;
