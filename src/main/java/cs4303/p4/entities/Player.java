@@ -101,7 +101,7 @@ public class Player extends Entity {
      * applies the jump force
      */
     public void jump() {
-        PVector jump = new PVector(0, -1 * Constants.Screen.height *
+        PVector jump = new PVector(0, -1 *
                 Constants.PLAYER.INSTANCE.JUMP_IMPULSE *
                 (AttributeController.getEntityAttributeValue(this, Attribute.JumpHeight) / 100));
         super.applyForce(jump);
@@ -159,7 +159,7 @@ public class Player extends Entity {
     // }
 
     public void resetPlayer() {
-        setLocation(new PVector(0, Constants.Screen.GamePlay.infoPanelHeight));
+        setLocation(new PVector(0, 0));
         setVelocity(new PVector(0, 0));
         setAcceleration(new PVector(0, 0));
         this.cameraOffsetX = 0;

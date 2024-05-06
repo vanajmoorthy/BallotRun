@@ -344,15 +344,19 @@ public final class GameStateGameplay extends GameState {
         }
 
         if (a_pressed) {
-            PVector left = new PVector(-1 * Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width *
-                    AttributeController.getEntityAttributeValue(player, Attribute.Speed) / 100, 0);
+            PVector left = new PVector(
+                -1 * Constants.moveIncrement,
+                0
+            );
             player.applyForce(left);
         }
 
         if (d_pressed) {
 
-            PVector right = new PVector(Constants.PLAYER.INSTANCE.X_MOVE * Constants.Screen.width *
-                    AttributeController.getEntityAttributeValue(player, Attribute.Speed) / 100, 0);
+            PVector right = new PVector(
+                Constants.moveIncrement,
+                0
+            );
             player.applyForce(right);
         }
     }

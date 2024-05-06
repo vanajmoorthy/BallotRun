@@ -6,6 +6,7 @@ import java.util.List;
 
 import cs4303.p4._util.Constants;
 import cs4303.p4.attributes.Attribute;
+import cs4303.p4.attributes.AttributeController;
 import cs4303.p4.attributes.AttributeModifier;
 import cs4303.p4.items.Item;
 import cs4303.p4.map.Node;
@@ -55,7 +56,7 @@ public abstract class Entity extends Collidable {
     public void applyGravity() {
 
         // gravity
-        PVector gravity = new PVector(0, Constants.Screen.height * Constants.gravity);
+        PVector gravity = new PVector(0, Constants.gravity);
         this.applyForce(gravity);
 
     }
@@ -72,6 +73,15 @@ public abstract class Entity extends Collidable {
         float v_x = velocity.x;
         float v_y = velocity.y;
         BoundingBox boundingBox = getBounds().get(0);
+
+        float speedMultiplier = AttributeController.getEntityAttributeValue(this, Attribute.Speed) / 100;
+        v_x = Math.max(
+            -Constants.speedCap * speedMultiplier,
+            Math.min(
+                Constants.speedCap * speedMultiplier,
+                v_x
+            )
+        );
 
         float x_min = getLocation().x + 1;
         float x_max = x_min + boundingBox.getWidth() - 1;
@@ -280,9 +290,10 @@ public abstract class Entity extends Collidable {
      */
     public void applyDrag() {
         PVector velocity = this.getVelocity().copy();
-        float drag = (float) (velocity.mag() * velocity.mag() * -2.5 * Constants.airResistance);
-        velocity.normalize();
-        velocity.mult(drag);
+        // float drag = (float) (velocity.mag() * velocity.mag() * -2.5 * Constants.airResistance);
+        // velocity.normalize();
+        velocity.setMag(Constants.airResistance);
+        velocity.rotate(PApplet.PI);
         this.applyForce(velocity);
     }
 
