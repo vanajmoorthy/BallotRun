@@ -105,19 +105,18 @@ public abstract class Entity extends Collidable {
 
                 temp.setBounds(bnds);
 
-
-                //normalise and flip the direction
-                System.out.println("actual velocity" + constrainedProspectiveV);
-                //PVector unitOfVelocity = prospectiveV.copy().normalize().mult(-1);
-
+                //get a unit vector which is a fraction of a pixel to move the bounding box
+                //back by
                 PVector unitOfVelocity = constrainedProspectiveV.copy().normalize().mult((float) -0.01);
 
+                //track the cumulative distance the boc was moved backwards
                 PVector trackingMovement = new PVector(0,0);
 
                 //move it backwards  by the unit vector till no collision
                 Boolean collide = true;
                 while(collide) {
 
+                    //move the entity
                     bCopy.moveBox(unitOfVelocity);
                     PVector tempLoc = temp.getLocation();
                     temp.setLocation(tempLoc.add(unitOfVelocity));
@@ -139,13 +138,13 @@ public abstract class Entity extends Collidable {
 
                 PVector v = PVector.add(constrainedProspectiveV,trackingMovement);
 
-
-
                 this.setVelocity(v);
 
 
                 // move the bounding box back to its original position
                 PVector reverse = PVector.mult(constrainedProspectiveV.copy(), -1);
+
+                // move the bounding box back to its original position
                 for (BoundingBox x : super.getBounds()) {
                     x.moveBox(reverse);
                 }
@@ -158,7 +157,6 @@ public abstract class Entity extends Collidable {
                     c.moveBox(this.getVelocity());
                 }
                 this.setAcceleration(new PVector(0,0));
-                //this.setVelocity(new PVector(0,0));
                 return;
             }
         }
