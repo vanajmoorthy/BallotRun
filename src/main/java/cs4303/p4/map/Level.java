@@ -17,7 +17,8 @@ public class Level {
     private int cellSize;
     public static int gridWidth;
     public static int gridHeight;
-    private Tile[][] levelGrid;
+    @Getter
+    private  Tile[][] levelGrid;
     private PApplet parent;
 
     @Getter
