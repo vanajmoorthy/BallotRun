@@ -107,23 +107,6 @@ public class Player extends Entity {
 
     }
 
-    @Override
-    public void move(List<Node> nodes) {
-
-        super.move(nodes);
-
-        // TODO edge of screen detection
-        // Stop the user from moving past the edges of the screen
-        // if(super.getLocation().x >= Constants.Screen.width){
-        // super.setLocation( new PVector(
-        // Constants.Screen.width,super.getLocation().y));
-        // }
-
-        // if(super.getLocation().x <= 0){
-        // super.setLocation( new PVector( 0,super.getLocation().y));
-        // }
-
-    }
 
     /**
      * Updates the postitions of the player and
