@@ -10,7 +10,6 @@ import cs4303.p4._util.Constants;
 import cs4303.p4._util.gui.GestureDetector;
 import cs4303.p4.map.Level;
 import cs4303.p4.map.Node;
-import lombok.Getter;
 import processing.core.PApplet;
 import processing.core.PVector;
 
