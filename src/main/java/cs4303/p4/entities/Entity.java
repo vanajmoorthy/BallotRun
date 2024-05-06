@@ -43,11 +43,9 @@ public abstract class Entity extends Collidable {
         this(x, y, new EnumMap<Attribute, AttributeModifier>(Attribute.class));
     }
 
-
     public boolean isInventoryFull() {
         return inventory.size() >= maxSlots;
     }
-
 
     public abstract void draw(PApplet sketch);
 
@@ -67,14 +65,14 @@ public abstract class Entity extends Collidable {
      */
     public void move(List<Node> nodes) {
 
-        //gravity
+        // gravity
         this.applyGravity();
 
-        //drag
+        // drag
         this.applyDrag();
 
         // work out the new velocity
-        PVector prospectiveV = PVector.add(this.getVelocity(),this.getAcceleration());
+        PVector prospectiveV = PVector.add(this.getVelocity(), this.getAcceleration());
         float constrainedX = constrain(prospectiveV.x, -30, 30);
         float constrainedY = constrain(prospectiveV.y, -30, 30);
         float constrainedZ = constrain(prospectiveV.z, -30, 30);
@@ -82,7 +80,7 @@ public abstract class Entity extends Collidable {
         PVector constrainedProspectiveV = new PVector(constrainedX, constrainedY, constrainedZ);
 
         // update the positions of the bounding boxes
-        for (BoundingBox b : super.getBounds()){
+        for (BoundingBox b : super.getBounds()) {
             b.moveBox(constrainedProspectiveV);
 
         }
@@ -91,13 +89,14 @@ public abstract class Entity extends Collidable {
         for (Node n : nodes) {
             // if theres a collision change how much movement occurs
             if (this.Collision(n)) {
-                //create an entity to move
+                // create an entity to move
                 BoundingBox bCopy = new BoundingBox(
-                        this.getBounds().get(0).getLocation().copy(),this.getBounds().get(0).getWidth(),this.getBounds().get(0).getHeight());
+                        this.getBounds().get(0).getLocation().copy(), this.getBounds().get(0).getWidth(),
+                        this.getBounds().get(0).getHeight());
 
                 ArrayList<BoundingBox> bnds = new ArrayList<BoundingBox>();
                 bnds.add(bCopy);
-                Entity temp = new Entity(this.getLocation().copy().x,this.getLocation().copy().y) {
+                Entity temp = new Entity(this.getLocation().copy().x, this.getLocation().copy().y) {
                     @Override
                     public void draw(PApplet sketch) {
 
@@ -106,30 +105,30 @@ public abstract class Entity extends Collidable {
 
                 temp.setBounds(bnds);
 
-                //get a unit vector which is a fraction of a pixel to move the bounding box
-                //back by
+                // get a unit vector which is a fraction of a pixel to move the bounding box
+                // back by
                 PVector unitOfVelocity = constrainedProspectiveV.copy().normalize().mult((float) -0.01);
 
-                //track the cumulative distance the boc was moved backwards
-                PVector trackingMovement = new PVector(0,0);
+                // track the cumulative distance the boc was moved backwards
+                PVector trackingMovement = new PVector(0, 0);
 
-                //move it backwards  by the unit vector till no collision
+                // move it backwards by the unit vector till no collision
                 Boolean collide = true;
-                while(collide) {
+                while (collide) {
 
-                    //move the entity
+                    // move the entity
                     bCopy.moveBox(unitOfVelocity);
                     PVector tempLoc = temp.getLocation();
                     temp.setLocation(tempLoc.add(unitOfVelocity));
                     trackingMovement.add(unitOfVelocity);
 
-                    if(!temp.Collision(n)){
-                        //figure out if the collision is with a node below
+                    if (!temp.Collision(n)) {
+                        // figure out if the collision is with a node below
                         BoundingBox b = n.getBoundingBox(this);
-                        if(b.getLocation().y > this.getLocation().y){
-                            //must be below
-                            //eliminate the x direction of tracking movement
-                            trackingMovement = new PVector((float) (0.05 * trackingMovement.x),trackingMovement.y);
+                        if (b.getLocation().y > this.getLocation().y) {
+                            // must be below
+                            // eliminate the x direction of tracking movement
+                            trackingMovement = new PVector((float) (0.05 * trackingMovement.x), trackingMovement.y);
 
                         }
                         collide = false;
@@ -137,10 +136,9 @@ public abstract class Entity extends Collidable {
                     }
                 }
 
-                PVector v = PVector.add(constrainedProspectiveV,trackingMovement);
+                PVector v = PVector.add(constrainedProspectiveV, trackingMovement);
 
                 this.setVelocity(v);
-
 
                 // move the bounding box back to its original position
                 PVector reverse = PVector.mult(constrainedProspectiveV.copy(), -1);
@@ -157,7 +155,7 @@ public abstract class Entity extends Collidable {
                 for (BoundingBox c : super.getBounds()) {
                     c.moveBox(this.getVelocity());
                 }
-                this.setAcceleration(new PVector(0,0));
+                this.setAcceleration(new PVector(0, 0));
                 return;
             }
         }
@@ -168,7 +166,7 @@ public abstract class Entity extends Collidable {
         // Update position based on velocity
         super.setLocation(PVector.add(super.getLocation(), this.getVelocity()));
 
-        this.setAcceleration(new PVector(0,0));
+        this.setAcceleration(new PVector(0, 0));
     }
 
     /**
@@ -232,8 +230,7 @@ public abstract class Entity extends Collidable {
         return (int) this.getLocation().x / Constants.TILE_SIZE;
     }
 
-
-    public void setVelocity(PVector v){
+    public void setVelocity(PVector v) {
         // Ensure no component of prospectiveV exceeds 35
         float constrainedX = constrain(v.x, -30, 30);
         float constrainedY = constrain(v.y, -30, 30);
@@ -241,6 +238,7 @@ public abstract class Entity extends Collidable {
 
         PVector constrainedProspectiveV = new PVector(constrainedX, constrainedY, constrainedZ);
         this.velocity = constrainedProspectiveV;
+    }
 
     /**
      * Updates the postitions of the entity and
