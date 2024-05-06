@@ -23,7 +23,7 @@ public class Level {
     @Getter
     private float cameraX;
     @Getter
-    private float cameraSpeed = 0.5f;
+    private float cameraSpeed = 0.9f;
     @Getter
     private boolean cameraMovingRight = true;
     @Getter
