@@ -175,7 +175,7 @@ public class Player extends Entity {
     }
 
     public void resetPlayer() {
-        setLocation(new PVector(0, 0));
+        setLocation(new PVector(0, Constants.Screen.GamePlay.infoPanelHeight));
         setVelocity(new PVector(0, 0));
         setAcceleration(new PVector(0, 0));
         this.cameraOffsetX = 0;

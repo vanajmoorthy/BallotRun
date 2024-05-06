@@ -48,12 +48,24 @@ public final class GameStateGameplay extends GameState {
 
             sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
             sketch.noStroke();
-            sketch.rect(Constants.Screen.width - 10 - 40, 10, 40, 40, 10);
+            sketch.rect(
+                Constants.Screen.width - 10 - 40,
+                Constants.Screen.height - 10 - 40,
+                40,
+                40,
+                10
+            );
 
             sketch.noFill();
             sketch.stroke(Colors.white);
             sketch.strokeWeight(2);
-            sketch.rect(Constants.Screen.width - 10 - 40 + 4, 10 + 4, 32, 32, 6);
+            sketch.rect(
+                Constants.Screen.width - 10 - 40 + 4,
+                Constants.Screen.height - 10 - 40 + 4,
+                32,
+                32, 
+                6
+            );
 
             sketch.filter(PApplet.INVERT);
             try {
@@ -62,7 +74,7 @@ public final class GameStateGameplay extends GameState {
                         ResourceUtils.getFile("classpath:icons/reload.png").getAbsolutePath()
                     ),
                     Constants.Screen.width - 10 - 40 + 5,
-                    10 + 5,
+                    Constants.Screen.height - 10 - 40 + 5,
                     30,
                     30
                 );
@@ -78,7 +90,7 @@ public final class GameStateGameplay extends GameState {
         new GestureDetector.Hitbox(
             new PVector(
                 Constants.Screen.width - 10 - 40,
-                10
+                Constants.Screen.height - 10 - 40
             ),
             new PVector(40, 40)
         )
@@ -93,7 +105,7 @@ public final class GameStateGameplay extends GameState {
             sketch.noStroke();
             sketch.rect(
                 Constants.Screen.width - 10 - 40 - 50,
-                10,
+                Constants.Screen.height - 10 - 40,
                 40,
                 40,
                 10
@@ -104,7 +116,7 @@ public final class GameStateGameplay extends GameState {
             sketch.strokeWeight(2);
             sketch.rect(
                 Constants.Screen.width - 10 - 40 - 50 + 4,
-                10 + 4,
+                Constants.Screen.height - 10 - 40 + 4,
                 32,
                 32,
                 6
@@ -122,7 +134,7 @@ public final class GameStateGameplay extends GameState {
                             ).getAbsolutePath()
                     ),
                     Constants.Screen.width - 10 - 40 - 50 + 5,
-                    10 + 5,
+                    Constants.Screen.height - 10 - 40 + 5,
                     30,
                     30
                 );
@@ -138,7 +150,7 @@ public final class GameStateGameplay extends GameState {
         new GestureDetector.Hitbox(
             new PVector(
                 Constants.Screen.width - 10 - 40 - 50,
-                10
+                Constants.Screen.height - 10 - 40
             ),
             new PVector(40, 40)
         )
@@ -194,10 +206,6 @@ public final class GameStateGameplay extends GameState {
             entity.draw(sketch);
         }
 
-        buttonRestart.draw(sketch);
-        buttonPause.draw(sketch);
-
-        sketch.cursor(cursor);
         player.updateAttack(sketch);
 
         if (level.playerOnBallot())
@@ -212,6 +220,20 @@ public final class GameStateGameplay extends GameState {
         // }
         update(0.0f);
 
+        sketch.noStroke();
+        sketch.fill(Colors.darkGray.dark);
+        sketch.rect(
+            0,
+            Constants.Screen.height - Constants.Screen.GamePlay.infoPanelHeight,
+            Constants.Screen.width,
+            Constants.Screen.GamePlay.infoPanelHeight
+        );
+
+        buttonRestart.draw(sketch);
+        buttonPause.draw(sketch);
+
+        sketch.cursor(cursor);
+
         if (player.getLocation().y > Constants.Screen.height)
             player.setHealth(0);
 
@@ -223,7 +245,6 @@ public final class GameStateGameplay extends GameState {
         } else {
             return null;
         }
-
     }
 
     /**

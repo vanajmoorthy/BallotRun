@@ -10,6 +10,10 @@ public final class Constants {
         public static final int minWidth = 500;
         public static final int minHeight = 500;
 
+        public static final class GamePlay {
+            public static final int infoPanelHeight = 60;
+        }
+
         public static final class Base {
             @AllArgsConstructor
             public static final class SectionHitbox {

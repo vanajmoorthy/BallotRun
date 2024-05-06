@@ -54,7 +54,7 @@ public class Level {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
         Level.gridWidth = (p.width / cellSize) * Math.max(width, 2);
-        Level.gridHeight = p.height / cellSize;
+        Level.gridHeight = (Constants.Screen.height - Constants.Screen.GamePlay.infoPanelHeight) / cellSize;
         levelGrid = new Tile[gridHeight][gridWidth];
         initializeGrid();
         this.player = player;

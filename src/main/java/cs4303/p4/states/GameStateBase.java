@@ -6,12 +6,16 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import cs4303.p4.entities.Player;
 import cs4303.p4._util.Colors;
 import cs4303.p4._util.Constants;
 import cs4303.p4._util.gui.GestureDetector;
+import cs4303.p4._util.gui.ImageController;
 import cs4303.p4.attributes.Attribute;
 import cs4303.p4.attributes.AttributeController;
 import cs4303.p4.attributes.AttributeModifier;
@@ -19,6 +23,7 @@ import cs4303.p4.items.Item;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+@Component
 public final class GameStateBase extends GameState {
     private Player player;
     private List<Item> items;
@@ -27,6 +32,11 @@ public final class GameStateBase extends GameState {
 
     private int cursor = PApplet.ARROW;
     private boolean didStartGame = false;
+
+    private ImageController imageController;
+
+    // @Autowired
+    // public void 
 
     private final GestureDetector buttonEqip = new GestureDetector(
         (sketch, hitbox, hasHover, hasClick) -> {
@@ -499,13 +509,21 @@ public final class GameStateBase extends GameState {
             5
         );
 
+        // sketch.image(
+        //     imageController.get(sketch, "classpath:textures/" + selectedItem.getType().getId() + ".png"),
+        //     Constants.Screen.Base.selection.x + Constants.Screen.Base.padding + 10,
+        //     Constants.Screen.Base.selection.y + Constants.Screen.Base.padding + 10,
+        //     itemIconSize - 20,
+        //     itemIconSize - 20
+        // );
+
         // TODO: this is no good but it works
         try {
             sketch.image(
                 sketch.loadImage(
-                    ResourceUtils.getFile("classpath:textures/" + selectedItem.getType().getId() + ".png")
-                        .getAbsolutePath()
-                ),
+                    ResourceUtils
+                        .getFile("classpath:textures/" + selectedItem.getType().getId() + ".png")
+                        .getAbsolutePath()),
                 Constants.Screen.Base.selection.x + Constants.Screen.Base.padding + 10,
                 Constants.Screen.Base.selection.y + Constants.Screen.Base.padding + 10,
                 itemIconSize - 20,
