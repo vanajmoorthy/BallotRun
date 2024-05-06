@@ -29,11 +29,12 @@ public class Tile {
             sketch.strokeWeight(1.5f);
             sketch.fill(Colors.darkGray.lighter);
             sketch.rect(
-                    x * cellSize + lerp * cellSize,
-                    y * cellSize,
-                    cellSize,
-                    cellSize,
-                    2);
+                x * cellSize + lerp * cellSize,
+                y * cellSize,
+                cellSize,
+                cellSize,
+                2
+            );
         }
     }
 }

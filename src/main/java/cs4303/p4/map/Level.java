@@ -18,7 +18,7 @@ public class Level {
     public static int gridWidth;
     public static int gridHeight;
     @Getter
-    private  Tile[][] levelGrid;
+    private Tile[][] levelGrid;
     private PApplet parent;
 
     @Getter
@@ -280,7 +280,7 @@ public class Level {
     }
 
     private void checkPlayerPosition() {
-        if (player.isOffMap(cameraX, gridWidth, cellSize, cameraMovingRight)) {
+        if (!cameraStill && (player.getLocation().x >= 20 + Constants.Screen.width + cameraX || player.getLocation().x < cameraX)) {
             player.setHealth(0);
         }
     }
@@ -292,10 +292,6 @@ public class Level {
 
         player.resetPlayer(); // Reset player's position
         player.resetBoundingBox();
-
-        for (Entity entity : entranceAndBallot) {
-            entity.getLocation().x += cameraX;
-        }
 
         cameraX = 0;
         cameraMovingRight = true;

@@ -141,22 +141,22 @@ public class Player extends Entity {
         }
     }
 
-    public boolean isOffMap(float cameraX, int gridWidth, int cellSize, boolean cameraMovingRight) {
-        float playerX = getLocation().x;
+    // public boolean isOffMap(float cameraX, int gridWidth, int cellSize, boolean cameraMovingRight) {
+    //     float playerX = getLocation().x;
 
-        // Check if off the left side
-        if (cameraMovingRight && playerX < -20) {
-            return true;
-        }
+    //     // Check if off the left side
+    //     if (cameraMovingRight && playerX < -20 - ) {
+    //         return true;
+    //     }
 
-        // Check if off the right side
-        if (!cameraMovingRight && playerX > (gridWidth * cellSize)) {
-            System.out.println("off right");
+    //     // Check if off the right side
+    //     if (!cameraMovingRight && playerX > (gridWidth * cellSize)) {
+    //         System.out.println("off right");
 
-            return true;
-        }
-        return false;
-    }
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
     public void resetPlayer() {
         setLocation(new PVector(0, Constants.Screen.GamePlay.infoPanelHeight));

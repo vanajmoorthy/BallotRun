@@ -22,7 +22,6 @@ public class Collidable {
      */
     public Collidable(float x, float y) {
         location = new PVector(x, y);
-
     }
 
     /**
