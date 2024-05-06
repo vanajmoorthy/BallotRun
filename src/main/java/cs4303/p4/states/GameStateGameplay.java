@@ -165,14 +165,8 @@ public final class GameStateGameplay extends GameState {
         System.out.println("Current level: " + currentLevel);
     }
 
-    public void resetGame(PApplet sketch) {
-        currentLevel = 1;
-        score = 0;
-        startLevel(sketch);
-    }
-
-    private int calculateScore() {
-        return (int) (100 * difficultyFactor); // Example scoring function
+    private int calculateScore(PApplet sketch) {
+        return (int) ((100 * difficultyFactor) + sketch.random(20));
     }
 
     public GameState draw(PApplet sketch) {
@@ -221,24 +215,15 @@ public final class GameStateGameplay extends GameState {
         if (player.getLocation().y > Constants.Screen.height)
             player.setHealth(0);
 
-        // if (player.getHealth() <= 0) {
-        // return new GameStateLoss(player, items); // Pass the current score to the
-        // loss state
-        // } else if (didReachBallotBox && level.playerOnEntrance()) {
-        // score += calculateScore(); // Calculate score based on current level
-        // difficulty
-        // currentLevel++; // Increment level count
-        // startLevel(sketch); // Start new level
-        // return null; // Continue in gameplay state
-        // }
+        if (player.getHealth() <= 0) {
+            return new GameStateBase(player, items);
+        } else if (didReachBallotBox && level.playerOnEntrance()) {
+            score += calculateScore(sketch);
+            return new GameStateWin(player, items, score);
+        } else {
+            return null;
+        }
 
-        return player.getHealth() <= 0
-                ? new GameStateBase(player, items)
-                : didReachBallotBox && level.playerOnEntrance()
-                        ? new GameStateWin(player, items)
-                        : null;
-
-        // return null;
     }
 
     /**

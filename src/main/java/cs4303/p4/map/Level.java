@@ -281,10 +281,6 @@ public class Level {
         }
     }
 
-    private void resetGame() {
-        player.setHealth(0); // Or whatever logic you need to reset the player and the game
-    }
-
     public void restartLevel() {
         for (Node node : nodes) {
             node.resetBoundingBox(); // Reset each node's bounding boxes to the start positions
