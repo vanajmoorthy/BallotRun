@@ -19,12 +19,16 @@ public class GameStateWin extends GameState {
 
     private int tickCounter = 300;
 
-    public GameStateWin(Player player, List<Item> items) {
+    private int score;
+
+    public GameStateWin(Player player, List<Item> items, int score) {
         this.player = player;
         Item newItem = new Item(ItemType.random());
         items.add(newItem);
         this.items = items;
         this.item = newItem;
+        this.score = score;
+
     }
 
     @Override
@@ -117,6 +121,10 @@ public class GameStateWin extends GameState {
             Constants.Screen.height / 2 + 80
         );
 
+        sketch.text(
+                "Score: " + score,
+                Constants.Screen.width / 2,
+                Constants.Screen.height / 2 + 120);
         return tickCounter-- <= 0
             ? new GameStateBase(player, items)
             : null;

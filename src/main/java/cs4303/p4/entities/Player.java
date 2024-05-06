@@ -16,6 +16,11 @@ import processing.core.PVector;
 public class Player extends Entity {
     private float cameraOffsetX;
 
+    private boolean isAttacking = false;
+    private float attackRadius = 50; // Example attack radius
+    private float currentAttackRadius = 0;
+    private long lastAttackTime = 0; // Track the last attack time
+    private static final long ATTACK_COOLDOWN = 500; // 500 milliseconds between attacks
 
     public Player(float x, float y) {
         super(x, y);
@@ -40,6 +45,36 @@ public class Player extends Entity {
         this.cameraOffsetX = offsetX;
     }
 
+    public void startAttack() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
+            isAttacking = true;
+            currentAttackRadius = 0; // Reset the radius for animation
+            lastAttackTime = currentTime; // Update last attack time
+        }
+    }
+
+    public void updateAttack(PApplet sketch) {
+        if (isAttacking) {
+            if (currentAttackRadius < attackRadius) {
+                currentAttackRadius += 5; // Increment the radius for animation
+                sketch.noFill();
+                sketch.stroke(255, 0, 0); // Red color for attack radius
+                // Draw ellipse centered on player's center
+                sketch.ellipse(getLocation().x + 10, getLocation().y + 10, currentAttackRadius * 2,
+                        currentAttackRadius * 2);
+            } else {
+                isAttacking = false; // Stop the attack
+                checkForEnemiesWithinRadius(); // Check for enemies within the radius
+            }
+        }
+    }
+
+    private void checkForEnemiesWithinRadius() {
+        // This method would check if any enemy is within the attack radius
+        // You will need a reference to the list of enemies or pass it as a parameter
+    }
+
     @Override
     public void draw(PApplet sketch) {
         sketch.pushMatrix();
@@ -49,13 +84,14 @@ public class Player extends Entity {
         // float screenX = getLocation().x - cameraOffsetX;
         sketch.rect(getLocation().x, getLocation().y, 20, 20); // 20x20 player for now
 
-//        sketch.noFill();
-//
-//        for (BoundingBox b : getBounds()) {
-//            // float bx = b.getLocation().x - cameraOffsetX;
-//            sketch.rect(b.getLocation().x, b.getLocation().y, b.getWidth(), b.getHeight());
-//
-//        }
+        // sketch.noFill();
+        //
+        // for (BoundingBox b : getBounds()) {
+        // // float bx = b.getLocation().x - cameraOffsetX;
+        // sketch.rect(b.getLocation().x, b.getLocation().y, b.getWidth(),
+        // b.getHeight());
+        //
+        // }
         sketch.popMatrix();
     }
 
@@ -75,7 +111,6 @@ public class Player extends Entity {
     public void move(List<Node> nodes) {
 
         super.move(nodes);
-
 
         // TODO edge of screen detection
         // Stop the user from moving past the edges of the screen
