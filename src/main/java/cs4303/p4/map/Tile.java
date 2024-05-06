@@ -1,12 +1,11 @@
 package cs4303.p4.map;
 
-import cs4303.p4.physics.Collidable;
+import cs4303.p4._util.Colors;
 import processing.core.PApplet;
 
 public class Tile {
     private int cellSize;
     private TileType type; // Type of the tile (0: empty, 1: platform, 2: enemy/treasure)
-    private int[] colour;
 
     // Constructor
     public Tile(int cellSize) {
@@ -25,32 +24,17 @@ public class Tile {
 
     // Draw method for the tile
     public void draw(PApplet sketch, int x, int y, float lerp) {
-        // Draw based on type
-        switch (type) {
-            case EMPTY:
-                sketch.fill(255, 0, 0);
-                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
-                break;
-            case PLATFORM:
-                // Draw platform
-                sketch.fill(255);
-                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
-                break;
-            case ENTITY:
-                // Draw enemy or treasure
-                sketch.ellipse(x * cellSize + cellSize / 2 + lerp * cellSize, y * cellSize + cellSize / 2, cellSize / 2,
-                        cellSize / 2);
-                break;
-            case BALLOT:
-                sketch.fill(0, 255, 0); // Green color for the BALLOT tile
-                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
-                break;
-            case START:
-                sketch.fill(255, 0, 0); // Green color for the BALLOT tile
-                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
-                break;
-            default:
-                break;
+        if (type == TileType.PLATFORM) {
+            sketch.stroke(Colors.darkGray.primary);
+            sketch.strokeWeight(1.5f);
+            sketch.fill(Colors.darkGray.dark);
+            sketch.rect(
+                x * cellSize + lerp * cellSize,
+                y * cellSize,
+                cellSize,
+                cellSize,
+                2
+            );
         }
     }
 }

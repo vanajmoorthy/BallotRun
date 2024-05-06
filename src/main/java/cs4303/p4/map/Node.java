@@ -37,7 +37,17 @@ public class Node extends Collidable {
         return new PVector(cameraSpeed, 0);
     }
 
+    public void resetBoundingBox() {
+        PVector startPosition = new PVector(x * cellSize, y * cellSize);
+        for (BoundingBox b : getBounds()) {
+            b.setLocation(startPosition);
+        }
+    }
+
     public void updateBoundingBoxes(float cameraSpeed, boolean cameraMovingRight, boolean cameraStill) {
+
+        // System.out.println("moving right: " + cameraMovingRight);
+        // System.out.println("still: " + cameraStill);
 
         if (cameraMovingRight && !cameraStill) {
             PVector adjustedPos = getAdjustedPosition(cameraSpeed);
@@ -54,7 +64,7 @@ public class Node extends Collidable {
             for (BoundingBox b : getBounds()) {
                 PVector currLocation = b.getLocation().copy();
 
-
+              
                 PVector newLocation = PVector.sub(currLocation, adjustedPos);
                 b.setLocation(newLocation);
             }

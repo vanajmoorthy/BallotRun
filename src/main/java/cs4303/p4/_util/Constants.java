@@ -22,18 +22,16 @@ public final class Constants {
             public static final int padding = 10;
 
             public static final SectionHitbox storage = new SectionHitbox(
-                padding,
-                padding,
-                500,
-                height - 2 * padding
-            );
+                    padding,
+                    padding,
+                    500,
+                    height - 2 * padding);
 
             public static final SectionHitbox selection = new SectionHitbox(
-                storage.width + 2 * padding,
-                padding,
-                width - storage.width - 3 * padding,
-                height - 2 * padding
-            );
+                    storage.width + 2 * padding,
+                    padding,
+                    width - storage.width - 3 * padding,
+                    height - 2 * padding);
         }
     }
 
@@ -44,13 +42,14 @@ public final class Constants {
 
     public enum PLAYER {
         INSTANCE;
+
         public final float X_MOVE = 0.002f;
+
 
         public final float JUMP_IMPULSE = 0.2F;
 
 
         public final int MASS = 15;
     }
-
 
 }

@@ -1,6 +1,5 @@
 package cs4303.p4.physics;
 
-import cs4303.p4.entities.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import processing.core.PVector;

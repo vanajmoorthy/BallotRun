@@ -1,25 +1,10 @@
 package cs4303.p4;
 
-import cs4303.p4.entities.Player;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.ResourceUtils;
 
 import cs4303.p4._util.Constants;
-import cs4303.p4.items.Item;
-import cs4303.p4.items.ItemType;
 import cs4303.p4.states.GameState;
-import cs4303.p4.states.GameStateBase;
-import cs4303.p4.states.GameStateGameplay;
 import cs4303.p4.states.GameStateTitle;
-import cs4303.p4.states.GameStateWin;
 import processing.core.PApplet;
 
 @SpringBootApplication
@@ -39,9 +24,8 @@ public class Game extends PApplet {
         smooth(8);
 
         size(
-            Math.max(Constants.Screen.width, Constants.Screen.minWidth),
-            Math.max(Constants.Screen.height, Constants.Screen.minHeight)
-        );
+                Math.max(Constants.Screen.width, Constants.Screen.minWidth),
+                Math.max(Constants.Screen.height, Constants.Screen.minHeight));
     }
 
     @Override
@@ -82,6 +66,7 @@ public class Game extends PApplet {
 
         state.update(deltaTime);
         GameState newState = state.draw(this);
-        if (newState != null) state = newState;
+        if (newState != null)
+            state = newState;
     }
 }

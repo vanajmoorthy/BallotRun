@@ -5,24 +5,27 @@ import cs4303.p4.attributes.AttributeController;
 import cs4303.p4.entities.Entity;
 import cs4303.p4.entities.Player;
 import cs4303.p4.items.Item;
+import cs4303.p4._util.Colors;
 import cs4303.p4._util.Constants;
+import cs4303.p4._util.gui.GestureDetector;
 import cs4303.p4.map.Level;
 import cs4303.p4.map.Node;
-import cs4303.p4.physics.BoundingBox;
 import lombok.Getter;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.util.ResourceUtils;
 
 @Getter
 public final class GameStateGameplay extends GameState {
     private Player player;
     private Level level;
     private List<Item> items;
-
-    // int cellSize = 40;
+    private ArrayList<Entity> entities = new ArrayList<Entity>();
 
     // flags to decouple movement
     private boolean w_pressed = false;
@@ -31,39 +34,123 @@ public final class GameStateGameplay extends GameState {
     private boolean s_pressed = false;
     private boolean jumped = false;
 
-    private ArrayList<Entity> entities = new ArrayList<Entity>();
+    private boolean didReachBallotBox = false;
+
+    private int cursor = PApplet.ARROW;
+
+    private GestureDetector buttonRestart = new GestureDetector(
+        (sketch, hitbox, hasHover, hasClick) -> {
+            if (hasHover) cursor = PApplet.HAND;
+
+            sketch.fill(
+                hasHover
+                    ? Colors.darkGray.primary
+                    : Colors.darkGray.dark
+            );
+            sketch.noStroke();
+            sketch.rect(
+                Constants.Screen.width - 10 - 40,
+                10,
+                40,
+                40,
+                10
+            );
+
+            sketch.noFill();
+            sketch.stroke(Colors.white);
+            sketch.strokeWeight(2);
+            sketch.rect(
+                Constants.Screen.width - 10 - 40 + 4,
+                10 + 4,
+                32,
+                32,
+                6
+            );
+
+            sketch.filter(PApplet.INVERT);
+            try {
+                sketch.image(
+                    sketch.loadImage(
+                        ResourceUtils.getFile("classpath:icons/reload.png").getAbsolutePath()
+                    ),
+                    Constants.Screen.width - 10 - 40 + 5,
+                    10 + 5,
+                    30,
+                    30
+                );
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            sketch.filter(PApplet.INVERT);
+
+        },
+        (sketch, button) -> {
+            level.restartLevel();
+        },
+        new GestureDetector.Hitbox(
+            new PVector(
+                Constants.Screen.width - 10 - 40,
+                10
+            ),
+            new PVector(40, 40)
+        )
+    );
 
     public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
         // TODO insert a start location
         this.player = player;
         this.items = items;
-        entities.add(player);
         level = new Level(sketch, 1.2f, player);
+        entities.add(player);
+        entities.addAll(level.getEntities());
         level.buildGraph();
+        player.resetPlayer(); // Reset player's position
     }
 
     public GameState draw(PApplet sketch) {
         // draw the player
-        sketch.background(200);
+        sketch.background(Colors.black);
+        cursor = PApplet.ARROW;
         level.draw(); // Draw the current view of the level
         // level.drawGraph(sketch);
-        if (level.isCameraDelayCompleted()) {
-            boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
-            player.moveWithCamera(level.getCameraSpeed(), cameraMoving, level.isCameraMovingRight(),
-                    level.isCameraStill());
+
+        for (Entity entity : entities) {
+            if (level.isCameraDelayCompleted()) {
+                boolean cameraMoving = level.isCameraMovingRight() || level.getCameraX() > 0;
+                entity.moveWithCamera(level.getCameraSpeed(), cameraMoving, level.isCameraMovingRight(),
+                        level.isCameraStill());
+            }
+
+            entity.draw(sketch);
         }
 
-        player.draw(sketch);
+        buttonRestart.draw(sketch);
+
+        sketch.cursor(cursor);
+
+        buttonRestart.draw(sketch);
+
+        sketch.cursor(cursor);
+
+        if (level.playerOnBallot()) didReachBallotBox = true;
 
         // for (Node n : level.getNodes()) {
         // for (BoundingBox b : n.getBounds()) {
+        // sketch.stroke(0, 0, 0);
         // sketch.rect(b.getLocation().x, b.getLocation().y, Constants.TILE_SIZE,
         // Constants.TILE_SIZE);
         // }
         // }
         update(0.0f);
 
-        return null;
+        if (player.getLocation().y > Constants.Screen.height)
+            player.setHealth(0);
+
+        return player.getHealth() <= 0
+                ? new GameStateLoss(player, items)
+                : didReachBallotBox && level.playerOnEntrance()
+                        ? new GameStateWin(player, items)
+                        : null;
     }
 
     /**
@@ -75,39 +162,40 @@ public final class GameStateGameplay extends GameState {
      */
     public void keyPressed(PApplet sketch) {
         char key = sketch.key;
-        if (key == 'w') {
+        if (key == 'w' || key == 'W') {
             this.w_pressed = true;
-        } else if (key == 's') {
+        } else if (key == 's' || key == 'S') {
             this.s_pressed = true;
-        } else if (key == 'a') {
+        } else if (key == 'a' || key == 'A') {
             this.a_pressed = true;
-        } else if (key == 'd') {
+        } else if (key == 'd' || key == 'D') {
             this.d_pressed = true;
         }
     }
 
     public void keyReleased(PApplet sketch) {
         char key = sketch.key;
-        if (key == 'w') {
+        if (key == 'w' || key == 'W') {
             this.w_pressed = false;
             // flip jumped
             if (this.jumped == true) {
                 this.jumped = false;
             }
         }
-        if (key == 's') {
+        if (key == 's' || key == 'A') {
             this.s_pressed = false;
         }
-        if (key == 'a') {
+        if (key == 'a' || key == 'S') {
             this.a_pressed = false;
         }
-        if (key == 'd') {
+        if (key == 'd' || key == 'D') {
             this.d_pressed = false;
         }
     }
 
     public void mousePressed(PApplet sketch) {
-
+        if (buttonRestart.hasFocus(sketch))
+            buttonRestart.click(sketch);
     }
 
     public void mouseReleased(PApplet sketch) {
@@ -137,8 +225,9 @@ public final class GameStateGameplay extends GameState {
         }
     }
 
-    public void update(float deltaTime){
-        level.updateCamera(deltaTime); // Update the camera position
+
+    public void update(float deltaTime) {
+        level.update(deltaTime);
 
         movePlayer();
 

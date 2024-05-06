@@ -7,6 +7,7 @@ import cs4303.p4.attributes.Attribute;
 import cs4303.p4.attributes.AttributeController;
 import cs4303.p4.map.Node;
 import cs4303.p4.physics.BoundingBox;
+import cs4303.p4._util.Colors;
 import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
 import processing.core.PApplet;
@@ -42,7 +43,8 @@ public class Player extends Entity {
     @Override
     public void draw(PApplet sketch) {
         sketch.pushMatrix();
-        sketch.fill(0, 0, 255); // Blue color for player
+        sketch.noStroke();
+        sketch.fill(Colors.blue.primary); // Blue color for player
         // Calculate player's position relative to camera
         // float screenX = getLocation().x - cameraOffsetX;
         sketch.rect(getLocation().x, getLocation().y, 20, 20); // 20x20 player for now
@@ -64,7 +66,7 @@ public class Player extends Entity {
     public void jump() {
         PVector jump = new PVector(0, -1 * Constants.Screen.height *
                 Constants.PLAYER.INSTANCE.JUMP_IMPULSE *
-                (AttributeController.getEntityAttributeValue(this, Attribute.JumpHeight)/100));
+                (AttributeController.getEntityAttributeValue(this, Attribute.JumpHeight) / 100));
         super.applyForce(jump);
 
     }
@@ -120,4 +122,35 @@ public class Player extends Entity {
         }
     }
 
+    public boolean isOffMap(float cameraX, int gridWidth, int cellSize, boolean cameraMovingRight) {
+        float playerX = getLocation().x;
+
+        // Check if off the left side
+        if (cameraMovingRight && playerX < -20) {
+            return true;
+        }
+
+        // Check if off the right side
+        if (!cameraMovingRight && playerX > (gridWidth * cellSize) / 2) {
+            System.out.println("off right");
+
+            return true;
+        }
+        return false;
+    }
+
+    public void resetPlayer() {
+        setLocation(new PVector(0, 0));
+        setVelocity(new PVector(0, 0));
+        setAcceleration(new PVector(0, 0));
+        this.setHealth(Math.round(AttributeController.getEntityAttributeValue(this, Attribute.Health)));
+        this.resetBoundingBox();
+    }
+
+    public void resetBoundingBox() {
+        BoundingBox b1 = new BoundingBox(this.getLocation(), 20, 20);
+        ArrayList<BoundingBox> b = new ArrayList<BoundingBox>();
+        b.add(b1);
+        super.setBounds(b);
+    }
 }

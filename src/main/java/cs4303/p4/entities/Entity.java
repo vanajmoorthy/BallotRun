@@ -26,6 +26,7 @@ public abstract class Entity extends Collidable {
     private EnumMap<Attribute, AttributeModifier> baseAttributes;
     private ArrayList<Item> inventory;
     private int maxSlots;
+    private int health = 1;
 
     // values for movement
     // TODO add to constructors
@@ -240,5 +241,37 @@ public abstract class Entity extends Collidable {
 
         PVector constrainedProspectiveV = new PVector(constrainedX, constrainedY, constrainedZ);
         this.velocity = constrainedProspectiveV;
+
+    /**
+     * Updates the postitions of the entity and
+     * its bounding boxes
+     * 
+     * @param offset the camera offset
+     */
+    public void moveWithCamera(float deltaX, boolean cameraMoving, boolean cameraMovingRight, boolean cameraStill) {
+        PVector location = getLocation();
+        if (cameraMoving) {
+            if (cameraMovingRight && !cameraStill) {
+                location.x -= deltaX * 2; // Move player horizontally with the camera when moving right
+            } else if (cameraStill) {
+                location.x = location.x;
+            } else {
+                location.x += deltaX * 2; // Move player in the opposite direction when camera moves left
+            }
+            setLocation(location);
+
+            // Also move the bounding boxes if necessary
+            for (BoundingBox b : getBounds()) {
+                if (cameraMovingRight && !cameraStill) {
+                    b.moveBox(new PVector(-deltaX * 2, 0));
+                } else if (cameraStill) {
+                    b.moveBox(new PVector(0, 0));
+
+                } else {
+                    b.moveBox(new PVector(deltaX * 2, 0));
+                }
+            }
+        }
+
     }
 }
