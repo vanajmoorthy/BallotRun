@@ -16,6 +16,8 @@ import cs4303.p4.physics.Projectile;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import static processing.core.PApplet.dist;
+
 public class Player extends Entity {
     private float cameraOffsetX;
 
@@ -77,15 +79,36 @@ public class Player extends Entity {
         // You will need a reference to the list of enemies or pass it as a parameter
         ArrayList<Enemy> toRemove = new ArrayList<>();
         for(Enemy e: enemies){
-            if(e.g)
+            if(isWithinRadius(e.getLocation().x, e.getLocation().y,20,this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+                toRemove.add(e);
+            }
         }
         ArrayList<Projectile> removals = new ArrayList<>();
         for(Projectile p :bullets){
-
+            if(isWithinRadius(p.getLocation().x, p.getLocation().y,p.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+                removals.add(p);
+            }
         }
+        enemies.removeAll(toRemove);
+        bullets.removeAll(removals);
+
     }
 
-    private boolean isWithinRadius
+    private boolean isWithinRadius(float squareX, float squareY, float squareSize, float radiusX, float radiusY, float radius) {
+        // Calculate the center of the square
+        float squareCenterX = squareX + squareSize / 2;
+        float squareCenterY = squareY + squareSize / 2;
+
+        // Calculate the distance between square center and radius center using distance formula
+        float distance = dist(squareCenterX, squareCenterY, radiusX, radiusY);
+
+        // Check if the distance is less than or equal to the radius
+        if (distance <= radius) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     @Override
     public void draw(PApplet sketch) {
