@@ -26,6 +26,7 @@ import java.util.Random;
 import org.springframework.util.ResourceUtils;
 
 public final class GameStateGameplay extends GameState {
+    private int healthIncrement;
     private Player player;
     private Level level;
     private List<Item> items;
@@ -47,6 +48,7 @@ public final class GameStateGameplay extends GameState {
     private int cursor = PApplet.ARROW;
 
     private int currentLevel = 1;
+
     private float difficultyFactor = 0.0f; // Start with a base difficulty
     private int score = 0;
 
@@ -105,7 +107,7 @@ public final class GameStateGameplay extends GameState {
     }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40 - 50, 10), new PVector(40, 40)));
 
     public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
-        // TODO insert a start location
+
         this.player = player;
         this.items = items;
         startLevel(sketch);
@@ -123,8 +125,10 @@ public final class GameStateGameplay extends GameState {
         System.out.println("Width: " + newWidth);
         System.out.println("Current level: " + currentLevel);
         System.out.println("difficulty: " + difficultyFactor);
+        //TODO make this scale
+        placeEnemies((int) (5 + difficultyFactor * 2));
 
-        placeEnemies((int) (10 * difficultyFactor));
+        this.healthIncrement = (int) (player.getHealth() * 0.2);
     }
 
     public void placeEnemies(int numberOfEnemies) {
@@ -150,6 +154,17 @@ public final class GameStateGameplay extends GameState {
                     continue;
                 }
 
+                //only place here if there is no node above it
+                Boolean valid = true;
+                for(Node n : selectedNode.getNeighbors()){
+                    if (n.getY() == selectedNode.getY() -1){
+                        System.out.printf("Unsuitable");
+                        valid = false;
+                    }
+                }
+                if(!valid){
+                    continue;
+                }
 
                 Enemy enemy = new Enemy(selectedNode.getX() * Constants.TILE_SIZE ,
                         (selectedNode.getY() - 1) * Constants.TILE_SIZE + 20, 160);
@@ -176,14 +191,6 @@ public final class GameStateGameplay extends GameState {
 
         float cameraOffset = level.getCameraX();
 
-        // // Display current level and difficulty
-        // sketch.fill(255); // White text
-        // sketch.textSize(14);
-        // sketch.textAlign(PApplet.LEFT, PApplet.TOP);
-        // String gameInfo = String.format("Difficulty: %.2f | Score: %d",
-        // difficultyFactor,
-        // score);
-        // sketch.text(gameInfo, 10, 10);
 
         level.draw(); // Draw the current view of the level
         // level.drawGraph(sketch);
@@ -211,13 +218,6 @@ public final class GameStateGameplay extends GameState {
         if (level.playerOnBallot())
             didReachBallotBox = true;
 
-        // for (Node n : level.getNodes()) {
-        // for (BoundingBox b : n.getBounds()) {
-        // sketch.stroke(0, 0, 0);
-        // sketch.rect(b.getLocation().x, b.getLocation().y, Constants.TILE_SIZE,
-        // Constants.TILE_SIZE);
-        // }
-        // }
         update(0.0f);
 
         sketch.noStroke();
@@ -235,7 +235,26 @@ public final class GameStateGameplay extends GameState {
             player.setHealth(0);
         }
 
+        // Display current level and difficulty
+        sketch.pushMatrix();
+        sketch.fill(255); // White text
+        sketch.textSize(14);
+        sketch.translate(45, Constants.Screen.height - 50);
+        String gameInfo = String.format("Difficulty: %.2f | Score: %d",
+                difficultyFactor,
+                score);
+        sketch.text(gameInfo, 50,0);
+        sketch.popMatrix();
+
+        sketch.pushMatrix();
+        sketch.fill(255,0,0); // red
+        sketch.translate(10, Constants.Screen.height - 30);
+        int numSegs = (int) (player.getHealth() / this.healthIncrement);
+        sketch.rect(0,0,numSegs * 20, 10);
+        sketch.popMatrix();
+
         if (player.getHealth() <= 0) {
+
             return new GameStateLoss(player, items);
         } else if (didReachBallotBox && level.playerOnEntrance()) {
             score += calculateScore(sketch);
@@ -243,6 +262,9 @@ public final class GameStateGameplay extends GameState {
         } else {
             return null;
         }
+
+
+
     }
 
     /**
@@ -319,11 +341,6 @@ public final class GameStateGameplay extends GameState {
 
     public void update(float deltaTime) {
         if (!isPaused) {
-            level.update(deltaTime);
-
-            movePlayer();
-            // player.move(level.getNodes());
-            player.move(level.getLevelGrid());
 
             for (Enemy e : enemies) {
                 Projectile b = e.fire(player, this.level.getNodes());
@@ -332,7 +349,6 @@ public final class GameStateGameplay extends GameState {
                 }
 
             }
-
             // if any projectiles crash into a wall
             // delete them
             ArrayList<Projectile> toRemove = new ArrayList<Projectile>();
@@ -344,9 +360,32 @@ public final class GameStateGameplay extends GameState {
                 }
             }
             projectiles.removeAll(toRemove);
+            toRemove.clear();
+
 
             // TODO remove the enemy from the arraylist of enemies when killed
+            //check for collisions with the player
+            for(Projectile p : this.projectiles){
 
+                if(player.Collision(p)){
+                    System.out.printf("health" + player.getHealth());
+                    player.setHealth(player.getHealth() - this.healthIncrement);
+                    toRemove.add(p);
+
+                }
+            }
+            projectiles.removeAll(toRemove);
+            toRemove.clear();
+
+            for(Projectile p : this.projectiles){
+                p.move();
+            }
+
+            level.update(deltaTime);
+
+            movePlayer();
+            // player.move(level.getNodes());
+            player.move(level.getLevelGrid());
 
         }
     }

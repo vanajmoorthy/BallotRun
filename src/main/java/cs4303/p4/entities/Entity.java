@@ -27,7 +27,7 @@ public abstract class Entity extends Collidable {
     private EnumMap<Attribute, AttributeModifier> baseAttributes;
     private ArrayList<Item> inventory;
     private int maxSlots;
-    private int health = 1;
+    private int health = 100;
 
     // values for movement
     // TODO add to constructors
