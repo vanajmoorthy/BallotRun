@@ -23,10 +23,8 @@ public class Game extends PApplet {
     public void settings() {
         smooth(8);
 
-        size(
-            Math.max(Constants.Screen.width, Constants.Screen.minWidth),
-            Math.max(Constants.Screen.height, Constants.Screen.minHeight)
-        );
+        size(Math.max(Constants.Screen.width, Constants.Screen.minWidth),
+                Math.max(Constants.Screen.height, Constants.Screen.minHeight));
     }
 
     @Override

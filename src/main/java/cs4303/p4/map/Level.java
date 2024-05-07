@@ -12,12 +12,16 @@ import cs4303.p4.physics.BoundingBox;
 import cs4303.p4.states.GameStateGameplay;
 import lombok.Getter;
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.core.PVector;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import org.springframework.util.ResourceUtils;
 
 public class Level {
     private int cellSize;
@@ -63,15 +67,27 @@ public class Level {
     private List<Laser> lasers;
     private int healthIncrement;
 
-    public Level(PApplet p, float difficultyFactor, Player player, int width, GameStateGameplay gamePlay) {
+    PImage platformImage; // Declare platform image
+    PImage ballotImage; // Declare platform image
+
+    public Level(PApplet p, float difficultyFactor, Player player, int width, GameStateGameplay gamePlay,
+            PImage platformImage) {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
 
-        Level.gridWidth = (p.width / cellSize) * Math.max(width, 2);
+        try {
+            ballotImage = p
+                    .loadImage(ResourceUtils.getFile("classpath:textures/" + "ballot" + ".png").getAbsolutePath());
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        Level.gridWidth = (p.width / cellSize);// * Math.max(width, 2);
         Level.gridHeight = (Constants.Screen.height - Constants.Screen.GamePlay.infoPanelHeight) / cellSize;
 
         levelGrid = new Tile[gridHeight][gridWidth];
-
+        this.platformImage = platformImage;
         initializeGrid();
         this.player = player;
         this.entities = new ArrayList<Entity>();
@@ -125,7 +141,7 @@ public class Level {
     private void initializeGrid() {
         for (int y = 0; y < gridHeight; y++) {
             for (int x = 0; x < gridWidth; x++) {
-                levelGrid[y][x] = new Tile(cellSize); // Initialize each Tile object
+                levelGrid[y][x] = new Tile(cellSize, platformImage); // Initialize each Tile object
             }
         }
     }
@@ -235,9 +251,10 @@ public class Level {
             highestPlatformY = randomY;
             System.out.println("No platform found in the rightmost column. Setting start tile at random position.");
         }
+
         // Spawn ballot box
         BallotBox ballotBox = new BallotBox((gridWidth - 1) * Constants.TILE_SIZE + Constants.TILE_SIZE / 2,
-                (highestPlatformY) * Constants.TILE_SIZE);
+                (highestPlatformY) * Constants.TILE_SIZE, ballotImage);
         ballotBox.getLocation().x -= ballotBox.getBounds().get(0).getWidth() / 2;
         ballotBox.getLocation().y -= ballotBox.getBounds().get(0).getHeight();
         entranceAndBallot.add(ballotBox);
