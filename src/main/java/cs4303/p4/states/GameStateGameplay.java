@@ -47,117 +47,62 @@ public final class GameStateGameplay extends GameState {
     private int cursor = PApplet.ARROW;
 
     private int currentLevel = 1;
-    private float difficultyFactor = 1.2f; // Start with a base difficulty
+    private float difficultyFactor = 0.0f; // Start with a base difficulty
     private int score = 0;
 
-    private GestureDetector buttonRestart = new GestureDetector(
-            (sketch, hitbox, hasHover, hasClick) -> {
-                if (hasHover && !isPaused)
-                    cursor = PApplet.HAND;
+    private GestureDetector buttonRestart = new GestureDetector((sketch, hitbox, hasHover, hasClick) -> {
+        if (hasHover && !isPaused)
+            cursor = PApplet.HAND;
 
-            sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
-            sketch.noStroke();
-            sketch.rect(
-                Constants.Screen.width - 10 - 40,
-                Constants.Screen.height - 10 - 40,
-                40,
-                40,
-                10
-            );
+        sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
+        sketch.noStroke();
+        sketch.rect(Constants.Screen.width - 10 - 40, Constants.Screen.height - 10 - 40, 40, 40, 10);
 
-            sketch.noFill();
-            sketch.stroke(Colors.white);
-            sketch.strokeWeight(2);
-            sketch.rect(Constants.Screen.width - 10 - 40 + 4, 10 + 4, 32, 32, 6);
+        sketch.noFill();
+        sketch.stroke(Colors.white);
+        sketch.strokeWeight(2);
+        sketch.rect(Constants.Screen.width - 10 - 40 + 4, 10 + 4, 32, 32, 6);
 
-            sketch.filter(PApplet.INVERT);
-            try {
-                sketch.image(
-                    sketch.loadImage(
-                        ResourceUtils.getFile("classpath:icons/reload.png").getAbsolutePath()
-                    ),
-                    Constants.Screen.width - 10 - 40 + 5,
-                    10 + 5,
-                    30,
-                    30
-                );
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            sketch.filter(PApplet.INVERT);
+        sketch.filter(PApplet.INVERT);
+        try {
+            sketch.image(sketch.loadImage(ResourceUtils.getFile("classpath:icons/reload.png").getAbsolutePath()),
+                    Constants.Screen.width - 10 - 40 + 5, 10 + 5, 30, 30);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        sketch.filter(PApplet.INVERT);
 
-        },
-        (sketch, button) -> {
-            if (!isPaused) level.restartLevel();
-        },
-        new GestureDetector.Hitbox(
-            new PVector(
-                Constants.Screen.width - 10 - 40,
-                10
-            ),
-            new PVector(40, 40)
-        )
-    );
+    }, (sketch, button) -> {
+        if (!isPaused)
+            level.restartLevel();
+    }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40, 10), new PVector(40, 40)));
 
-    private GestureDetector buttonPause = new GestureDetector(
-            (sketch, hitbox, hasHover, hasClick) -> {
-                if (hasHover)
-                    cursor = PApplet.HAND;
+    private GestureDetector buttonPause = new GestureDetector((sketch, hitbox, hasHover, hasClick) -> {
+        if (hasHover)
+            cursor = PApplet.HAND;
 
-            sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
-            sketch.noStroke();
-            sketch.rect(
-                Constants.Screen.width - 10 - 40 - 50,
-                10,
-                40,
-                40,
-                10
-            );
+        sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
+        sketch.noStroke();
+        sketch.rect(Constants.Screen.width - 10 - 40 - 50, 10, 40, 40, 10);
 
-            sketch.noFill();
-            sketch.stroke(Colors.white);
-            sketch.strokeWeight(2);
-            sketch.rect(
-                Constants.Screen.width - 10 - 40 - 50 + 4,
-                10 + 4,
-                32,
-                32,
-                6
-            );
+        sketch.noFill();
+        sketch.stroke(Colors.white);
+        sketch.strokeWeight(2);
+        sketch.rect(Constants.Screen.width - 10 - 40 - 50 + 4, 10 + 4, 32, 32, 6);
 
-            sketch.filter(PApplet.INVERT);
-            try {
-                sketch.image(
-                    sketch.loadImage(
-                        ResourceUtils
-                            .getFile(
-                                isPaused
-                                    ? "classpath:icons/play.png"
-                                    : "classpath:icons/pause.png"
-                            ).getAbsolutePath()
-                    ),
-                    Constants.Screen.width - 10 - 40 - 50 + 5,
-                    10 + 5,
-                    30,
-                    30
-                );
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            sketch.filter(PApplet.INVERT);
+        sketch.filter(PApplet.INVERT);
+        try {
+            sketch.image(sketch.loadImage(ResourceUtils
+                    .getFile(isPaused ? "classpath:icons/play.png" : "classpath:icons/pause.png").getAbsolutePath()),
+                    Constants.Screen.width - 10 - 40 - 50 + 5, 10 + 5, 30, 30);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        sketch.filter(PApplet.INVERT);
 
-        },
-        (sketch, button) -> {
-            isPaused = !isPaused;
-        },
-        new GestureDetector.Hitbox(
-            new PVector(
-                Constants.Screen.width - 10 - 40 - 50,
-                10
-            ),
-            new PVector(40, 40)
-        )
-    );
+    }, (sketch, button) -> {
+        isPaused = !isPaused;
+    }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40 - 50, 10), new PVector(40, 40)));
 
     public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
         // TODO insert a start location
@@ -175,8 +120,8 @@ public final class GameStateGameplay extends GameState {
         entities.addAll(level.getEntities()); // Add new level entities
         player.resetPlayer(); // Reset player's position
         didReachBallotBox = false;
-        System.out.println("Width: " + newWidth);
-        System.out.println("Current level: " + currentLevel);
+        // System.out.println("Width: " + newWidth);
+        // System.out.println("Current level: " + currentLevel);
 
     }
 
@@ -221,8 +166,9 @@ public final class GameStateGameplay extends GameState {
         // sketch.fill(255); // White text
         // sketch.textSize(14);
         // sketch.textAlign(PApplet.LEFT, PApplet.TOP);
-        // String gameInfo = String.format("Difficulty: %.2f | Score: %d", difficultyFactor,
-        //         score);
+        // String gameInfo = String.format("Difficulty: %.2f | Score: %d",
+        // difficultyFactor,
+        // score);
         // sketch.text(gameInfo, 10, 10);
 
         level.draw(); // Draw the current view of the level
@@ -256,20 +202,18 @@ public final class GameStateGameplay extends GameState {
 
         sketch.noStroke();
         sketch.fill(Colors.darkGray.dark);
-        sketch.rect(
-            0,
-            Constants.Screen.height - Constants.Screen.GamePlay.infoPanelHeight,
-            Constants.Screen.width,
-            Constants.Screen.GamePlay.infoPanelHeight
-        );
+        sketch.rect(0, Constants.Screen.height - Constants.Screen.GamePlay.infoPanelHeight, Constants.Screen.width,
+                Constants.Screen.GamePlay.infoPanelHeight);
 
         buttonRestart.draw(sketch);
         buttonPause.draw(sketch);
 
         sketch.cursor(cursor);
 
-        if (player.getLocation().y > Constants.Screen.height)
+        if (player.getLocation().y > Constants.Screen.height) {
+            System.out.println("y!");
             player.setHealth(0);
+        }
 
         if (player.getHealth() <= 0) {
             return new GameStateLoss(player, items);
@@ -282,9 +226,7 @@ public final class GameStateGameplay extends GameState {
     }
 
     /**
-     * w is jump
-     * a is left
-     * d is right
+     * w is jump a is left d is right
      * 
      * @param sketch
      */
@@ -344,19 +286,13 @@ public final class GameStateGameplay extends GameState {
         }
 
         if (a_pressed) {
-            PVector left = new PVector(
-                -1 * Constants.moveIncrement,
-                0
-            );
+            PVector left = new PVector(-1 * Constants.moveIncrement, 0);
             player.applyForce(left);
         }
 
         if (d_pressed) {
 
-            PVector right = new PVector(
-                Constants.moveIncrement,
-                0
-            );
+            PVector right = new PVector(Constants.moveIncrement, 0);
             player.applyForce(right);
         }
     }
