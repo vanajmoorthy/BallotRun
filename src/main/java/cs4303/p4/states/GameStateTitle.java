@@ -11,7 +11,6 @@ import cs4303.p4._util.Constants;
 import cs4303.p4._util.gui.GestureDetector;
 import cs4303.p4.entities.Player;
 import cs4303.p4.items.Item;
-import cs4303.p4.items.ItemType;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
@@ -34,18 +33,6 @@ public class GameStateTitle extends GameState {
         }
         this.player = new Player(0, 0, playerImage);
         this.items = new ArrayList<Item>();
-
-        items.add(new Item(ItemType.Chestplate));
-        items.add(new Item(ItemType.Constinution));
-        items.add(new Item(ItemType.ParliamentSword));
-        items.add(new Item(ItemType.CongressSword));
-        items.add(new Item(ItemType.Bribe));
-        items.add(new Item(ItemType.HealthTalisman));
-        items.add(new Item(ItemType.GlobalizationCharm));
-        items.add(new Item(ItemType.Bill));
-        items.add(new Item(ItemType.FancySuit));
-        items.add(new Item(ItemType.DeepestConcerns));
-        items.add(new Item(ItemType.TradeTreaty));
     }
 
     private int cursor = PApplet.ARROW;
