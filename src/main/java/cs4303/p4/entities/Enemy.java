@@ -52,9 +52,17 @@ public class Enemy extends Entity {
 
     @Override
     public void draw(PApplet sketch) {
-        sketch.image(image, super.getLocation().x, super.getLocation().y - size / 2, size, size); // Draw the image at
-                                                                                                  // the ballot
-        // box
+        try {
+            sketch.image(image, super.getLocation().x, super.getLocation().y - size / 2, size, size); // Draw the image
+                                                                                                      // at
+        } catch (Exception e) {
+            sketch.pushMatrix();
+            sketch.noStroke();
+            sketch.fill(Colors.red.primary);
+            sketch.rect(getLocation().x, getLocation().y, 20, 20);
+
+            sketch.popMatrix();
+        }
 
     }
 

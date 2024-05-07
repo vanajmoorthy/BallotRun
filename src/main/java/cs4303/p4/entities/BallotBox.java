@@ -28,7 +28,16 @@ public class BallotBox extends Entity {
 
     @Override
     public void draw(PApplet sketch) {
-        sketch.image(image, super.getLocation().x, super.getLocation().y, 35, 35); // Draw the image at the ballot box
-                                                                                   // position
+        try {
+            sketch.image(image, super.getLocation().x, super.getLocation().y, 35, 35); // Draw the image at the ballot
+                                                                                       // box
+
+        } catch (Exception e) {
+            sketch.fill(Colors.gray.light);
+            sketch.stroke(Colors.gray.primary);
+            sketch.strokeWeight(2);
+            sketch.rect(super.getLocation().x, super.getLocation().y, 35, 35);
+        }
+        // position
     }
 }
