@@ -14,6 +14,7 @@ import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
 import cs4303.p4.physics.Projectile;
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.core.PVector;
 
 import static processing.core.PApplet.constrain;
@@ -29,8 +30,9 @@ public class Player extends Entity {
     private static long ATTACK_COOLDOWN; // 500 milliseconds between attacks
     private int size;
     private boolean canJump = true;
+    PImage image;
 
-    public Player(float x, float y) {
+    public Player(float x, float y, PImage image) {
         super(x, y);
         super.setInventory(new ArrayList<Item>());
         super.setMaxSlots(3);
@@ -41,6 +43,7 @@ public class Player extends Entity {
         super.setVelocity(new PVector(0, 0));
         this.cameraOffsetX = 0;
         this.size = 20;
+        this.image = image;
 
         ATTACK_COOLDOWN = (500 * (long) AttributeController.getEntityAttributeValue(this, Attribute.AttackSpeed)) / 100;
         // create bounding box
@@ -59,20 +62,19 @@ public class Player extends Entity {
         }
     }
 
-    public void updateAttack(PApplet sketch,ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
+    public void updateAttack(PApplet sketch, ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
         if (isAttacking) {
             if (currentAttackRadius < attackRadius) {
                 currentAttackRadius += 5; // Increment the radius for animation
                 sketch.noFill();
                 sketch.stroke(255, 0, 0); // Red color for attack radius
                 // Draw ellipse centered on player's center
-                sketch.ellipse(getLocation().x + 10, getLocation().y + 10, currentAttackRadius ,
-                        currentAttackRadius );
+                sketch.ellipse(getLocation().x + 10, getLocation().y + 10, currentAttackRadius, currentAttackRadius);
             } else {
                 isAttacking = false; // Stop the attack
 
             }
-            checkForEnemiesWithinRadius(enemies,bullets); // Check for enemies within the radius
+            checkForEnemiesWithinRadius(enemies, bullets); // Check for enemies within the radius
         }
     }
 
@@ -80,15 +82,17 @@ public class Player extends Entity {
         // This method would check if any enemy is within the attack radius
         // You will need a reference to the list of enemies or pass it as a parameter
         ArrayList<Enemy> toRemove = new ArrayList<>();
-        for(Enemy e: enemies){
-            if(isWithinRadius(e.getLocation().x, e.getLocation().y,e.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+        for (Enemy e : enemies) {
+            if (isWithinRadius(e.getLocation().x, e.getLocation().y, e.getSize(), this.getLocation().x + 10,
+                    this.getLocation().y + 10, currentAttackRadius)) {
                 System.out.printf("in radius");
                 toRemove.add(e);
             }
         }
         ArrayList<Projectile> removals = new ArrayList<>();
-        for(Projectile p :bullets){
-            if(isWithinRadius(p.getLocation().x, p.getLocation().y,p.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+        for (Projectile p : bullets) {
+            if (isWithinRadius(p.getLocation().x, p.getLocation().y, p.getSize(), this.getLocation().x + 10,
+                    this.getLocation().y + 10, currentAttackRadius)) {
                 System.out.printf("in radius");
                 removals.add(p);
             }
@@ -98,29 +102,24 @@ public class Player extends Entity {
 
     }
 
-
     boolean isWithinRadius(float squareX, float squareY, float squareSize, float radiusX, float radiusY, float radius) {
-        PVector squareCentre  = new PVector(squareX -this.cameraOffsetX + squareSize/2 , squareY + squareSize/2);
+        PVector squareCentre = new PVector(squareX - this.cameraOffsetX + squareSize / 2, squareY + squareSize / 2);
         PVector radiusCentre = new PVector(radiusX, radiusY);
 
-        PVector squareToRadius = PVector.sub(radiusCentre,squareCentre);
+        PVector squareToRadius = PVector.sub(radiusCentre, squareCentre);
 
-        if(squareToRadius.mag() <= radius){
+        if (squareToRadius.mag() <= radius) {
             return true;
 
-        }else{
+        } else {
             return false;
         }
     }
 
     @Override
     public void draw(PApplet sketch) {
-        sketch.pushMatrix();
-        sketch.noStroke();
-        sketch.fill(Colors.blue.primary); // Blue color for player
-        sketch.rect(getLocation().x, getLocation().y, size, size);
 
-        sketch.popMatrix();
+        sketch.image(image, getLocation().x, getLocation().y, size, size); // Draw the image at
 
     }
 

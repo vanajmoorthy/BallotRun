@@ -26,6 +26,7 @@ import java.util.Random;
 
 import org.springframework.util.ResourceUtils;
 import processing.core.PImage;
+import processing.sound.*;
 
 public final class GameStateGameplay extends GameState {
     @Getter
@@ -56,6 +57,11 @@ public final class GameStateGameplay extends GameState {
     private int score = 0;
     PImage platformImage; // Declare platform image
     PImage enemyImage; // Declare enemy image
+
+    SoundFile laserSound;
+    SoundFile jumpSound;
+    SoundFile successSound;
+    SoundFile explodeSound;
 
     private GestureDetector buttonRestart = new GestureDetector((sketch, hitbox, hasHover, hasClick) -> {
         if (hasHover && !isPaused)
@@ -116,6 +122,26 @@ public final class GameStateGameplay extends GameState {
         this.items = items;
         this.difficultyFactor = player.getInventory().stream().map(item -> item.getType().getRarity().getDifficultyModifier()).reduce(0f, Float::sum);
         startLevel(sketch);
+
+        // try {
+        // laserSound = new SoundFile(sketch,
+        // ResourceUtils.getFile("classpath:sounds/" + "laser" +
+        // ".wav").getAbsolutePath());
+        // jumpSound = new SoundFile(sketch,
+        // ResourceUtils.getFile("classpath:sounds/" + "jump" +
+        // ".wav").getAbsolutePath());
+
+        // explodeSound = new SoundFile(sketch,
+        // ResourceUtils.getFile("classpath:sounds/" + "explode" +
+        // ".wav").getAbsolutePath());
+
+        // successSound = new SoundFile(sketch,
+        // ResourceUtils.getFile("classpath:sounds/" + "success" +
+        // ".wav").getAbsolutePath());
+        // } catch (FileNotFoundException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
     }
 
     public void startLevel(PApplet sketch) {

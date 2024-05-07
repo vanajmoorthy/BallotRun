@@ -29,7 +29,7 @@ public class Game extends PApplet {
 
     @Override
     public void setup() {
-        state = new GameStateTitle();
+        state = new GameStateTitle(this);
 
         // TODO MAKE THIS NOT A COMMENT
         frameRate(30); // Set the frame rate to 30 fps
