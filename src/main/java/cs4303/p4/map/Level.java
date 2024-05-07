@@ -1,6 +1,7 @@
 package cs4303.p4.map;
 
 import cs4303.p4._util.gui.TimedText;
+import cs4303.p4.Game;
 import cs4303.p4._util.Constants;
 import cs4303.p4.entities.BallotBox;
 import cs4303.p4.entities.Entity;
@@ -8,6 +9,7 @@ import cs4303.p4.entities.Entrance;
 import cs4303.p4.entities.Laser;
 import cs4303.p4.entities.Player;
 import cs4303.p4.physics.BoundingBox;
+import cs4303.p4.states.GameStateGameplay;
 import lombok.Getter;
 import processing.core.PApplet;
 import processing.core.PVector;
@@ -59,8 +61,9 @@ public class Level {
     private TimedText ballotMessage;
     private TimedText startingMessage;
     private List<Laser> lasers;
+    private int healthIncrement;
 
-    public Level(PApplet p, float difficultyFactor, Player player, int width) {
+    public Level(PApplet p, float difficultyFactor, Player player, int width, GameStateGameplay gamePlay) {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
 
@@ -84,17 +87,39 @@ public class Level {
 
         lasers = new ArrayList<>();
         generateLasers();
+        this.healthIncrement = gamePlay.getHealthIncrement();
+
     }
 
     private void generateLasers() {
         int numLasers = gridWidth / 10; // Number of lasers to add
         int buffer = 10; // Number of cells to skip from the start
+        int minSpacing = 5; // Minimum number of cells between each laser
+
         Random rand = new Random();
+        List<Integer> laserPositions = new ArrayList<>(); // Track the grid positions of lasers
+
         for (int i = 0; i < numLasers; i++) {
-            int x = (rand.nextInt(gridWidth - buffer) + buffer) * cellSize; // Avoid placing lasers in the buffer zone
-            int y = 0; // Start at the top of the grid
-            lasers.add(new Laser(parent, x, y));
+            int x;
+            do {
+                // Generate a position ensuring it's beyond the buffer and spaced by minSpacing
+                x = (rand.nextInt(gridWidth - buffer - minSpacing) + buffer);
+            } while (!isPositionValid(x, laserPositions, minSpacing));
+
+            laserPositions.add(x); // Store the position
+            lasers.add(new Laser(parent, x * cellSize, 0)); // Create a new laser at this position
         }
+    }
+
+    private boolean isPositionValid(int currentPosition, List<Integer> positions, int minSpacing) {
+        // Check if the new position is at least minSpacing cells away from existing
+        // lasers
+        for (int pos : positions) {
+            if (Math.abs(pos - currentPosition) < minSpacing) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void initializeGrid() {
@@ -537,7 +562,10 @@ public class Level {
         for (Laser laser : lasers) {
             laser.update(deltaTime); // Update each laser
             if (laser.checkCollision(player)) {
-                player.setHealth(player.getHealth() - 1); // Decrease health if there's a collision
+                System.out.println("player health before hit" + player.getHealth());
+
+                player.setHealth(player.getHealth() - this.healthIncrement * 2);
+                System.out.println("player health after hit" + player.getHealth());
             }
         }
     }

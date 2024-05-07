@@ -15,6 +15,7 @@ import cs4303.p4.map.Tile;
 import cs4303.p4.map.TileType;
 import cs4303.p4.physics.Bullet;
 import cs4303.p4.physics.Projectile;
+import lombok.Getter;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -26,6 +27,7 @@ import java.util.Random;
 import org.springframework.util.ResourceUtils;
 
 public final class GameStateGameplay extends GameState {
+    @Getter
     private int healthIncrement;
     private Player player;
     private Level level;
@@ -116,19 +118,17 @@ public final class GameStateGameplay extends GameState {
     public void startLevel(PApplet sketch) {
         entities.clear(); // Clear all entities before adding new ones
         int newWidth = (int) (currentLevel / 1.8); // Increase grid width with each level
-        level = new Level(sketch, difficultyFactor, player, newWidth);
+        player.resetPlayer(); // Reset player's position
+
+        this.healthIncrement = (int) (player.getHealth() * 0.1);
+        level = new Level(sketch, difficultyFactor, player, newWidth, this);
         level.buildGraph();
         entities.add(player); // Re-add the player
         entities.addAll(level.getEntities()); // Add new level entities
-        player.resetPlayer(); // Reset player's position
         didReachBallotBox = false;
-        System.out.println("Width: " + newWidth);
-        System.out.println("Current level: " + currentLevel);
-        System.out.println("difficulty: " + difficultyFactor);
         // TODO make this scale
         placeEnemies((int) (5 + difficultyFactor * 2));
 
-        this.healthIncrement = (int) (player.getHealth() * 0.2);
     }
 
     public void placeEnemies(int numberOfEnemies) {
@@ -158,7 +158,7 @@ public final class GameStateGameplay extends GameState {
                 Boolean valid = true;
                 for (Node n : selectedNode.getNeighbors()) {
                     if (n.getY() == selectedNode.getY() - 1) {
-                        System.out.printf("Unsuitable");
+                        // System.out.printf("Unsuitable");
                         valid = false;
                     }
                 }
@@ -385,7 +385,6 @@ public final class GameStateGameplay extends GameState {
             for (Projectile p : this.projectiles) {
 
                 if (player.Collision(p)) {
-                    System.out.printf("health" + player.getHealth());
                     player.setHealth(player.getHealth() - this.healthIncrement);
                     toRemove.add(p);
 
