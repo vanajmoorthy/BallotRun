@@ -112,6 +112,13 @@ public abstract class Entity extends Collidable {
         }
 
         velocity.x = v_x;
+        getLocation().x += v_x;
+
+        x_min = getLocation().x + 1;
+        x_max = x_min + boundingBox.getWidth() - 1;
+
+        tile_x_min = (int) (x_min / Constants.TILE_SIZE);
+        tile_x_max = (int) (x_max / Constants.TILE_SIZE);
 
         if (v_y > 0) {
             for (int i = tile_y_max + 1; i <= (int) ((y_max + v_y) / Constants.TILE_SIZE); i++) {
@@ -138,6 +145,7 @@ public abstract class Entity extends Collidable {
         }
 
         velocity.y = v_y;
+        getLocation().x -= v_x;
 
         // System.out.println(getTileX() + " " + getTileY());
         // System.out.println(getLocation().x + " " + getLocation().y);
@@ -240,7 +248,7 @@ public abstract class Entity extends Collidable {
         // this.setVelocity(v);
 
         // Update position based on velocity
-        super.getLocation().add(velocity);
+        getLocation().add(velocity);
 
         this.setAcceleration(new PVector(0, 0));
     }
