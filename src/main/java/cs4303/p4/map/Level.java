@@ -83,7 +83,7 @@ public class Level {
             e.printStackTrace();
         }
 
-        Level.gridWidth = (p.width / cellSize) * Math.max(width, 2);
+        Level.gridWidth = (p.width / cellSize);// * Math.max(width, 2);
         Level.gridHeight = (Constants.Screen.height - Constants.Screen.GamePlay.infoPanelHeight) / cellSize;
 
         levelGrid = new Tile[gridHeight][gridWidth];
@@ -246,10 +246,17 @@ public class Level {
         }
         // Spawn a platform if rightmost column has no tiles
         if (highestPlatformY == -1) {
-            int randomY = PApplet.floor(parent.random(2, gridHeight));
+            int randomY = PApplet.floor(parent.random(2, 7));
             levelGrid[randomY][gridWidth - 1].setType(TileType.PLATFORM);
             highestPlatformY = randomY;
             System.out.println("No platform found in the rightmost column. Setting start tile at random position.");
+        }
+
+        // If the highest platform is not within the top 5 rows, generate a random
+        // y-coordinate within the top 5 rows
+        if (highestPlatformY > 4) {
+            highestPlatformY = (int) parent.random(0, 5);
+            System.out.println("Highest platform is not in top 5 rows. Placing ballot box randomly in top 5 rows.");
         }
 
         // Spawn ballot box
@@ -382,7 +389,9 @@ public class Level {
     private void ensureBallotAccessibility(int ballotX, int ballotY) {
         // Ensure the tile with the ballot box is empty
         levelGrid[ballotY][ballotX].setType(TileType.EMPTY);
-        levelGrid[ballotY - 1][ballotX].setType(TileType.EMPTY);
+        if (ballotY - 1 >= 0) {
+            levelGrid[ballotY - 1][ballotX].setType(TileType.EMPTY);
+        }
 
         // Clear tiles in a diagonal path leading to the ballot box and also clear above
         // the path
