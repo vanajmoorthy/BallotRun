@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
@@ -23,7 +24,6 @@ import cs4303.p4.items.Item;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-@Component
 public final class GameStateBase extends GameState {
     private Player player;
     private List<Item> items;
@@ -33,7 +33,7 @@ public final class GameStateBase extends GameState {
     private int cursor = PApplet.ARROW;
     private boolean didStartGame = false;
 
-    private ImageController imageController;
+    // private ImageController imageController;
 
     // @Autowired
     // public void 
@@ -241,6 +241,7 @@ public final class GameStateBase extends GameState {
                                     ResourceUtils
                                         .getFile("classpath:textures/" + item.getType().getId() + ".png")
                                         .getAbsolutePath()
+                                    // new ClassPathResource("classpath:textures/" + item.getType().getId() + ".png").getFilename()
                                 ),
                                 10 + offsetX + 9,
                                 10 + offsetY + 9,

@@ -94,7 +94,7 @@ public abstract class Entity extends Collidable {
                                 && levelGrid[tile_y_min][i].getType() == TileType.PLATFORM
                                 || tile_y_max < levelGrid.length && tile_y_max >= 0
                                         && levelGrid[tile_y_max][i].getType() == TileType.PLATFORM)) {
-                    v_x = Math.max(0, i * Constants.TILE_SIZE - x_max - 1);
+                    v_x = Math.max(0, i * Constants.TILE_SIZE - x_max - 0.05f);
                     break;
                 }
             }
@@ -105,7 +105,7 @@ public abstract class Entity extends Collidable {
                                 && levelGrid[tile_y_min][i].getType() == TileType.PLATFORM
                                 || tile_y_max < levelGrid.length && tile_y_max >= 0
                                         && levelGrid[tile_y_max][i].getType() == TileType.PLATFORM)) {
-                    v_x = Math.min(0, (i + 1) * Constants.TILE_SIZE - x_min + 1);
+                    v_x = Math.min(0, (i + 1) * Constants.TILE_SIZE - x_min + 0.05f);
                     break;
                 }
             }
@@ -120,7 +120,7 @@ public abstract class Entity extends Collidable {
                                 && levelGrid[i][tile_x_min].getType() == TileType.PLATFORM
                                 || tile_x_max < levelGrid[0].length && tile_x_max >= 0
                                         && levelGrid[i][tile_x_max].getType() == TileType.PLATFORM)) {
-                    v_y = Math.max(0, i * Constants.TILE_SIZE - y_max - 1);
+                    v_y = Math.max(0, i * Constants.TILE_SIZE - y_max - 0.05f);
                     break;
                 }
             }
@@ -131,7 +131,7 @@ public abstract class Entity extends Collidable {
                                 && levelGrid[i][tile_x_min].getType() == TileType.PLATFORM
                                 || tile_x_max < levelGrid[0].length && tile_x_max >= 0
                                         && levelGrid[i][tile_x_max].getType() == TileType.PLATFORM)) {
-                    v_y = Math.min(0, (i + 1) * Constants.TILE_SIZE - y_min + 1);
+                    v_y = Math.min(0, (i + 1) * Constants.TILE_SIZE - y_min + 0.05f);
                     break;
                 }
             }
