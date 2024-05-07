@@ -85,7 +85,6 @@ public class Player extends Entity {
         for (Enemy e : enemies) {
             if (isWithinRadius(e.getLocation().x, e.getLocation().y, e.getSize(), this.getLocation().x + 10,
                     this.getLocation().y + 10, currentAttackRadius)) {
-                System.out.printf("in radius");
                 toRemove.add(e);
             }
         }
@@ -93,7 +92,6 @@ public class Player extends Entity {
         for (Projectile p : bullets) {
             if (isWithinRadius(p.getLocation().x, p.getLocation().y, p.getSize(), this.getLocation().x + 10,
                     this.getLocation().y + 10, currentAttackRadius)) {
-                System.out.printf("in radius");
                 removals.add(p);
             }
         }

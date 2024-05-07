@@ -83,7 +83,7 @@ public class Level {
             e.printStackTrace();
         }
 
-        Level.gridWidth = (p.width / cellSize) * Math.max(width, 2);
+        Level.gridWidth = (p.width / cellSize);// * Math.max(width, 2);
         Level.gridHeight = (Constants.Screen.height - Constants.Screen.GamePlay.infoPanelHeight) / cellSize;
 
         levelGrid = new Tile[gridHeight][gridWidth];
@@ -392,6 +392,7 @@ public class Level {
         if (ballotY - 1 >= 0) {
             levelGrid[ballotY - 1][ballotX].setType(TileType.EMPTY);
         }
+        levelGrid[ballotY + 1][ballotX].setType(TileType.PLATFORM);
 
         // Clear tiles in a diagonal path leading to the ballot box and also clear above
         // the path
