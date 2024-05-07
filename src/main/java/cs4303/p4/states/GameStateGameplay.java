@@ -227,7 +227,15 @@ public final class GameStateGameplay extends GameState {
 
             entity.getLocation().x += cameraOffset;
         }
-
+        ArrayList<Entity> deleting = new ArrayList<Entity>();
+        for(Entity e: entities) {
+            if(e instanceof Enemy){
+                if(!enemies.contains(e)){
+                    deleting.add(e);
+                }
+            }
+        }
+        entities.removeAll(deleting);
         if (level.playerOnBallot())
             didReachBallotBox = true;
 

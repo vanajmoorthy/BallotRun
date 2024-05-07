@@ -104,11 +104,8 @@ public class Player extends Entity {
         PVector radiusCentre = new PVector(radiusX, radiusY);
 
         PVector squareToRadius = PVector.sub(radiusCentre,squareCentre);
-        System.out.println("mag :" +  squareToRadius.mag());
-        System.out.println(squareCentre);
-        System.out.println(radiusCentre);
-        if(squareToRadius.mag() <= (radius + squareSize)*2){
-            System.out.println("----------------------------------------------------------");
+
+        if(squareToRadius.mag() <= radius){
             return true;
 
         }else{
