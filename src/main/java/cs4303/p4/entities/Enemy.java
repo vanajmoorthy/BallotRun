@@ -6,29 +6,32 @@ import cs4303.p4.map.Node;
 import cs4303.p4.physics.BoundingBox;
 import cs4303.p4.physics.Bullet;
 import cs4303.p4.physics.Projectile;
+import lombok.Getter;
+import lombok.Setter;
 import processing.core.PApplet;
 import processing.core.PVector;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Getter
+@Setter
 public class Enemy extends Entity{
-    private int bullet_speed = 4;
+    private int bullet_speed;
     private float range;
     private long lastFireTime;
     private int cameraOffsetX;
-
+    private int size;
     /**
      * Basic constructor 
      * @param x
      * @param y
      */
-    public Enemy(float x, float y,float range) {
+    public Enemy(float x, float y,float range, float difficulty) {
         super(x, y);
-
+        this.size = 20;
         this.range  = range;
         super.setMass(Constants.PLAYER.INSTANCE.MASS);
-
+        this.bullet_speed = (int) PApplet.map(difficulty, 0, 5, 1, 4);
         // initialise mass and acceleration to 0
         super.setAcceleration(new PVector(0, 0));
         super.setVelocity(new PVector(0, 0));

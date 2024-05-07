@@ -15,6 +15,7 @@ import cs4303.p4.map.Tile;
 import cs4303.p4.map.TileType;
 import cs4303.p4.physics.Bullet;
 import cs4303.p4.physics.Projectile;
+import lombok.Getter;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -26,6 +27,8 @@ import java.util.Random;
 import org.springframework.util.ResourceUtils;
 
 public final class GameStateGameplay extends GameState {
+    @Getter
+    private int healthIncrement;
     private Player player;
     private Level level;
     private List<Item> items;
@@ -47,6 +50,7 @@ public final class GameStateGameplay extends GameState {
     private int cursor = PApplet.ARROW;
 
     private int currentLevel = 1;
+
     private float difficultyFactor = 0.0f; // Start with a base difficulty
     private int score = 0;
 
@@ -105,7 +109,7 @@ public final class GameStateGameplay extends GameState {
     }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40 - 50, 10), new PVector(40, 40)));
 
     public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
-        // TODO insert a start location
+
         this.player = player;
         this.items = items;
         startLevel(sketch);
@@ -114,17 +118,17 @@ public final class GameStateGameplay extends GameState {
     public void startLevel(PApplet sketch) {
         entities.clear(); // Clear all entities before adding new ones
         int newWidth = (int) (currentLevel / 1.8); // Increase grid width with each level
-        level = new Level(sketch, difficultyFactor, player, newWidth);
+        player.resetPlayer(); // Reset player's position
+
+        this.healthIncrement = (int) (player.getHealth() * 0.1);
+        level = new Level(sketch, difficultyFactor, player, newWidth, this);
         level.buildGraph();
         entities.add(player); // Re-add the player
         entities.addAll(level.getEntities()); // Add new level entities
-        player.resetPlayer(); // Reset player's position
         didReachBallotBox = false;
-        System.out.println("Width: " + newWidth);
-        System.out.println("Current level: " + currentLevel);
-        System.out.println("difficulty: " + difficultyFactor);
+        // TODO make this scale
+        placeEnemies((int) (5 + difficultyFactor * 2));
 
-        placeEnemies((int) (10 * difficultyFactor));
     }
 
     public void placeEnemies(int numberOfEnemies) {
@@ -135,24 +139,34 @@ public final class GameStateGameplay extends GameState {
                 int randomIndex = random.nextInt(level.getNodes().size());
                 Node selectedNode = level.getNodes().get(randomIndex);
 
-
-                if(selectedNode.getY() == 0){
+                if (selectedNode.getY() == 0) {
                     continue;
                 }
 
-                if(selectedNode.getY() >= level.gridHeight -1 ){
+                if (selectedNode.getY() >= level.gridHeight - 1) {
                     continue;
                 }
-                if(selectedNode.getX() == 0){
+                if (selectedNode.getX() == 0) {
                     continue;
                 }
-                if(selectedNode.getX() >= level.gridWidth -1){
+                if (selectedNode.getX() >= level.gridWidth - 1) {
                     continue;
                 }
 
+                // only place here if there is no node above it
+                Boolean valid = true;
+                for (Node n : selectedNode.getNeighbors()) {
+                    if (n.getY() == selectedNode.getY() - 1) {
+                        // System.out.printf("Unsuitable");
+                        valid = false;
+                    }
+                }
+                if (!valid) {
+                    continue;
+                }
 
-                Enemy enemy = new Enemy(selectedNode.getX() * Constants.TILE_SIZE ,
-                        (selectedNode.getY() - 1) * Constants.TILE_SIZE + 20, 160);
+                Enemy enemy = new Enemy(selectedNode.getX() * Constants.TILE_SIZE,
+                        (selectedNode.getY() - 1) * Constants.TILE_SIZE + 20, 160, this.difficultyFactor);
 
                 entities.add(enemy);
                 enemies.add(enemy);
@@ -163,7 +177,6 @@ public final class GameStateGameplay extends GameState {
 
         }
     }
-
 
     private int calculateScore(PApplet sketch) {
         return (int) ((100 * difficultyFactor) + sketch.random(20));
@@ -176,23 +189,8 @@ public final class GameStateGameplay extends GameState {
 
         float cameraOffset = level.getCameraX();
 
-        // // Display current level and difficulty
-        // sketch.fill(255); // White text
-        // sketch.textSize(14);
-        // sketch.textAlign(PApplet.LEFT, PApplet.TOP);
-        // String gameInfo = String.format("Difficulty: %.2f | Score: %d",
-        // difficultyFactor,
-        // score);
-        // sketch.text(gameInfo, 10, 10);
-
         level.draw(); // Draw the current view of the level
         // level.drawGraph(sketch);
-
-        for (Entity entity : entities) {
-            entity.getLocation().x -= cameraOffset;
-            entity.draw(sketch);
-            entity.getLocation().x += cameraOffset;
-        }
 
         for (Entity entity : level.getEntranceAndBallot()) {
             entity.getLocation().x -= cameraOffset;
@@ -200,24 +198,37 @@ public final class GameStateGameplay extends GameState {
             entity.getLocation().x += cameraOffset;
         }
 
-        for (Projectile p : projectiles){
+        for (Projectile p : projectiles) {
             p.getLocation().x -= cameraOffset;
             p.draw(sketch);
             p.getLocation().x += cameraOffset;
         }
 
-        player.updateAttack(sketch);
+        for (Entity entity : entities) {
 
+            entity.getLocation().x -= cameraOffset;
+            entity.draw(sketch);
+
+            if (entity instanceof Player) {
+                player.cameraOffsetX = cameraOffset;
+                player.updateAttack(sketch, enemies, projectiles);
+
+            }
+
+            entity.getLocation().x += cameraOffset;
+        }
+        ArrayList<Entity> deleting = new ArrayList<Entity>();
+        for (Entity e : entities) {
+            if (e instanceof Enemy) {
+                if (!enemies.contains(e)) {
+                    deleting.add(e);
+                }
+            }
+        }
+        entities.removeAll(deleting);
         if (level.playerOnBallot())
             didReachBallotBox = true;
 
-        // for (Node n : level.getNodes()) {
-        // for (BoundingBox b : n.getBounds()) {
-        // sketch.stroke(0, 0, 0);
-        // sketch.rect(b.getLocation().x, b.getLocation().y, Constants.TILE_SIZE,
-        // Constants.TILE_SIZE);
-        // }
-        // }
         update(0.0f);
 
         sketch.noStroke();
@@ -231,11 +242,27 @@ public final class GameStateGameplay extends GameState {
         sketch.cursor(cursor);
 
         if (player.getLocation().y > Constants.Screen.height) {
-            System.out.println("y!");
             player.setHealth(0);
         }
 
+        // Display current level and difficulty
+        sketch.pushMatrix();
+        sketch.fill(255); // White text
+        sketch.textSize(14);
+        sketch.translate(2, Constants.Screen.height - 45);
+        String gameInfo = String.format("Score: %d", score);
+        sketch.text(gameInfo, 50, 0);
+        sketch.popMatrix();
+
+        sketch.pushMatrix();
+        sketch.fill(255, 0, 0); // red
+        sketch.translate(10, Constants.Screen.height - 30);
+        int numSegs = (int) (player.getHealth() / this.healthIncrement);
+        sketch.rect(0, 0, numSegs * 20, 10);
+        sketch.popMatrix();
+
         if (player.getHealth() <= 0) {
+
             return new GameStateLoss(player, items);
         } else if (didReachBallotBox && level.playerOnEntrance()) {
             score += calculateScore(sketch);
@@ -243,6 +270,7 @@ public final class GameStateGameplay extends GameState {
         } else {
             return null;
         }
+
     }
 
     /**
@@ -319,11 +347,6 @@ public final class GameStateGameplay extends GameState {
 
     public void update(float deltaTime) {
         if (!isPaused) {
-            level.update(deltaTime);
-
-            movePlayer();
-            // player.move(level.getNodes());
-            player.move(level.getLevelGrid());
 
             for (Enemy e : enemies) {
                 Projectile b = e.fire(player, this.level.getNodes());
@@ -332,7 +355,6 @@ public final class GameStateGameplay extends GameState {
                 }
 
             }
-
             // if any projectiles crash into a wall
             // delete them
             ArrayList<Projectile> toRemove = new ArrayList<Projectile>();
@@ -344,12 +366,32 @@ public final class GameStateGameplay extends GameState {
                 }
             }
             projectiles.removeAll(toRemove);
+            toRemove.clear();
 
             // TODO remove the enemy from the arraylist of enemies when killed
+            // check for collisions with the player
+            for (Projectile p : this.projectiles) {
 
+                if (player.Collision(p)) {
+                    player.setHealth(player.getHealth() - this.healthIncrement);
+                    toRemove.add(p);
+
+                }
+            }
+            projectiles.removeAll(toRemove);
+            toRemove.clear();
+
+            for (Projectile p : this.projectiles) {
+                p.move();
+            }
+
+            level.update(deltaTime);
+
+            movePlayer();
+            // player.move(level.getNodes());
+            player.move(level.getLevelGrid());
 
         }
     }
-
 
 }

@@ -12,14 +12,18 @@ import cs4303.p4.physics.BoundingBox;
 import cs4303.p4._util.Colors;
 import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
+import cs4303.p4.physics.Projectile;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import static processing.core.PApplet.constrain;
+import static processing.core.PApplet.dist;
+
 public class Player extends Entity {
-    private float cameraOffsetX;
+    public float cameraOffsetX;
 
     private boolean isAttacking = false;
-    private float attackRadius = 50; // Example attack radius
+    private float attackRadius = 100; // Example attack radius
     private float currentAttackRadius = 0;
     private long lastAttackTime = 0; // Track the last attack time
     private static long ATTACK_COOLDOWN; // 500 milliseconds between attacks
@@ -46,10 +50,6 @@ public class Player extends Entity {
         super.setBounds(b);
     }
 
-    public void setCameraOffsetX(float offsetX) {
-        this.cameraOffsetX = offsetX;
-    }
-
     public void startAttack() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
@@ -59,25 +59,58 @@ public class Player extends Entity {
         }
     }
 
-    public void updateAttack(PApplet sketch) {
+    public void updateAttack(PApplet sketch,ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
         if (isAttacking) {
             if (currentAttackRadius < attackRadius) {
                 currentAttackRadius += 5; // Increment the radius for animation
                 sketch.noFill();
                 sketch.stroke(255, 0, 0); // Red color for attack radius
                 // Draw ellipse centered on player's center
-                sketch.ellipse(getLocation().x + 10, getLocation().y + 10, currentAttackRadius * 2,
-                        currentAttackRadius * 2);
+                sketch.ellipse(getLocation().x + 10, getLocation().y + 10, currentAttackRadius ,
+                        currentAttackRadius );
             } else {
                 isAttacking = false; // Stop the attack
-                checkForEnemiesWithinRadius(); // Check for enemies within the radius
+
             }
+            checkForEnemiesWithinRadius(enemies,bullets); // Check for enemies within the radius
         }
     }
 
-    private void checkForEnemiesWithinRadius() {
+    private void checkForEnemiesWithinRadius(ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
         // This method would check if any enemy is within the attack radius
         // You will need a reference to the list of enemies or pass it as a parameter
+        ArrayList<Enemy> toRemove = new ArrayList<>();
+        for(Enemy e: enemies){
+            if(isWithinRadius(e.getLocation().x, e.getLocation().y,e.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+                System.out.printf("in radius");
+                toRemove.add(e);
+            }
+        }
+        ArrayList<Projectile> removals = new ArrayList<>();
+        for(Projectile p :bullets){
+            if(isWithinRadius(p.getLocation().x, p.getLocation().y,p.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+                System.out.printf("in radius");
+                removals.add(p);
+            }
+        }
+        enemies.removeAll(toRemove);
+        bullets.removeAll(removals);
+
+    }
+
+
+    boolean isWithinRadius(float squareX, float squareY, float squareSize, float radiusX, float radiusY, float radius) {
+        PVector squareCentre  = new PVector(squareX -this.cameraOffsetX + squareSize/2 , squareY + squareSize/2);
+        PVector radiusCentre = new PVector(radiusX, radiusY);
+
+        PVector squareToRadius = PVector.sub(radiusCentre,squareCentre);
+
+        if(squareToRadius.mag() <= radius){
+            return true;
+
+        }else{
+            return false;
+        }
     }
 
     @Override
@@ -85,18 +118,8 @@ public class Player extends Entity {
         sketch.pushMatrix();
         sketch.noStroke();
         sketch.fill(Colors.blue.primary); // Blue color for player
-        // Calculate player's position relative to camera
-        // float screenX = getLocation().x - cameraOffsetX;
-        sketch.rect(getLocation().x, getLocation().y, size, size); // 20x20 player for now
+        sketch.rect(getLocation().x, getLocation().y, size, size);
 
-        // sketch.noFill();
-        //
-        // for (BoundingBox b : getBounds()) {
-        // // float bx = b.getLocation().x - cameraOffsetX;
-        // sketch.rect(b.getLocation().x, b.getLocation().y, b.getWidth(),
-        // b.getHeight());
-        //
-        // }
         sketch.popMatrix();
 
     }
@@ -119,7 +142,11 @@ public class Player extends Entity {
         int belowY = (int) ((getLocation().y + size) / Constants.TILE_SIZE) + 1;
         int playerX = (int) (getLocation().x / Constants.TILE_SIZE);
 
-        playerX = PApplet.min(playerX, 12);
+        // Ensure the indexes are within the bounds of the level grid
+        if (playerX < 0 || playerX >= Level.getLevelGrid()[0].length || belowY >= Level.getLevelGrid().length) {
+            return false; // Return false if out of bounds
+        }
+
         // Check if the tile below the player is a platform
         return Level.getLevelGrid()[belowY][playerX].getType() == TileType.PLATFORM;
     }
@@ -155,29 +182,10 @@ public class Player extends Entity {
         }
     }
 
-    // public boolean isOffMap(float cameraX, int gridWidth, int cellSize, boolean
-    // cameraMovingRight) {
-    // float playerX = getLocation().x;
-
-    // // Check if off the left side
-    // if (cameraMovingRight && playerX < -20 - ) {
-    // return true;
-    // }
-
-    // // Check if off the right side
-    // if (!cameraMovingRight && playerX > (gridWidth * cellSize)) {
-    // System.out.println("off right");
-
-    // return true;
-    // }
-    // return false;
-    // }
-
     public void resetPlayer() {
         setLocation(new PVector(0, 0));
         setVelocity(new PVector(0, 0));
         setAcceleration(new PVector(0, 0));
-        this.cameraOffsetX = 0;
         this.setHealth(Math.round(AttributeController.getEntityAttributeValue(this, Attribute.Health)));
         this.resetBoundingBox();
     }
