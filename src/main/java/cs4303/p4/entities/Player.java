@@ -102,6 +102,7 @@ public class Player extends Entity {
         float squareCenterX = squareX + squareSize / 2;
         float squareCenterY = squareY + squareSize / 2;
 
+        float
         // Calculate the distance between square center and radius center using distance formula
         float distance = dist(squareCenterX, squareCenterY, radiusX, radiusY);
 
