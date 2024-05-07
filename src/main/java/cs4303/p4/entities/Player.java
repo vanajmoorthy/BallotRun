@@ -16,13 +16,14 @@ import cs4303.p4.physics.Projectile;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import static processing.core.PApplet.constrain;
 import static processing.core.PApplet.dist;
 
 public class Player extends Entity {
     public float cameraOffsetX;
 
     private boolean isAttacking = false;
-    private float attackRadius = 50; // Example attack radius
+    private float attackRadius = 100; // Example attack radius
     private float currentAttackRadius = 0;
     private long lastAttackTime = 0; // Track the last attack time
     private static long ATTACK_COOLDOWN; // 500 milliseconds between attacks
@@ -58,20 +59,20 @@ public class Player extends Entity {
         }
     }
 
-    public void updateAttack(PApplet sketch, ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
+    public void updateAttack(PApplet sketch,ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
         if (isAttacking) {
             if (currentAttackRadius < attackRadius) {
                 currentAttackRadius += 5; // Increment the radius for animation
                 sketch.noFill();
                 sketch.stroke(255, 0, 0); // Red color for attack radius
                 // Draw ellipse centered on player's center
-                sketch.ellipse(getLocation().x + 10, getLocation().y + 10, currentAttackRadius * 2,
-                        currentAttackRadius * 2);
+                sketch.ellipse(getLocation().x + 10, getLocation().y + 10, currentAttackRadius ,
+                        currentAttackRadius );
             } else {
                 isAttacking = false; // Stop the attack
 
             }
-            checkForEnemiesWithinRadius(enemies, bullets); // Check for enemies within the radius
+            checkForEnemiesWithinRadius(enemies,bullets); // Check for enemies within the radius
         }
     }
 
@@ -79,17 +80,15 @@ public class Player extends Entity {
         // This method would check if any enemy is within the attack radius
         // You will need a reference to the list of enemies or pass it as a parameter
         ArrayList<Enemy> toRemove = new ArrayList<>();
-        for (Enemy e : enemies) {
-            if (isWithinRadius(e.getLocation().x, e.getLocation().y, e.getSize(), this.getLocation().x + 10,
-                    this.getLocation().y + 10, currentAttackRadius)) {
+        for(Enemy e: enemies){
+            if(isWithinRadius(e.getLocation().x, e.getLocation().y,e.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
                 System.out.printf("in radius");
                 toRemove.add(e);
             }
         }
         ArrayList<Projectile> removals = new ArrayList<>();
-        for (Projectile p : bullets) {
-            if (isWithinRadius(p.getLocation().x, p.getLocation().y, p.getSize(), this.getLocation().x + 10,
-                    this.getLocation().y + 10, currentAttackRadius)) {
+        for(Projectile p :bullets){
+            if(isWithinRadius(p.getLocation().x, p.getLocation().y,p.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
                 System.out.printf("in radius");
                 removals.add(p);
             }
@@ -99,20 +98,20 @@ public class Player extends Entity {
 
     }
 
-    private boolean isWithinRadius(float squareX, float squareY, float squareSize, float radiusX, float radiusY,
-            float radius) {
-        // Calculate the center of the square
-        float squareCenterX = squareX + squareSize / 2;
-        float squareCenterY = squareY + squareSize / 2;
 
-        // Calculate the distance between square center and radius center using distance
-        // formula
-        float distance = dist(squareCenterX, squareCenterY, radiusX, radiusY);
+    boolean isWithinRadius(float squareX, float squareY, float squareSize, float radiusX, float radiusY, float radius) {
+        PVector squareCentre  = new PVector(squareX -this.cameraOffsetX + squareSize/2 , squareY + squareSize/2);
+        PVector radiusCentre = new PVector(radiusX, radiusY);
 
-        // Check if the distance is less than or equal to the radius
-        if (distance <= radius) {
+        PVector squareToRadius = PVector.sub(radiusCentre,squareCentre);
+        System.out.println("mag :" +  squareToRadius.mag());
+        System.out.println(squareCentre);
+        System.out.println(radiusCentre);
+        if(squareToRadius.mag() <= (radius + squareSize)*2){
+            System.out.println("----------------------------------------------------------");
             return true;
-        } else {
+
+        }else{
             return false;
         }
     }
