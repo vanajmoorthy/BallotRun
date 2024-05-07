@@ -58,7 +58,7 @@ public class Player extends Entity {
         }
     }
 
-    public void updateAttack(PApplet sketch,ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
+    public void updateAttack(PApplet sketch, ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
         if (isAttacking) {
             if (currentAttackRadius < attackRadius) {
                 currentAttackRadius += 5; // Increment the radius for animation
@@ -71,7 +71,7 @@ public class Player extends Entity {
                 isAttacking = false; // Stop the attack
 
             }
-            checkForEnemiesWithinRadius(enemies,bullets); // Check for enemies within the radius
+            checkForEnemiesWithinRadius(enemies, bullets); // Check for enemies within the radius
         }
     }
 
@@ -79,15 +79,17 @@ public class Player extends Entity {
         // This method would check if any enemy is within the attack radius
         // You will need a reference to the list of enemies or pass it as a parameter
         ArrayList<Enemy> toRemove = new ArrayList<>();
-        for(Enemy e: enemies){
-            if(isWithinRadius(e.getLocation().x, e.getLocation().y,e.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+        for (Enemy e : enemies) {
+            if (isWithinRadius(e.getLocation().x, e.getLocation().y, e.getSize(), this.getLocation().x + 10,
+                    this.getLocation().y + 10, currentAttackRadius)) {
                 System.out.printf("in radius");
                 toRemove.add(e);
             }
         }
         ArrayList<Projectile> removals = new ArrayList<>();
-        for(Projectile p :bullets){
-            if(isWithinRadius(p.getLocation().x, p.getLocation().y,p.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+        for (Projectile p : bullets) {
+            if (isWithinRadius(p.getLocation().x, p.getLocation().y, p.getSize(), this.getLocation().x + 10,
+                    this.getLocation().y + 10, currentAttackRadius)) {
                 System.out.printf("in radius");
                 removals.add(p);
             }
@@ -97,13 +99,14 @@ public class Player extends Entity {
 
     }
 
-    private boolean isWithinRadius(float squareX, float squareY, float squareSize, float radiusX, float radiusY, float radius) {
+    private boolean isWithinRadius(float squareX, float squareY, float squareSize, float radiusX, float radiusY,
+            float radius) {
         // Calculate the center of the square
         float squareCenterX = squareX + squareSize / 2;
         float squareCenterY = squareY + squareSize / 2;
 
-        float
-        // Calculate the distance between square center and radius center using distance formula
+        // Calculate the distance between square center and radius center using distance
+        // formula
         float distance = dist(squareCenterX, squareCenterY, radiusX, radiusY);
 
         // Check if the distance is less than or equal to the radius
@@ -143,7 +146,11 @@ public class Player extends Entity {
         int belowY = (int) ((getLocation().y + size) / Constants.TILE_SIZE) + 1;
         int playerX = (int) (getLocation().x / Constants.TILE_SIZE);
 
-        // playerX = PApplet.min(playerX, 12);
+        // Ensure the indexes are within the bounds of the level grid
+        if (playerX < 0 || playerX >= Level.getLevelGrid()[0].length || belowY >= Level.getLevelGrid().length) {
+            return false; // Return false if out of bounds
+        }
+
         // Check if the tile below the player is a platform
         return Level.getLevelGrid()[belowY][playerX].getType() == TileType.PLATFORM;
     }
