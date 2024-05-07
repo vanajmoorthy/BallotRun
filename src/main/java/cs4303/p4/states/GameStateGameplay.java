@@ -239,9 +239,8 @@ public final class GameStateGameplay extends GameState {
         sketch.pushMatrix();
         sketch.fill(255); // White text
         sketch.textSize(14);
-        sketch.translate(45, Constants.Screen.height - 50);
-        String gameInfo = String.format("Difficulty: %.2f | Score: %d",
-                difficultyFactor,
+        sketch.translate(2, Constants.Screen.height - 45);
+        String gameInfo = String.format("Score: %d",
                 score);
         sketch.text(gameInfo, 50,0);
         sketch.popMatrix();
@@ -262,8 +261,6 @@ public final class GameStateGameplay extends GameState {
         } else {
             return null;
         }
-
-
 
     }
 
