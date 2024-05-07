@@ -12,12 +12,14 @@ public class Laser {
     private PApplet parent; // Reference to the PApplet for drawing
     private float dashLength = 10; // Length of each dash
     private float dashSpace = 10; // Space between dashes
+    private boolean hasHitPlayer; // Flag to check if laser has already hit the player
 
     public Laser(PApplet parent, float x, float y) {
         this.parent = parent;
         this.x = x;
         this.y = y;
         this.active = false;
+        this.hasHitPlayer = false;
         this.timer = 0;
     }
 
@@ -25,15 +27,18 @@ public class Laser {
         timer += deltaTime;
         if (timer >= interval) {
             active = !active; // Toggle laser activity
-            timer = 0; // Reset timer
+            timer = 0;
+            hasHitPlayer = false; // Reset the hit flag whenever the laser toggles state
         }
     }
 
     public boolean checkCollision(Player player) {
-        if (!active)
-            return false; // Do not check collisions if the laser is not active
+        if (!active || hasHitPlayer) {
+            return false; // Do not check collisions if the laser is not active or has already hit
+        }
         for (BoundingBox box : player.getBounds()) {
             if (lineIntersectsRect(x, y, x, parent.height, box)) {
+                hasHitPlayer = true; // Mark that the laser has hit the player this cycle
                 return true; // Return true if any part of the player intersects the active laser
             }
         }
@@ -43,16 +48,13 @@ public class Laser {
     public void draw(float cameraX) {
         float adjustedX = x - cameraX;
         if (active) {
-            // When the laser is active and red
             parent.stroke(255, 0, 0); // Red color for danger
             parent.strokeWeight(2);
             drawDashedLine(adjustedX);
         } else {
-            // When the laser is inactive, draw as solid white
             parent.stroke(255, 255, 255, 120); // White color for inactive state
             parent.strokeWeight(2);
             drawDashedLine(adjustedX);
-
         }
     }
 
@@ -65,8 +67,6 @@ public class Laser {
     }
 
     private boolean lineIntersectsRect(float x1, float y1, float x2, float y2, BoundingBox box) {
-        // Check if any of the rectangle's vertical boundaries are within the x range of
-        // the line
         return (box.getLocation().x <= x1 && box.getLocation().x + box.getWidth() >= x1)
                 && (y1 <= box.getLocation().y + box.getHeight() && y2 >= box.getLocation().y);
     }
