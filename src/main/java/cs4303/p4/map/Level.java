@@ -83,7 +83,7 @@ public class Level {
             e.printStackTrace();
         }
 
-        Level.gridWidth = (p.width / cellSize);// * Math.max(width, 2);
+        Level.gridWidth = (p.width / cellSize); * Math.max(width, 2);
         Level.gridHeight = (Constants.Screen.height - Constants.Screen.GamePlay.infoPanelHeight) / cellSize;
 
         levelGrid = new Tile[gridHeight][gridWidth];
