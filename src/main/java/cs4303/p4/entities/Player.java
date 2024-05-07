@@ -116,8 +116,16 @@ public class Player extends Entity {
 
     @Override
     public void draw(PApplet sketch) {
+        try {
+            sketch.image(image, getLocation().x, getLocation().y, size, size); // Draw the image at
+        } catch (Exception e) {
+            sketch.pushMatrix();
+            sketch.noStroke();
+            sketch.fill(Colors.blue.primary); // Blue color for player
+            sketch.rect(getLocation().x, getLocation().y, size, size);
 
-        sketch.image(image, getLocation().x, getLocation().y, size, size); // Draw the image at
+            sketch.popMatrix();
+        }
 
     }
 

@@ -28,7 +28,14 @@ public class Tile {
     // Draw method for the tile
     public void draw(PApplet sketch, int x, int y, float lerp) {
         if (type == TileType.PLATFORM) {
-            sketch.image(platformImage, x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
+            try {
+                sketch.image(platformImage, x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize);
+            } catch (Exception e) {
+                sketch.stroke(Colors.darkGray.light);
+                sketch.strokeWeight(1.5f);
+                sketch.fill(Colors.darkGray.lighter);
+                sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize, 2);
+            }
         } else if (type == TileType.TEST) {
             sketch.stroke(Colors.red.light);
             sketch.strokeWeight(1.5f);
