@@ -68,7 +68,7 @@ public class Enemy extends Entity {
 
         long currentTimeMillis = System.currentTimeMillis();
         // fire
-        if (currentTimeMillis - lastFireTime > 1500) {
+        if (currentTimeMillis - lastFireTime > (1500 - 100 * this.bullet_speed)) {
             // check if the player is in range
             if (checkForPlayer(player, nodes)) {
                 PVector dir = PVector.sub(player.getLocation().copy(), this.getLocation().copy());

@@ -148,7 +148,7 @@ public final class GameStateGameplay extends GameState {
         entities.add(player); // Re-add the player
         entities.addAll(level.getEntities()); // Add new level entities
         didReachBallotBox = false;
-        // TODO make this scale
+
         placeEnemies((int) (5 + difficultyFactor * 2));
 
     }
@@ -212,7 +212,7 @@ public final class GameStateGameplay extends GameState {
         float cameraOffset = level.getCameraX();
 
         level.draw(); // Draw the current view of the level
-        // level.drawGraph(sketch);
+        //level.drawGraph(sketch);
 
         for (Entity entity : level.getEntranceAndBallot()) {
             entity.getLocation().x -= cameraOffset;
@@ -247,10 +247,15 @@ public final class GameStateGameplay extends GameState {
                 }
             }
         }
-        entities.removeAll(deleting);
-        if (level.playerOnBallot())
-            didReachBallotBox = true;
+        score += (difficultyFactor * 5) + 10 * (deleting.size());
 
+        entities.removeAll(deleting);
+        if (level.playerOnBallot()) {
+            if (!didReachBallotBox) {
+                placeEnemies((int) (5 + difficultyFactor * 2));
+            }
+            didReachBallotBox = true;
+        }
         update(0.0f);
 
         sketch.noStroke();
@@ -390,7 +395,6 @@ public final class GameStateGameplay extends GameState {
             projectiles.removeAll(toRemove);
             toRemove.clear();
 
-            // TODO remove the enemy from the arraylist of enemies when killed
             // check for collisions with the player
             for (Projectile p : this.projectiles) {
 
