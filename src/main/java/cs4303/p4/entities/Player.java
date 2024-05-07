@@ -5,7 +5,9 @@ import java.util.List;
 
 import cs4303.p4.attributes.Attribute;
 import cs4303.p4.attributes.AttributeController;
+import cs4303.p4.map.Level;
 import cs4303.p4.map.Node;
+import cs4303.p4.map.TileType;
 import cs4303.p4.physics.BoundingBox;
 import cs4303.p4._util.Colors;
 import cs4303.p4._util.Constants;
@@ -21,6 +23,8 @@ public class Player extends Entity {
     private float currentAttackRadius = 0;
     private long lastAttackTime = 0; // Track the last attack time
     private static long ATTACK_COOLDOWN; // 500 milliseconds between attacks
+    private int size;
+    private boolean canJump = true;
 
     public Player(float x, float y) {
         super(x, y);
@@ -32,11 +36,11 @@ public class Player extends Entity {
         super.setAcceleration(new PVector(0, 0));
         super.setVelocity(new PVector(0, 0));
         this.cameraOffsetX = 0;
+        this.size = 20;
 
-
-        ATTACK_COOLDOWN = (500 * (long) AttributeController.getEntityAttributeValue(this, Attribute.AttackSpeed))/100;
+        ATTACK_COOLDOWN = (500 * (long) AttributeController.getEntityAttributeValue(this, Attribute.AttackSpeed)) / 100;
         // create bounding box
-        BoundingBox b1 = new BoundingBox(this.getLocation(), 20, 20);
+        BoundingBox b1 = new BoundingBox(this.getLocation(), size, size);
         ArrayList<BoundingBox> b = new ArrayList<BoundingBox>();
         b.add(b1);
         super.setBounds(b);
@@ -83,7 +87,7 @@ public class Player extends Entity {
         sketch.fill(Colors.blue.primary); // Blue color for player
         // Calculate player's position relative to camera
         // float screenX = getLocation().x - cameraOffsetX;
-        sketch.rect(getLocation().x, getLocation().y, 20, 20); // 20x20 player for now
+        sketch.rect(getLocation().x, getLocation().y, size, size); // 20x20 player for now
 
         // sketch.noFill();
         //
@@ -94,36 +98,79 @@ public class Player extends Entity {
         //
         // }
         sketch.popMatrix();
+
     }
 
     /**
-     * Jump function
-     * applies the jump force
+     * Jump function applies the jump force
      */
     public void jump() {
-        PVector jump = new PVector(0, -1 *
-                Constants.PLAYER.INSTANCE.JUMP_IMPULSE *
-                (AttributeController.getEntityAttributeValue(this, Attribute.JumpHeight) / 100));
-        super.applyForce(jump);
+        if (canJump && isGrounded()) {
+            PVector jumpForce = new PVector(0, -Constants.PLAYER.INSTANCE.JUMP_IMPULSE
+                    * (AttributeController.getEntityAttributeValue(this, Attribute.JumpHeight) / 100));
+            super.applyForce(jumpForce);
+            canJump = false; // Player cannot jump again until they land
+        }
+        canJump = true;
 
     }
 
+    public boolean isGrounded() {
+        int belowY = (int) ((getLocation().y + size) / Constants.TILE_SIZE) + 1;
+        int playerX = (int) (getLocation().x / Constants.TILE_SIZE);
 
-    // public boolean isOffMap(float cameraX, int gridWidth, int cellSize, boolean cameraMovingRight) {
-    //     float playerX = getLocation().x;
+        playerX = PApplet.min(playerX, 12);
+        // Check if the tile below the player is a platform
+        return Level.getLevelGrid()[belowY][playerX].getType() == TileType.PLATFORM;
+    }
 
-    //     // Check if off the left side
-    //     if (cameraMovingRight && playerX < -20 - ) {
-    //         return true;
-    //     }
+    /**
+     * Updates the postitions of the player and its bounding boxes
+     *
+     * @param offset the camera offset
+     */
+    public void moveWithCamera(float deltaX, boolean cameraMoving, boolean cameraMovingRight, boolean cameraStill) {
+        PVector location = getLocation();
+        if (cameraMoving) {
+            if (cameraMovingRight && !cameraStill) {
+                location.x -= deltaX * 2; // Move player horizontally with the camera when moving right
+            } else if (cameraStill) {
+                location.x = location.x;
+            } else {
+                location.x += deltaX * 2; // Move player in the opposite direction when camera moves left
+            }
+            setLocation(location);
 
-    //     // Check if off the right side
-    //     if (!cameraMovingRight && playerX > (gridWidth * cellSize)) {
-    //         System.out.println("off right");
+            // Also move the bounding boxes if necessary
+            for (BoundingBox b : getBounds()) {
+                if (cameraMovingRight && !cameraStill) {
+                    b.moveBox(new PVector(-deltaX * 2, 0));
+                } else if (cameraStill) {
+                    b.moveBox(new PVector(0, 0));
 
-    //         return true;
-    //     }
-    //     return false;
+                } else {
+                    b.moveBox(new PVector(deltaX * 2, 0));
+                }
+            }
+        }
+    }
+
+    // public boolean isOffMap(float cameraX, int gridWidth, int cellSize, boolean
+    // cameraMovingRight) {
+    // float playerX = getLocation().x;
+
+    // // Check if off the left side
+    // if (cameraMovingRight && playerX < -20 - ) {
+    // return true;
+    // }
+
+    // // Check if off the right side
+    // if (!cameraMovingRight && playerX > (gridWidth * cellSize)) {
+    // System.out.println("off right");
+
+    // return true;
+    // }
+    // return false;
     // }
 
     public void resetPlayer() {

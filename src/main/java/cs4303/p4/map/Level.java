@@ -5,6 +5,7 @@ import cs4303.p4._util.Constants;
 import cs4303.p4.entities.BallotBox;
 import cs4303.p4.entities.Entity;
 import cs4303.p4.entities.Entrance;
+import cs4303.p4.entities.Laser;
 import cs4303.p4.entities.Player;
 import cs4303.p4.physics.BoundingBox;
 import lombok.Getter;
@@ -12,7 +13,9 @@ import processing.core.PApplet;
 import processing.core.PVector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class Level {
     private int cellSize;
@@ -20,8 +23,8 @@ public class Level {
     public static int gridWidth;
 
     public static int gridHeight;
-    @Getter
-    private Tile[][] levelGrid;
+
+    static @Getter private Tile[][] levelGrid;
     private PApplet parent;
 
     @Getter
@@ -55,13 +58,17 @@ public class Level {
 
     private TimedText ballotMessage;
     private TimedText startingMessage;
+    private List<Laser> lasers;
 
     public Level(PApplet p, float difficultyFactor, Player player, int width) {
         this.cellSize = Constants.TILE_SIZE;
         this.parent = p;
+
         Level.gridWidth = (p.width / cellSize) * Math.max(width, 2);
         Level.gridHeight = (Constants.Screen.height - Constants.Screen.GamePlay.infoPanelHeight) / cellSize;
+
         levelGrid = new Tile[gridHeight][gridWidth];
+
         initializeGrid();
         this.player = player;
         this.entities = new ArrayList<Entity>();
@@ -74,6 +81,19 @@ public class Level {
         this.startingMessage = new TimedText("Starting...", cameraDelayTime,
                 new PVector(parent.width / 2, parent.height / 2));
         this.startingMessage.start();
+
+        lasers = new ArrayList<>();
+        generateLasers();
+    }
+
+    private void generateLasers() {
+        int numLasers = gridWidth / 10; // Number of lasers to add
+        Random rand = new Random();
+        for (int i = 0; i < numLasers; i++) {
+            int x = rand.nextInt(gridWidth) * cellSize; // Random x position within the grid width
+            int y = 0; // Start at the top of the grid
+            lasers.add(new Laser(parent, x, y));
+        }
     }
 
     private void initializeGrid() {
@@ -99,60 +119,58 @@ public class Level {
     void generateLevel(float difficultyFactor) {
         int lastPlatformX = 0; // Keep track of the last platform's x-coordinate
 
-        // Ensure the player can always progress by creating a base path
-        for (int x = 1; x < gridWidth - 1; x++) {
-            // Every few cells, guarantee a platform within jump reach
-            if ((x - lastPlatformX) >= 2 + (int) (difficultyFactor * 2)) { // Increase the gap between platforms based
-                                                                           // on difficulty
-                levelGrid[gridHeight - 3][x].setType(TileType.PLATFORM);
-                lastPlatformX = x; // Update the last platform position
-            }
-        }
+        // Reset the grid with empty tiles first
+        initializeGrid();
 
-        // Additional random platforms for complexity (could overlap the base path)
-        for (int x = 1; x < gridWidth - 1; x++) {
-            for (int y = gridHeight - 5; y > 1; y -= 2) {
-                if (parent.random(1) < 0.1 / difficultyFactor) { // Decrease the probability of random platforms based
-                                                                 // on difficulty
-                    int platformWidth = (int) (2 + parent.random(4 - (int) (difficultyFactor * 2))); // Vary platform
-                                                                                                     // width based on
-                                                                                                     // difficulty
-                    for (int i = 0; i < platformWidth; i++) {
-                        if (x + i < gridWidth) {
-                            levelGrid[y][x + i].setType(TileType.PLATFORM);
-                        }
-                    }
+        // Dynamic parameters based on difficulty
+        int maxIslands = 20; // More islands at easier levels
+        int minIslands = 5; // Fewer islands at harder levels
+        int numIslands = (int) PApplet.map(difficultyFactor, 0, 5, maxIslands, minIslands);
+
+        int numSectionsX = 3; // More sections for higher difficulty
+        int numSectionsY = 2; // More vertical sections as difficulty
+                              // increases
+
+        int sectionWidth = gridWidth / numSectionsX;
+        int sectionHeight = gridHeight / numSectionsY;
+        ArrayList<PVector> islandCenters = new ArrayList<>();
+        // Generate islands within each section
+        for (int i = 0; i < numIslands; i++) {
+            int minIslandWidth = 3;
+            int maxIslandWidth = 5;
+            int islandWidth = (int) parent.random(minIslandWidth, maxIslandWidth);
+
+            // Choose a random section
+            int sectionIndex = i % (numSectionsX * numSectionsY);
+            int sectionX = sectionIndex % numSectionsX;
+            int sectionY = sectionIndex % numSectionsY;
+
+            // Calculate random position within the chosen section
+            int xPosition = (int) parent.random(sectionX * sectionWidth, (sectionX + 1) * sectionWidth - islandWidth);
+            int yPosition = (int) parent.random(sectionY * sectionHeight, (sectionY + 1) * sectionHeight - 1);
+            islandCenters.add(new PVector(xPosition + islandWidth / 2, yPosition));
+
+            yPosition = (int) PApplet.map(yPosition, 0, 10, 0, 12);
+            // Gaussian distribution parameters
+            float sigma = islandWidth / 3.0f; // Controls the spread of the bell curve
+            float mean = xPosition + islandWidth / 2.0f; // Center of the island
+
+            for (int x = xPosition; x < xPosition + islandWidth; x++) {
+                levelGrid[yPosition][x].setType(TileType.PLATFORM);
+                int gaussianHeight = (int) (Math.exp(-0.5 * Math.pow((x - mean) / sigma, 2)) * 3); // Scale factor for
+                                                                                                   // height
+
+                for (int y = yPosition + 1; y <= yPosition + gaussianHeight && y < gridHeight; y++) {
+                    levelGrid[y][x].setType(TileType.PLATFORM);
                 }
             }
         }
 
-        // Create the platforms that can be jumped onto from below
-        for (int x = 1; x < gridWidth - 1; x++) {
-            // Start from ground level and check upwards, ignore top two rows
-            for (int y = gridHeight - 1; y > 1; y -= 2) {
-                if (parent.random(1) < 0.3 / difficultyFactor) { // Decrease the probability of platforms based on
-                                                                 // difficulty
-                    int platformHeight = (int) (1 + parent.random(4 - (int) (difficultyFactor * 2))); // Vary platform
-                                                                                                      // height based on
-                                                                                                      // difficulty
-                    for (int i = 0; i < platformHeight; i++) {
-                        if (y - i > 0) {
-                            levelGrid[y - i][x].setType(TileType.PLATFORM);
-                        }
-                    }
+        // Identify isolated islands and connect them
+        connectIslands(islandCenters);
 
-                    // Ensure there is a platform within 2 spaces to the left or right for
-                    // reversibility
-                    if (x > 1 && levelGrid[y][x - 2].getType() == TileType.EMPTY && parent.random(1) < 0.5) {
-                        levelGrid[y][x - 2].setType(TileType.PLATFORM);
-                    }
-                    if (x < gridWidth - 2 && levelGrid[y][x + 2].getType() == TileType.EMPTY
-                            && parent.random(1) < 0.5) {
-                        levelGrid[y][x + 2].setType(TileType.PLATFORM);
-                    }
-                }
-            }
-        }
+        // Ensure starting and ending platforms are accessible
+        ensureAccessibility();
 
         // Find the highest platform in the leftmost column
         int highestPlatformY = -1;
@@ -170,9 +188,7 @@ public class Level {
             System.out.println("No platform found in the leftmost column. Setting start tile at random position.");
         }
         // Spawn entrance
-        Entrance entrance = new Entrance(
-                Constants.TILE_SIZE / 2,
-                (highestPlatformY) * Constants.TILE_SIZE);
+        Entrance entrance = new Entrance(Constants.TILE_SIZE / 2, (highestPlatformY) * Constants.TILE_SIZE);
         entrance.getLocation().x -= entrance.getBounds().get(0).getWidth() / 2;
         entrance.getLocation().y -= entrance.getBounds().get(0).getHeight();
         entranceAndBallot.add(entrance);
@@ -194,13 +210,137 @@ public class Level {
             System.out.println("No platform found in the rightmost column. Setting start tile at random position.");
         }
         // Spawn ballot box
-        BallotBox ballotBox = new BallotBox(
-                (gridWidth - 1) * Constants.TILE_SIZE + Constants.TILE_SIZE / 2,
+        BallotBox ballotBox = new BallotBox((gridWidth - 1) * Constants.TILE_SIZE + Constants.TILE_SIZE / 2,
                 (highestPlatformY) * Constants.TILE_SIZE);
         ballotBox.getLocation().x -= ballotBox.getBounds().get(0).getWidth() / 2;
         ballotBox.getLocation().y -= ballotBox.getBounds().get(0).getHeight();
         entranceAndBallot.add(ballotBox);
         this.ballotBox = ballotBox;
+
+        // Find the starting position (entrance) and the ending position (ballot box)
+        int startX = (int) entrance.getLocation().x / cellSize;
+        int startY = (int) entrance.getLocation().y / cellSize;
+        int endX = (int) ballotBox.getLocation().x / cellSize;
+        int endY = (int) ballotBox.getLocation().y / cellSize;
+
+        // Generate a traversable path from the ballot box to the start position
+        boolean[][] visited = new boolean[gridHeight][gridWidth];
+        List<int[]> path = generateTraversablePath(startX, startY, endX, endY);
+        List<int[]> path2 = generateTraversablePath(0, gridHeight, endX, endY);
+
+        for (int[] step : path) {
+            int x = step[0];
+            int y = step[1];
+            if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+                levelGrid[y][x].setType(TileType.EMPTY); // Adjust the tile type
+                if (y - 1 > 0) {
+                    levelGrid[y - 1][x].setType(TileType.EMPTY); // Set the adjacent tile for
+                    // thickness
+                }
+            }
+        }
+        for (int[] step : path2) {
+            int x = step[0];
+            int y = step[1];
+            if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+                levelGrid[y][x].setType(TileType.EMPTY); // Adjust the tile type
+                if (y - 1 > 0) {
+                    levelGrid[y - 1][x].setType(TileType.EMPTY); // Set the adjacent tile for
+                    // thickness
+                }
+            }
+        }
+
+        // Modify the level grid based on the generated path
+
+        if (path != null) {
+            for (int[] coordinates : path) {
+                int x = coordinates[0];
+                int y = coordinates[1];
+
+                if (levelGrid[y][x].getType() != TileType.PLATFORM) {
+                    // Add platforms below the path if not on an island
+                    for (int i = y + 1; i < Math.min(gridHeight, y + 3); i++) {
+                        levelGrid[i][x].setType(TileType.PLATFORM);
+                    }
+                } else {
+                    // Carve out sections of the islands if the path is on an island
+                    for (int i = y - 1; i >= Math.max(0, y - 2); i--) {
+                        levelGrid[i][x].setType(TileType.EMPTY);
+                    }
+                }
+            }
+
+        }
+
+        // Additional parameters for column clearing
+        int minClearColumns = 2; // Minimum number of columns to clear
+        int maxClearColumns = 5; // Maximum number of columns to clear
+        int numClearedColumns = (int) PApplet.map(difficultyFactor, 0, 5, minClearColumns, maxClearColumns);
+
+        // Randomly choose columns to clear
+        Random random = new Random();
+        ArrayList<Integer> clearedColumns = new ArrayList<>();
+        for (int i = 0; i < numClearedColumns; i++) {
+            int randomColumn = random.nextInt(gridWidth);
+            // Ensure the column is not on the edges (entrance/exit)
+            while (randomColumn == 0 || randomColumn == gridWidth - 1 || clearedColumns.contains(randomColumn)) {
+                randomColumn = random.nextInt(gridWidth);
+            }
+            clearedColumns.add(randomColumn);
+        }
+
+        // Clear the chosen columns
+        for (int clearedColumn : clearedColumns) {
+            for (int y = 0; y < gridHeight; y++) {
+                levelGrid[y][clearedColumn].setType(TileType.EMPTY);
+            }
+        }
+
+        // Modify the level grid based on the generated path (considering cleared
+        // columns)
+        if (path != null) {
+            for (int[] coordinates : path) {
+                int x = coordinates[0];
+                int y = coordinates[1];
+
+                // Skip cleared columns while carving out sections for the path
+                if (!clearedColumns.contains(x)) {
+                    if (levelGrid[y][x].getType() != TileType.PLATFORM) {
+                        // Add platforms below the path if not on an island
+                        for (int i = y + 1; i < Math.min(gridHeight, y + 3); i++) {
+                            levelGrid[i][x].setType(TileType.PLATFORM);
+                        }
+                    } else {
+                        // Carve out sections of the islands if the path is on an island
+                        for (int i = y - 1; i >= Math.max(0, y - 2); i--) {
+                            levelGrid[i][x].setType(TileType.EMPTY);
+                        }
+                    }
+                }
+            }
+        }
+
+        // After placing the ballot box in the grid
+        int ballotX = (int) ballotBox.getLocation().x / cellSize; // Convert position to grid coordinates
+        int ballotY = (int) ballotBox.getLocation().y / cellSize;
+
+        // Ensure the tile with the ballot box is empty
+        levelGrid[ballotY][ballotX].setType(TileType.EMPTY);
+
+        // Clear tiles to the left of the ballot box and ensure there are platforms
+        // underneath
+        int tilesToClear = 7; // Number of tiles to clear to the left of the ballot box
+        for (int i = 0; i < tilesToClear; i++) {
+            int clearX = ballotX - 1 - i; // Calculate the x-coordinate of the tile to clear
+            if (clearX >= 0) { // Check bounds
+                levelGrid[ballotY][clearX].setType(TileType.EMPTY);
+                // Ensure there is a platform right underneath the cleared tile if within bounds
+                if (ballotY + 1 < gridHeight) {
+                    levelGrid[ballotY + 1][clearX].setType(TileType.PLATFORM);
+                }
+            }
+        }
 
         // // Add enemies, etc
         // int numObstacles = (int) (10 * difficultyFactor); // Increase the number of
@@ -214,6 +354,119 @@ public class Level {
         // treasure
         // }
         // }
+
+    }
+
+    private void ensureAccessibility() {
+        // Example function to ensure that the first and last platforms are reachable
+        levelGrid[1][1].setType(TileType.PLATFORM); // Starting platform
+        levelGrid[gridHeight - 2][gridWidth - 2].setType(TileType.PLATFORM); // Ending platform
+    }
+
+    private List<int[]> generateTraversablePath(int startX, int startY, int endX, int endY) {
+        List<int[]> path = new ArrayList<>();
+        int currentX = startX;
+        int currentY = startY;
+        int verticalDirection = 1; // Start moving upward
+
+        // Establish boundaries for vertical movement
+        int maxY = gridHeight - 2;
+        int minY = 1;
+        int maxHorizontalSteps = 5;
+        int minHorizontalSteps = 1;
+        int horizontalSteps = (int) (Math.random() * (maxHorizontalSteps - minHorizontalSteps + 1))
+                + minHorizontalSteps; // Random steps between min and max
+
+        while (currentX != endX || currentY != endY) {
+            // Check for horizontal movement remaining
+            if (horizontalSteps > 0) {
+                int horizontalStep = Integer.compare(endX, currentX);
+                currentX += horizontalStep;
+                horizontalSteps--;
+            } else {
+                // Determine next vertical position within boundaries
+                int nextY = currentY + verticalDirection;
+                if (nextY > maxY || nextY < minY) {
+                    verticalDirection *= -1;
+                    nextY = currentY + verticalDirection;
+                }
+
+                // Apply the vertical movement and reset horizontal steps
+                currentY = nextY;
+                horizontalSteps = (int) (Math.random() * (maxHorizontalSteps - minHorizontalSteps + 1))
+                        + minHorizontalSteps;
+            }
+
+            // Add the current position to the path
+            path.add(new int[] { currentX, currentY });
+
+            // Safety measure to prevent infinite loops
+            if (path.size() > gridWidth * gridHeight) {
+                break;
+            }
+        }
+
+        return path;
+    }
+
+    private void connectIslands(ArrayList<PVector> islandCenters) {
+        boolean[] visited = new boolean[islandCenters.size()];
+        visited[0] = true;
+
+        for (int i = 0; i < islandCenters.size() - 1; i++) {
+            int start = -1, end = -1;
+            double closestDist = Double.MAX_VALUE;
+
+            for (int j = 0; j < islandCenters.size(); j++) {
+                if (!visited[j])
+                    continue;
+
+                for (int k = 0; k < islandCenters.size(); k++) {
+                    if (visited[k] || j == k)
+                        continue;
+
+                    double dist = Math.sqrt(Math.pow(islandCenters.get(j).x - islandCenters.get(k).x, 2)
+                            + Math.pow(islandCenters.get(j).y - islandCenters.get(k).y, 2));
+                    if (dist < closestDist) {
+                        closestDist = dist;
+                        start = j;
+                        end = k;
+                    }
+                }
+            }
+
+            if (start != -1 && end != -1) {
+                visited[end] = true;
+                generatePath((int) islandCenters.get(start).x, (int) islandCenters.get(start).y,
+                        (int) islandCenters.get(end).x, (int) islandCenters.get(end).y);
+            }
+        }
+    }
+
+    private void generatePath(int startX, int startY, int endX, int endY) {
+        // Simple line drawing algorithm to connect two points
+        int dx = Math.abs(endX - startX);
+        int dy = Math.abs(endY - startY);
+        int sx = startX < endX ? 1 : -1;
+        int sy = startY < endY ? 1 : -1;
+
+        int err = (dx > dy ? dx : -dy) / 2;
+        int e2;
+
+        while (true) {
+            levelGrid[startY][startX].setType(TileType.PLATFORM); // Set the path
+            if (startX == endX && startY == endY)
+                break;
+            e2 = err;
+            if (e2 > -dx) {
+                err -= dy;
+                startX += sx;
+            }
+            if (e2 < dy) {
+                err += dx;
+                startY += sy;
+            }
+        }
     }
 
     public void buildGraph() {
@@ -250,14 +503,13 @@ public class Level {
                 float neighborScreenY = neighbor.getY() * cellSize;
 
                 // Draw a line between the current node and its neighbor
-                sketch.line(nodeScreenX + cellSize / 2, nodeScreenY + cellSize / 2,
-                        neighborScreenX + cellSize / 2, neighborScreenY + cellSize / 2);
+                sketch.line(nodeScreenX + cellSize / 2, nodeScreenY + cellSize / 2, neighborScreenX + cellSize / 2,
+                        neighborScreenY + cellSize / 2);
             }
         }
     }
 
     public void update(float deltaTime) {
-        // Normal update logic
         if (!cameraDelayCompleted) {
             cameraDelayElapsed += deltaTime;
             startingMessage.update(deltaTime);
@@ -280,10 +532,18 @@ public class Level {
 
         ballotMessage.update(deltaTime);
         checkPlayerPosition();
+
+        for (Laser laser : lasers) {
+            laser.update(deltaTime); // Update each laser
+            if (laser.checkCollision(player)) {
+                player.setHealth(player.getHealth() - 1); // Decrease health if there's a collision
+            }
+        }
     }
 
     private void checkPlayerPosition() {
-        if (!cameraStill && (player.getLocation().x >= 20 + Constants.Screen.width + cameraX || player.getLocation().x < cameraX)) {
+        if (!cameraStill && (player.getLocation().x >= 20 + Constants.Screen.width + cameraX
+                || player.getLocation().x < cameraX - 1)) {
             player.setHealth(0);
         }
     }
@@ -367,21 +627,19 @@ public class Level {
     public boolean playerOnBallot() {
         BoundingBox boxPlayer = player.getBounds().get(0);
         BoundingBox boxBallotBox = ballotBox.getBounds().get(0);
-        return
-            boxPlayer.getLocation().x + boxPlayer.getWidth() >= boxBallotBox.getLocation().x &&
-            boxPlayer.getLocation().y + boxPlayer.getHeight() >= boxBallotBox.getLocation().y &&
-            boxBallotBox.getLocation().x + boxBallotBox.getWidth() >= boxPlayer.getLocation().x &&
-            boxBallotBox.getLocation().x + boxBallotBox.getHeight() >= boxPlayer.getLocation().x;
+        return boxPlayer.getLocation().x + boxPlayer.getWidth() >= boxBallotBox.getLocation().x
+                && boxPlayer.getLocation().y + boxPlayer.getHeight() >= boxBallotBox.getLocation().y
+                && boxBallotBox.getLocation().x + boxBallotBox.getWidth() >= boxPlayer.getLocation().x
+                && boxBallotBox.getLocation().x + boxBallotBox.getHeight() >= boxPlayer.getLocation().x;
     }
 
     public boolean playerOnEntrance() {
         BoundingBox boxPlayer = player.getBounds().get(0);
         BoundingBox boxEntrance = entrance.getBounds().get(0);
-        return
-            boxPlayer.getLocation().x + boxPlayer.getWidth() >= boxEntrance.getLocation().x &&
-            boxPlayer.getLocation().y + boxPlayer.getHeight() >= boxEntrance.getLocation().y &&
-            boxEntrance.getLocation().x + boxEntrance.getWidth() >= boxPlayer.getLocation().x &&
-            boxEntrance.getLocation().x + boxEntrance.getHeight() >= boxPlayer.getLocation().x;
+        return boxPlayer.getLocation().x + boxPlayer.getWidth() >= boxEntrance.getLocation().x
+                && boxPlayer.getLocation().y + boxPlayer.getHeight() >= boxEntrance.getLocation().y
+                && boxEntrance.getLocation().x + boxEntrance.getWidth() >= boxPlayer.getLocation().x
+                && boxEntrance.getLocation().x + boxEntrance.getHeight() >= boxPlayer.getLocation().x;
     }
 
     public void draw() {
@@ -392,6 +650,11 @@ public class Level {
         if (ballotMessage.isActive()) {
             ballotMessage.draw(parent);
         }
+
+        for (Laser laser : lasers) {
+            laser.draw(cameraX); // Pass the current camera offset
+        }
+
     }
 
     // Modify the draw method to offset tiles based on the camera position
