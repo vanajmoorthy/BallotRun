@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.springframework.util.ResourceUtils;
+import processing.core.PImage;
 
 public final class GameStateGameplay extends GameState {
     @Getter
@@ -53,6 +54,8 @@ public final class GameStateGameplay extends GameState {
 
     private float difficultyFactor = 0.0f; // Start with a base difficulty
     private int score = 0;
+    PImage platformImage; // Declare platform image
+    PImage enemyImage; // Declare enemy image
 
     private GestureDetector buttonRestart = new GestureDetector((sketch, hitbox, hasHover, hasClick) -> {
         if (hasHover && !isPaused)
@@ -121,7 +124,23 @@ public final class GameStateGameplay extends GameState {
         player.resetPlayer(); // Reset player's position
 
         this.healthIncrement = (int) (player.getHealth() * 0.1);
-        level = new Level(sketch, difficultyFactor, player, newWidth, this);
+        try {
+            platformImage = sketch
+                    .loadImage(ResourceUtils.getFile("classpath:textures/" + "floor" + ".png").getAbsolutePath());
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        try {
+            enemyImage = sketch
+                    .loadImage(ResourceUtils.getFile("classpath:textures/" + "enemy" + ".png").getAbsolutePath());
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        level = new Level(sketch, difficultyFactor, player, newWidth, this, platformImage);
         level.buildGraph();
         entities.add(player); // Re-add the player
         entities.addAll(level.getEntities()); // Add new level entities
@@ -166,7 +185,7 @@ public final class GameStateGameplay extends GameState {
                 }
 
                 Enemy enemy = new Enemy(selectedNode.getX() * Constants.TILE_SIZE,
-                        (selectedNode.getY() - 1) * Constants.TILE_SIZE + 20, 160, this.difficultyFactor);
+                        (selectedNode.getY() - 1) * Constants.TILE_SIZE + 20, 160, this.difficultyFactor, enemyImage);
 
                 entities.add(enemy);
                 enemies.add(enemy);
@@ -184,7 +203,7 @@ public final class GameStateGameplay extends GameState {
 
     public GameState draw(PApplet sketch) {
         // draw the player
-        sketch.background(Colors.black);
+        sketch.background(Colors.darkGray.darker);
         cursor = PApplet.ARROW;
 
         float cameraOffset = level.getCameraX();
