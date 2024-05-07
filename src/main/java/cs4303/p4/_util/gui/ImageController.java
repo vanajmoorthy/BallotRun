@@ -12,13 +12,9 @@ import processing.core.PImage;
 
 @Component
 public final class ImageController {
-    private final Map<String, PImage> cache;
+    private static final Map<String, PImage> cache = new HashMap<String, PImage>();
 
-    public ImageController() {
-        this.cache = new HashMap<String, PImage>();
-    }
-
-    public PImage get(PApplet sketch, String path) {
+    public static PImage get(PApplet sketch, String path) {
         if (cache.containsKey(path)) return cache.get(path);
 
         try {

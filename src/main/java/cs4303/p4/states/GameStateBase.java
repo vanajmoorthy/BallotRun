@@ -21,6 +21,7 @@ import cs4303.p4.attributes.Attribute;
 import cs4303.p4.attributes.AttributeController;
 import cs4303.p4.attributes.AttributeModifier;
 import cs4303.p4.items.Item;
+import cs4303.p4.items.ItemType;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -32,6 +33,7 @@ public final class GameStateBase extends GameState {
 
     private int cursor = PApplet.ARROW;
     private boolean didStartGame = false;
+    private boolean didUpdateItemsList = false;
 
     // private ImageController imageController;
 
@@ -277,7 +279,12 @@ public final class GameStateBase extends GameState {
         }
 
         sketch.cursor(cursor);
-        return didStartGame ? new GameStateGameplay(sketch, player, items) : null;
+        return
+            didUpdateItemsList
+                ? new GameStateBase(player, items)
+                : didStartGame
+                    ? new GameStateGameplay(sketch, player, items)
+                    : null;
     }
 
     private void drawInventory(PApplet sketch) {
@@ -425,7 +432,12 @@ public final class GameStateBase extends GameState {
     }
 
     public void keyPressed(PApplet sketch) {
-
+        if (sketch.key == 'M' || sketch.key == 'm') {
+            for (ItemType itemType : ItemType.values()) {
+                items.add(new Item(itemType));
+            }
+            didUpdateItemsList = true;
+        }
     }
 
     public void keyReleased(PApplet sketch) {
