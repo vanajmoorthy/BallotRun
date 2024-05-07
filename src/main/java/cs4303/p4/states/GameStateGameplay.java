@@ -69,12 +69,12 @@ public final class GameStateGameplay extends GameState {
         sketch.noFill();
         sketch.stroke(Colors.white);
         sketch.strokeWeight(2);
-        sketch.rect(Constants.Screen.width - 10 - 40 + 4, 10 + 4, 32, 32, 6);
+        sketch.rect(Constants.Screen.width - 10 - 40 + 4, Constants.Screen.height - 10 - 40 + 4, 32, 32, 6);
 
         sketch.filter(PApplet.INVERT);
         try {
             sketch.image(sketch.loadImage(ResourceUtils.getFile("classpath:icons/reload.png").getAbsolutePath()),
-                    Constants.Screen.width - 10 - 40 + 5, 10 + 5, 30, 30);
+                    Constants.Screen.width - 10 - 40 + 5, Constants.Screen.height - 10 - 40 + 5, 30, 30);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -83,7 +83,7 @@ public final class GameStateGameplay extends GameState {
     }, (sketch, button) -> {
         if (!isPaused)
             level.restartLevel();
-    }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40, 10), new PVector(40, 40)));
+    }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40, Constants.Screen.height - 10 - 40), new PVector(40, 40)));
 
     private GestureDetector buttonPause = new GestureDetector((sketch, hitbox, hasHover, hasClick) -> {
         if (hasHover)
@@ -91,18 +91,18 @@ public final class GameStateGameplay extends GameState {
 
         sketch.fill(hasHover ? Colors.darkGray.primary : Colors.darkGray.dark);
         sketch.noStroke();
-        sketch.rect(Constants.Screen.width - 10 - 40 - 50, 10, 40, 40, 10);
+        sketch.rect(Constants.Screen.width - 10 - 40 - 50, Constants.Screen.height - 10 - 40, 40, 40, 10);
 
         sketch.noFill();
         sketch.stroke(Colors.white);
         sketch.strokeWeight(2);
-        sketch.rect(Constants.Screen.width - 10 - 40 - 50 + 4, 10 + 4, 32, 32, 6);
+        sketch.rect(Constants.Screen.width - 10 - 40 - 50 + 4, Constants.Screen.height - 10 - 40 + 4, 32, 32, 6);
 
         sketch.filter(PApplet.INVERT);
         try {
             sketch.image(sketch.loadImage(ResourceUtils
                     .getFile(isPaused ? "classpath:icons/play.png" : "classpath:icons/pause.png").getAbsolutePath()),
-                    Constants.Screen.width - 10 - 40 - 50 + 5, 10 + 5, 30, 30);
+                    Constants.Screen.width - 10 - 40 - 50 + 5, Constants.Screen.height - 10 - 40 + 5, 30, 30);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -110,7 +110,7 @@ public final class GameStateGameplay extends GameState {
 
     }, (sketch, button) -> {
         isPaused = !isPaused;
-    }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40 - 50, 10), new PVector(40, 40)));
+    }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40 - 50, Constants.Screen.height - 10 - 40), new PVector(40, 40)));
 
     public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
         this.player = player;
