@@ -196,7 +196,7 @@ public class Level {
         connectIslands(islandCenters);
 
         // Ensure starting and ending platforms are accessible
-        ensureAccessibility();
+        // ensureAccessibility();
 
         // Find the highest platform in the leftmost column
         int highestPlatformY = -1;
@@ -351,42 +351,44 @@ public class Level {
         int ballotX = (int) ballotBox.getLocation().x / cellSize; // Convert position to grid coordinates
         int ballotY = (int) ballotBox.getLocation().y / cellSize;
 
-        // Ensure the tile with the ballot box is empty
-        levelGrid[ballotY][ballotX].setType(TileType.EMPTY);
-
-        // Clear tiles to the left of the ballot box and ensure there are platforms
-        // underneath
-        int tilesToClear = 7; // Number of tiles to clear to the left of the ballot box
-        for (int i = 0; i < tilesToClear; i++) {
-            int clearX = ballotX - 1 - i; // Calculate the x-coordinate of the tile to clear
-            if (clearX >= 0) { // Check bounds
-                levelGrid[ballotY][clearX].setType(TileType.EMPTY);
-                // Ensure there is a platform right underneath the cleared tile if within bounds
-                if (ballotY + 1 < gridHeight) {
-                    levelGrid[ballotY + 1][clearX].setType(TileType.PLATFORM);
-                }
-            }
-        }
-
-        // // Add enemies, etc
-        // int numObstacles = (int) (10 * difficultyFactor); // Increase the number of
-        // obstacles based on difficulty
-        // for (int i = 0; i < numObstacles; i++) {
-        // int randX = (int) parent.random(gridWidth);
-        // int randY = (int) parent.random(gridHeight - 2); // Avoid placing items on
-        // the ground
-        // if (levelGrid[randY][randX].getType() == TileType.EMPTY) {
-        // levelGrid[randY][randX].setType(TileType.ENTITY); // Enemy, hazard, or
-        // treasure
-        // }
-        // }
+        ensureBallotAccessibility(ballotX, ballotY);
 
     }
 
-    private void ensureAccessibility() {
-        // Example function to ensure that the first and last platforms are reachable
-        levelGrid[1][1].setType(TileType.PLATFORM); // Starting platform
-        levelGrid[gridHeight - 2][gridWidth - 2].setType(TileType.PLATFORM); // Ending platform
+    // private void ensureAccessibility() {
+    // // Example function to ensure that the first and last platforms are reachable
+    // levelGrid[1][1].setType(TileType.PLATFORM); // Starting platform
+    // levelGrid[gridHeight - 2][gridWidth - 2].setType(TileType.PLATFORM); //
+    // Ending platform
+    // }
+
+    private void ensureBallotAccessibility(int ballotX, int ballotY) {
+        // Ensure the tile with the ballot box is empty
+        levelGrid[ballotY][ballotX].setType(TileType.EMPTY);
+        levelGrid[ballotY - 1][ballotX].setType(TileType.EMPTY);
+
+        // Clear tiles in a diagonal path leading to the ballot box and also clear above
+        // the path
+        int tilesToClear = 7; // Number of tiles to clear diagonally towards the ballot box
+        for (int i = 0; i < tilesToClear; i++) {
+            int clearX = ballotX - 1 - i; // Calculate the x-coordinate of the tile to clear, moving left
+            int clearY = ballotY + i; // Calculate the y-coordinate of the tile to clear, moving downward
+
+            if (clearX >= 0 && clearY < gridHeight) { // Check bounds for both x and y
+                levelGrid[clearY][clearX].setType(TileType.EMPTY); // Clear the diagonal tile
+
+                // Additionally clear the tile directly above the diagonal path if within bounds
+                if (clearY - 1 >= 0) {
+                    levelGrid[clearY - 1][clearX].setType(TileType.EMPTY);
+                }
+
+                // Ensure there is a platform right underneath the cleared diagonal tile if
+                // within vertical bounds
+                if (clearY + 1 < gridHeight) {
+                    levelGrid[clearY + 1][clearX].setType(TileType.PLATFORM);
+                }
+            }
+        }
     }
 
     private List<int[]> generateTraversablePath(int startX, int startY, int endX, int endY) {
@@ -562,10 +564,7 @@ public class Level {
         for (Laser laser : lasers) {
             laser.update(deltaTime); // Update each laser
             if (laser.checkCollision(player)) {
-                System.out.println("player health before hit" + player.getHealth());
-
                 player.setHealth(player.getHealth() - this.healthIncrement * 2);
-                System.out.println("player health after hit" + player.getHealth());
             }
         }
     }

@@ -30,7 +30,7 @@ public class Tile {
             sketch.fill(Colors.darkGray.lighter);
             sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize, 2);
         } else if (type == TileType.TEST) {
-            sketch.stroke(Colors.darkGray.light);
+            sketch.stroke(Colors.red.light);
             sketch.strokeWeight(1.5f);
             sketch.fill(Colors.red.lighter);
             sketch.rect(x * cellSize + lerp * cellSize, y * cellSize, cellSize, cellSize, 2);
