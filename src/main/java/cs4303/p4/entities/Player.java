@@ -19,7 +19,7 @@ import processing.core.PVector;
 import static processing.core.PApplet.dist;
 
 public class Player extends Entity {
-    private float cameraOffsetX;
+    public float cameraOffsetX;
 
     private boolean isAttacking = false;
     private float attackRadius = 50; // Example attack radius
@@ -69,8 +69,9 @@ public class Player extends Entity {
                         currentAttackRadius * 2);
             } else {
                 isAttacking = false; // Stop the attack
-                checkForEnemiesWithinRadius(enemies,bullets); // Check for enemies within the radius
+
             }
+            checkForEnemiesWithinRadius(enemies,bullets); // Check for enemies within the radius
         }
     }
 
@@ -79,13 +80,15 @@ public class Player extends Entity {
         // You will need a reference to the list of enemies or pass it as a parameter
         ArrayList<Enemy> toRemove = new ArrayList<>();
         for(Enemy e: enemies){
-            if(isWithinRadius(e.getLocation().x, e.getLocation().y,20,this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+            if(isWithinRadius(e.getLocation().x, e.getLocation().y,e.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+                System.out.printf("in radius");
                 toRemove.add(e);
             }
         }
         ArrayList<Projectile> removals = new ArrayList<>();
         for(Projectile p :bullets){
             if(isWithinRadius(p.getLocation().x, p.getLocation().y,p.getSize(),this.getLocation().x+10, this.getLocation().y+10,currentAttackRadius)){
+                System.out.printf("in radius");
                 removals.add(p);
             }
         }

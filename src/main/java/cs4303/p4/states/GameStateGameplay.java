@@ -197,12 +197,13 @@ public final class GameStateGameplay extends GameState {
 
         for (Entity entity : entities) {
 
-            System.out.printf("cameraOffset" + cameraOffset);
             entity.getLocation().x -= cameraOffset;
             entity.draw(sketch);
 
             if(entity instanceof Player){
-                player.updateAttack(sketch);
+                //player.cameraOffsetX = cameraOffset;
+                player.updateAttack(sketch,enemies,projectiles);
+
             }
             entity.getLocation().x += cameraOffset;
         }
