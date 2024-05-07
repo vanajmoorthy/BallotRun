@@ -12,6 +12,7 @@ import cs4303.p4.physics.BoundingBox;
 import cs4303.p4._util.Colors;
 import cs4303.p4._util.Constants;
 import cs4303.p4.items.Item;
+import cs4303.p4.physics.Projectile;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -46,10 +47,6 @@ public class Player extends Entity {
         super.setBounds(b);
     }
 
-    public void setCameraOffsetX(float offsetX) {
-        this.cameraOffsetX = offsetX;
-    }
-
     public void startAttack() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastAttackTime >= ATTACK_COOLDOWN) {
@@ -59,7 +56,7 @@ public class Player extends Entity {
         }
     }
 
-    public void updateAttack(PApplet sketch) {
+    public void updateAttack(PApplet sketch,ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
         if (isAttacking) {
             if (currentAttackRadius < attackRadius) {
                 currentAttackRadius += 5; // Increment the radius for animation
@@ -70,33 +67,33 @@ public class Player extends Entity {
                         currentAttackRadius * 2);
             } else {
                 isAttacking = false; // Stop the attack
-                checkForEnemiesWithinRadius(); // Check for enemies within the radius
+                checkForEnemiesWithinRadius(enemies,bullets); // Check for enemies within the radius
             }
         }
     }
 
-    private void checkForEnemiesWithinRadius() {
+    private void checkForEnemiesWithinRadius(ArrayList<Enemy> enemies, ArrayList<Projectile> bullets) {
         // This method would check if any enemy is within the attack radius
         // You will need a reference to the list of enemies or pass it as a parameter
+        ArrayList<Enemy> toRemove = new ArrayList<>();
+        for(Enemy e: enemies){
+            if(e.g)
+        }
+        ArrayList<Projectile> removals = new ArrayList<>();
+        for(Projectile p :bullets){
+
+        }
     }
+
+    private boolean isWithinRadius
 
     @Override
     public void draw(PApplet sketch) {
         sketch.pushMatrix();
         sketch.noStroke();
         sketch.fill(Colors.blue.primary); // Blue color for player
-        // Calculate player's position relative to camera
-        // float screenX = getLocation().x - cameraOffsetX;
-        sketch.rect(getLocation().x, getLocation().y, size, size); // 20x20 player for now
+        sketch.rect(getLocation().x, getLocation().y, size, size);
 
-        // sketch.noFill();
-        //
-        // for (BoundingBox b : getBounds()) {
-        // // float bx = b.getLocation().x - cameraOffsetX;
-        // sketch.rect(b.getLocation().x, b.getLocation().y, b.getWidth(),
-        // b.getHeight());
-        //
-        // }
         sketch.popMatrix();
 
     }
@@ -155,29 +152,10 @@ public class Player extends Entity {
         }
     }
 
-    // public boolean isOffMap(float cameraX, int gridWidth, int cellSize, boolean
-    // cameraMovingRight) {
-    // float playerX = getLocation().x;
-
-    // // Check if off the left side
-    // if (cameraMovingRight && playerX < -20 - ) {
-    // return true;
-    // }
-
-    // // Check if off the right side
-    // if (!cameraMovingRight && playerX > (gridWidth * cellSize)) {
-    // System.out.println("off right");
-
-    // return true;
-    // }
-    // return false;
-    // }
-
     public void resetPlayer() {
         setLocation(new PVector(0, 0));
         setVelocity(new PVector(0, 0));
         setAcceleration(new PVector(0, 0));
-        this.cameraOffsetX = 0;
         this.setHealth(Math.round(AttributeController.getEntityAttributeValue(this, Attribute.Health)));
         this.resetBoundingBox();
     }

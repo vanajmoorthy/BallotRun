@@ -196,8 +196,14 @@ public final class GameStateGameplay extends GameState {
         // level.drawGraph(sketch);
 
         for (Entity entity : entities) {
+
+            System.out.printf("cameraOffset" + cameraOffset);
             entity.getLocation().x -= cameraOffset;
             entity.draw(sketch);
+
+            if(entity instanceof Player){
+                player.updateAttack(sketch);
+            }
             entity.getLocation().x += cameraOffset;
         }
 
@@ -213,7 +219,6 @@ public final class GameStateGameplay extends GameState {
             p.getLocation().x += cameraOffset;
         }
 
-        player.updateAttack(sketch);
 
         if (level.playerOnBallot())
             didReachBallotBox = true;
