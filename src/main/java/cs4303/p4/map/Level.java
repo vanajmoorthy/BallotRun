@@ -88,9 +88,10 @@ public class Level {
 
     private void generateLasers() {
         int numLasers = gridWidth / 10; // Number of lasers to add
+        int buffer = 10; // Number of cells to skip from the start
         Random rand = new Random();
         for (int i = 0; i < numLasers; i++) {
-            int x = rand.nextInt(gridWidth) * cellSize; // Random x position within the grid width
+            int x = (rand.nextInt(gridWidth - buffer) + buffer) * cellSize; // Avoid placing lasers in the buffer zone
             int y = 0; // Start at the top of the grid
             lasers.add(new Laser(parent, x, y));
         }

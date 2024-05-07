@@ -10,6 +10,8 @@ public class Laser {
     private float timer; // Timer to control flashing
     private float interval = 2.0f; // Interval in seconds between flashes
     private PApplet parent; // Reference to the PApplet for drawing
+    private float dashLength = 10; // Length of each dash
+    private float dashSpace = 10; // Space between dashes
 
     public Laser(PApplet parent, float x, float y) {
         this.parent = parent;
@@ -39,11 +41,26 @@ public class Laser {
     }
 
     public void draw(float cameraX) {
-        if (active) { // Only draw if the laser is active
-            parent.stroke(255, 0, 0); // Red color for the laser
-            parent.strokeWeight(2); // Set the line thickness for visibility
-            float adjustedX = x - cameraX; // Adjust position by camera offset
-            parent.line(adjustedX, 0, adjustedX, parent.height); // Draw a vertical line from top to bottom
+        float adjustedX = x - cameraX;
+        if (active) {
+            // When the laser is active and red
+            parent.stroke(255, 0, 0); // Red color for danger
+            parent.strokeWeight(2);
+            drawDashedLine(adjustedX);
+        } else {
+            // When the laser is inactive, draw as solid white
+            parent.stroke(255); // White color for inactive state
+            parent.strokeWeight(2);
+            drawDashedLine(adjustedX);
+
+        }
+    }
+
+    private void drawDashedLine(float adjustedX) {
+        float y = 0;
+        while (y < parent.height) {
+            parent.line(adjustedX, y, adjustedX, y + dashLength);
+            y += dashLength + dashSpace;
         }
     }
 
