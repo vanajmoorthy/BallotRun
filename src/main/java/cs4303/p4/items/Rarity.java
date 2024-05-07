@@ -7,12 +7,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Rarity {
-    Common(   "Common",    Colors.white),
-    Uncommon( "Uncommon",  Colors.lime.light),
-    Rare(     "Rare",      Colors.amber.primary),
-    Epic(     "Epic",      Colors.pink.darker),
-    Legendary("Legendary", Colors.teal.dark);
+    Common(   "Common",    Colors.white, 0.33f),
+    Uncommon( "Uncommon",  Colors.lime.light, 0.66f),
+    Rare(     "Rare",      Colors.amber.primary, 1.15f),
+    Epic(     "Epic",      Colors.pink.darker, 1.35f),
+    Legendary("Legendary", Colors.teal.dark, 1.66f);
 
     private final String displayName;
     private final int color;
+    private final float difficultyModifier;
 }

@@ -52,7 +52,7 @@ public final class GameStateGameplay extends GameState {
 
     private int currentLevel = 1;
 
-    private float difficultyFactor = 0.0f; // Start with a base difficulty
+    private float difficultyFactor; // Start with a base difficulty
     private int score = 0;
     PImage platformImage; // Declare platform image
     PImage enemyImage; // Declare enemy image
@@ -112,9 +112,9 @@ public final class GameStateGameplay extends GameState {
     }, new GestureDetector.Hitbox(new PVector(Constants.Screen.width - 10 - 40 - 50, 10), new PVector(40, 40)));
 
     public GameStateGameplay(PApplet sketch, Player player, List<Item> items) {
-
         this.player = player;
         this.items = items;
+        this.difficultyFactor = player.getInventory().stream().map(item -> item.getType().getRarity().getDifficultyModifier()).reduce(0f, Float::sum);
         startLevel(sketch);
     }
 

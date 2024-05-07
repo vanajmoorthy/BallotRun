@@ -129,12 +129,15 @@ public final class GameStateBase extends GameState {
         this.player = player;
         this.items = items;
         this.buttons = new ArrayList<GestureDetector>();
-        final List<Item> itemsSorted = items.stream().sorted((a, b) -> {
-            int rarity = -a.getType().getRarity().compareTo(b.getType().getRarity());
-            if (rarity != 0)
-                return rarity;
-            return a.getType().getDisplayName().compareTo(b.getType().getDisplayName());
-        }).collect(Collectors.toList());
+        final List<Item> itemsSorted = items
+            .stream()
+            .sorted((a, b) -> {
+                int rarity = -a.getType().getRarity().compareTo(b.getType().getRarity());
+                if (rarity != 0)
+                    return rarity;
+                return a.getType().getDisplayName().compareTo(b.getType().getDisplayName());
+            })
+            .collect(Collectors.toList());
         for (int i = 0; i < items.size(); i++) {
             Item item = itemsSorted.get(i);
 
