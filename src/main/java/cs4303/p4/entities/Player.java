@@ -147,7 +147,16 @@ public class Player extends Entity {
         }
 
         // Check if the tile below the player is a platform
-        return Level.getLevelGrid()[belowY][playerX].getType() == TileType.PLATFORM;
+        if (Level.getLevelGrid()[belowY][playerX].getType() == TileType.PLATFORM) {
+            // Check if the bottom of the player's bounding box is within a certain distance
+            // of the ground
+            float bottomY = getLocation().y + size;
+            float groundY = belowY * Constants.TILE_SIZE;
+            float groundThreshold = 5; // Adjust this threshold as needed
+            return bottomY >= groundY - groundThreshold;
+        } else {
+            return false;
+        }
     }
 
     /**
