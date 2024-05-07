@@ -49,7 +49,7 @@ public class Laser {
             drawDashedLine(adjustedX);
         } else {
             // When the laser is inactive, draw as solid white
-            parent.stroke(255); // White color for inactive state
+            parent.stroke(255, 255, 255, 120); // White color for inactive state
             parent.strokeWeight(2);
             drawDashedLine(adjustedX);
 
