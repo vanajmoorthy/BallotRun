@@ -123,9 +123,9 @@ public class Level {
         initializeGrid();
 
         // Dynamic parameters based on difficulty
-        int maxIslands = 20; // More islands at easier levels
+        int maxIslands = 40; // More islands at easier levels
         int minIslands = 5; // Fewer islands at harder levels
-        int numIslands = (int) PApplet.map(difficultyFactor, 0, 5, maxIslands, minIslands);
+        int numIslands = (int) PApplet.map(difficultyFactor, 0, 5, minIslands, maxIslands);
 
         int numSectionsX = 3; // More sections for higher difficulty
         int numSectionsY = 2; // More vertical sections as difficulty

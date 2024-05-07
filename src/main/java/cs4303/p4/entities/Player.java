@@ -143,7 +143,7 @@ public class Player extends Entity {
         int belowY = (int) ((getLocation().y + size) / Constants.TILE_SIZE) + 1;
         int playerX = (int) (getLocation().x / Constants.TILE_SIZE);
 
-        playerX = PApplet.min(playerX, 12);
+        // playerX = PApplet.min(playerX, 12);
         // Check if the tile below the player is a platform
         return Level.getLevelGrid()[belowY][playerX].getType() == TileType.PLATFORM;
     }
