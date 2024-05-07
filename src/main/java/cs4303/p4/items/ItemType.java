@@ -19,70 +19,92 @@ public enum ItemType {
         "chestplate",
         Rarity.Common,
         "Chestplate",
-        new RichText(),
+        new RichText(Arrays.<TextNode>asList(
+            new TextSpan("Molded from the steely resolve of countless campaigns, this chestplate absorbs the impact of direct confrontations, reducing damage taken and symbolizing the shield of conviction against adversity.", null)
+        )),
         getChestplateBaseAttributes()
     ),
     ParliamentSword(
         "sword_parliament",
         Rarity.Epic,
         "The Parliament",
-        new RichText(),
+        new RichText(Arrays.<TextNode>asList(
+            new TextSpan("A robust gavel once wielded in the grand halls of The Parliament, this artifact unifies voices of reason and passion. It amplifies your influence, allowing commands and pleas to resonate further and gives you strength. However, due to legislative gridlock, it makes you slower.", null)
+        )),
         getParliamentSwordBaseAttributes()
     ),
     CongressSword(
         "sword_congress",
         Rarity.Rare,
         "Sword of Congress",
-        new RichText(),
+        new RichText(Arrays.<TextNode>asList(
+            new TextSpan("This blade was smithed in the crucible of heated debates and sharp wit. The Sword of Congress cuts through deception and slices away the chains of oppression with each swing, delivering justice with precision. It gives you strength and slower attack speed.", null)
+        )),
         getCongressSwordBaseAttributes()
     ),
     GlobalizationCharm(
         "globalization_charm",
         Rarity.Rare,
         "Globalization Charm",
-        new RichText(),
+        new RichText(Arrays.<TextNode>asList(
+            new TextSpan("Forged from the essence of interconnected markets, this charm widens your perspective, revealing hidden paths and shortcuts. It represents the inevitable tide of shared destinies and mutual benefits and gives you more attack speed and strength.", null)
+        )),
         getGlobalizationCharmBaseAttributes()
     ),
     HealthTalisman(
         "health_talisman",
         Rarity.Uncommon,
         "Health Talisman",
-        new RichText(),
+        new RichText(Arrays.<TextNode>asList(
+            new TextSpan("Carved from ancient woods harboring the spirits of healing, this talisman slowly restores vitality, embodying the resilience and recovery of nature itself.", null)
+        )),
         getHealthTalismanBaseAttributes()
     ),
     Bribe(
         "bribe",
         Rarity.Uncommon,
         "Bribe",
-        new RichText(),
+        new RichText(Arrays.<TextNode>asList(
+            new TextSpan("A discreet pouch filled with untraceable currency, the Bribe can turn foes into temporary allies. Use it wisely, as the power of corruption is seductive and may lead to unexpected consequences like reduced luck.", null)
+        )),
         getBribeBaseAttributes()
     ),
     Bill(
         "bill",
         Rarity.Rare,
         "Bill",
-        new RichText(),
+        new RichText(Arrays.<TextNode>asList(
+            new TextSpan("Inked with the urgency of change, the Bill is a powerful document that can reshape reality in minor ways. When activated, it momentarily alters the game's rules, providing luck to the bearer. However, due to legislative gridlock, it makes you slower.", null)
+        )),
         getBillBaseAttributes()
     ),
     FancySuit(
         "fancy_suit",
         Rarity.Uncommon,
         "Fancy Suit",
-        new RichText(),
+        new RichText(Arrays.<TextNode>asList(
+            new TextSpan("Tailored by a master from threads of influence and charm, wearing this Fancy Suit can open locked doors and gates, as guards and enemies hesitate to halt such an impressive figure.", null)
+        )),
         getFancySuitAttributes()
     ),
     TradeTreaty(
         "trade_treaty",
         Rarity.Epic,
         "Trade Treaty",
-        new RichText(),
+        new RichText(Arrays.<TextNode>asList(
+            new TextSpan("Bound in the leather of diplomacy, the Trade Treaty is a scroll granting economic foresight.", null)
+        )),
         getTradeTreatyAttributes()
     ),
     DeepestConcerns(
         "sword_deepest_concerns",
         Rarity.Legendary,
         "Deepest Concerns",
-        new RichText(),
+        new RichText(
+            Arrays.<TextNode>asList(
+                new TextSpan("We are deeply concerned about democratic backsliding in our nation.", null)
+            )
+        ),
         getDeepestConcernsAttributes()
     ),
     Constinution(

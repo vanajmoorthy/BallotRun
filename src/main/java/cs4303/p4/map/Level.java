@@ -308,6 +308,10 @@ public class Level {
                 int x = coordinates[0];
                 int y = coordinates[1];
 
+                if (y >= gridHeight) {
+                    y = gridHeight - 1;
+                }
+
                 if (levelGrid[y][x].getType() != TileType.PLATFORM) {
                     // Add platforms below the path if not on an island
                     for (int i = y + 1; i < Math.min(gridHeight, y + 3); i++) {
