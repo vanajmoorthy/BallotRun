@@ -290,34 +290,16 @@ public abstract class Entity extends Collidable {
      */
     public void applyDrag() {
         PVector velocity = this.getVelocity().copy();
-        // float drag = (float) (velocity.mag() * velocity.mag() * -2.5 * Constants.airResistance);
-        // velocity.normalize();
+        //float drag = (float) (velocity.mag() * velocity.mag() * 0.5 * Constants.airResistance);
+        //velocity.normalize();
+        //velocity.mult(drag);
+
         velocity.setMag(Constants.airResistance);
         velocity.rotate(PApplet.PI);
+
         this.applyForce(velocity);
     }
 
-    /**
-     * Get the grid y of the previous tile
-     * 
-     * @return
-     */
-
-    public int getTileY() {
-
-        return (int) this.getLocation().y / Constants.TILE_SIZE;
-    }
-
-    /**
-     * Get the grid y of the previous tile
-     * 
-     * @return
-     */
-
-    public int getTileX() {
-
-        return (int) this.getLocation().x / Constants.TILE_SIZE;
-    }
 
     public void setVelocity(PVector v) {
         // Ensure no component of prospectiveV exceeds 35

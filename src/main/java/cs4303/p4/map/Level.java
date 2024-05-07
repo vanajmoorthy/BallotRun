@@ -16,7 +16,9 @@ import java.util.List;
 
 public class Level {
     private int cellSize;
+
     public static int gridWidth;
+
     public static int gridHeight;
     @Getter
     private Tile[][] levelGrid;

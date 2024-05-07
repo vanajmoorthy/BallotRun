@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Enemy extends Entity{
-    private int bullet_speed = 2;
+    private int bullet_speed = 4;
     private float range;
     private long lastFireTime;
     private int cameraOffsetX;
@@ -25,6 +25,7 @@ public class Enemy extends Entity{
      */
     public Enemy(float x, float y,float range) {
         super(x, y);
+
         this.range  = range;
         super.setMass(Constants.PLAYER.INSTANCE.MASS);
 
@@ -46,7 +47,6 @@ public class Enemy extends Entity{
         sketch.pushMatrix();
         sketch.noStroke();
         sketch.fill(Colors.red.primary);
-
         sketch.rect(getLocation().x, getLocation().y, 20, 20);
 
         sketch.popMatrix();
@@ -61,16 +61,17 @@ public class Enemy extends Entity{
 
         long currentTimeMillis = System.currentTimeMillis();
         //fire
-        if (currentTimeMillis - lastFireTime > 1000) {
+        if (currentTimeMillis - lastFireTime > 1500) {
             //check if the player is in range
             if(checkForPlayer(player,nodes)){
                 PVector dir = PVector.sub(player.getLocation().copy(),this.getLocation().copy());
                 dir.normalize();
-                Bullet p = new Bullet(this.getLocation().x - 5, this.getLocation().y, dir,bullet_speed,5);
+                Bullet p = new Bullet(this.getLocation().x - 5, this.getLocation().y, dir,bullet_speed,10);
+                this.lastFireTime = currentTimeMillis;
                 return p;
             }
 
-            this.lastFireTime = currentTimeMillis;
+
 
         }
         return null;
@@ -85,6 +86,9 @@ public class Enemy extends Entity{
     private boolean checkForPlayer(Player player, List<Node> nodes){
         //get the direction to the player
         PVector dir = PVector.sub(player.getLocation().copy(),this.getLocation().copy());
+        if(dir.mag() > this.range){
+            return false;
+        }
         dir.normalize();
 
         //startloc offset
@@ -113,7 +117,7 @@ public class Enemy extends Entity{
                 PVector vectorToPlayer = PVector.sub(player.getLocation().copy(),this.getLocation().copy());
                 float distanceToPlayer = vectorToPlayer.mag();
                 if(distanceToPlayer <= this.range){
-                    System.out.println("can fire at player");
+
                     playerInRange = true;
 
                 }
@@ -125,35 +129,4 @@ public class Enemy extends Entity{
         return playerInRange;
     }
 
-    /**
-     * Updates the postitions of the player and
-     * its bounding boxes
-     *
-     * @param offset the camera offset
-     */
-    public void moveWithCamera(float deltaX, boolean cameraMoving, boolean cameraMovingRight, boolean cameraStill) {
-        PVector location = getLocation();
-        if (cameraMoving) {
-            if (cameraMovingRight && !cameraStill) {
-                location.x -= deltaX * 2; // Move player horizontally with the camera when moving right
-            } else if (cameraStill) {
-                location.x = location.x;
-            } else {
-                location.x += deltaX * 2; // Move player in the opposite direction when camera moves left
-            }
-            setLocation(location);
-
-            // Also move the bounding boxes if necessary
-            for (BoundingBox b : getBounds()) {
-                if (cameraMovingRight && !cameraStill) {
-                    b.moveBox(new PVector(-deltaX * 2, 0));
-                } else if (cameraStill) {
-                    b.moveBox(new PVector(0, 0));
-
-                } else {
-                    b.moveBox(new PVector(deltaX * 2, 0));
-                }
-            }
-        }
-    }
-}
+   }

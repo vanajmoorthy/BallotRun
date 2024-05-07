@@ -109,38 +109,6 @@ public class Player extends Entity {
     }
 
 
-    /**
-     * Updates the postitions of the player and
-     * its bounding boxes
-     * 
-     * @param offset the camera offset
-     */
-    public void moveWithCamera(float deltaX, boolean cameraMoving, boolean cameraMovingRight, boolean cameraStill) {
-        PVector location = getLocation();
-        if (cameraMoving) {
-            if (cameraMovingRight && !cameraStill) {
-                location.x -= deltaX * 2; // Move player horizontally with the camera when moving right
-            } else if (cameraStill) {
-                location.x = location.x;
-            } else {
-                location.x += deltaX * 2; // Move player in the opposite direction when camera moves left
-            }
-            setLocation(location);
-
-            // Also move the bounding boxes if necessary
-            for (BoundingBox b : getBounds()) {
-                if (cameraMovingRight && !cameraStill) {
-                    b.moveBox(new PVector(-deltaX * 2, 0));
-                } else if (cameraStill) {
-                    b.moveBox(new PVector(0, 0));
-
-                } else {
-                    b.moveBox(new PVector(deltaX * 2, 0));
-                }
-            }
-        }
-    }
-
     // public boolean isOffMap(float cameraX, int gridWidth, int cellSize, boolean cameraMovingRight) {
     //     float playerX = getLocation().x;
 

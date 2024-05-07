@@ -177,7 +177,9 @@ public final class GameStateGameplay extends GameState {
         didReachBallotBox = false;
         System.out.println("Width: " + newWidth);
         System.out.println("Current level: " + currentLevel);
+        System.out.println("difficulty: " + difficultyFactor);
 
+        placeEnemies((int) (10 * difficultyFactor));
     }
 
     public void placeEnemies(int numberOfEnemies) {
@@ -188,23 +190,35 @@ public final class GameStateGameplay extends GameState {
                 int randomIndex = random.nextInt(level.getNodes().size());
                 Node selectedNode = level.getNodes().get(randomIndex);
 
-                // check the tile above the node has space
-                Tile[][] grid = level.getLevelGrid();
-                Tile t = grid[selectedNode.getX()][selectedNode.getY() - 1];
-                if (t.getType() == TileType.EMPTY) {
 
-                    Enemy enemy = new Enemy(selectedNode.getX() * Constants.TILE_SIZE,
-                            (selectedNode.getY() - 1) * Constants.TILE_SIZE, 320);
-
-                    entities.add(enemy);
-                    enemies.add(enemy);
-
-                    foundTile = true;
+                if(selectedNode.getY() == 0){
+                    continue;
                 }
+
+                if(selectedNode.getY() >= level.gridHeight -1 ){
+                    continue;
+                }
+                if(selectedNode.getX() == 0){
+                    continue;
+                }
+                if(selectedNode.getX() >= level.gridWidth -1){
+                    continue;
+                }
+
+
+                Enemy enemy = new Enemy(selectedNode.getX() * Constants.TILE_SIZE ,
+                        (selectedNode.getY() - 1) * Constants.TILE_SIZE + 20, 160);
+
+                entities.add(enemy);
+                enemies.add(enemy);
+
+                foundTile = true;
+
             }
 
         }
     }
+
 
     private int calculateScore(PApplet sketch) {
         return (int) ((100 * difficultyFactor) + sketch.random(20));
@@ -240,6 +254,12 @@ public final class GameStateGameplay extends GameState {
             entity.getLocation().x += cameraOffset;
         }
 
+        for (Projectile p : projectiles){
+            p.getLocation().x -= cameraOffset;
+            p.draw(sketch);
+            p.getLocation().x += cameraOffset;
+        }
+
         player.updateAttack(sketch);
 
         if (level.playerOnBallot())
@@ -262,6 +282,10 @@ public final class GameStateGameplay extends GameState {
             Constants.Screen.width,
             Constants.Screen.GamePlay.infoPanelHeight
         );
+
+        for(Projectile b: this.projectiles){
+            b.move();
+        }
 
         buttonRestart.draw(sketch);
         buttonPause.draw(sketch);
@@ -391,7 +415,9 @@ public final class GameStateGameplay extends GameState {
 
             // TODO remove the enemy from the arraylist of enemies when killed
 
+
         }
     }
+
 
 }
