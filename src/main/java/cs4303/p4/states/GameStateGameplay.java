@@ -167,7 +167,7 @@ public final class GameStateGameplay extends GameState {
                 }
 
                 Enemy enemy = new Enemy(selectedNode.getX() * Constants.TILE_SIZE ,
-                        (selectedNode.getY() - 1) * Constants.TILE_SIZE + 20, 160);
+                        (selectedNode.getY() - 1) * Constants.TILE_SIZE + 20, 160,this.difficultyFactor);
 
                 entities.add(enemy);
                 enemies.add(enemy);

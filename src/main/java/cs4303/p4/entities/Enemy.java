@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Enemy extends Entity{
-    private int bullet_speed = 4;
+    private int bullet_speed;
     private float range;
     private long lastFireTime;
     private int cameraOffsetX;
@@ -26,12 +26,12 @@ public class Enemy extends Entity{
      * @param x
      * @param y
      */
-    public Enemy(float x, float y,float range) {
+    public Enemy(float x, float y,float range, float difficulty) {
         super(x, y);
         this.size = 20;
         this.range  = range;
         super.setMass(Constants.PLAYER.INSTANCE.MASS);
-
+        this.bullet_speed = (int) PApplet.map(difficulty, 0, 5, 1, 4);
         // initialise mass and acceleration to 0
         super.setAcceleration(new PVector(0, 0));
         super.setVelocity(new PVector(0, 0));
