@@ -14,5 +14,7 @@ Navigate to the ballot box and back.
 # Controls
 
 WAD - Movement
+
 Space - Attack
+
 M - (when selecting inventory) add one item of each type to storage
