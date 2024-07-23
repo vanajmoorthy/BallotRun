@@ -1,16 +1,15 @@
 # How to run
 
-2 options
-
-1. Run the .jar file provided. This will not include textures.
-2. Run the spring application from source code
-    1. Unzip source.zip file
-    2. Navigate to the same folder as .gitignore file
-    3. mvn spring-boot:run
+Either
+* Run the .jar file provided. This will not include textures.
+*  Run the spring application from source code
+    * Unzip source.zip file
+    * Navigate to the same folder as .gitignore file
+    * `mvn spring-boot:run`
 
 # Goal
 
-Navigate to the ballotbox and back
+Navigate to the ballot box and back.
 
 # Controls
 
